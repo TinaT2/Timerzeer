@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Timerzeer</string>
+    <string name="stopwatch_title">Stopwatch title</string>
+    <string name="start">Start</string>
+</resources>
