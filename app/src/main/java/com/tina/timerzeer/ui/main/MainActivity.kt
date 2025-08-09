@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.tina.timerzeer.ui.stopwatch.StopwatchScreenRoot
-import com.tina.timerzeer.ui.theme.TimerzeerTheme
+import com.tina.timerzeer.core.theme.TimerzeerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

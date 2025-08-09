@@ -33,10 +33,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.mapper.toTimeComponents
-import com.tina.timerzeer.ui.components.PrimaryButton
+import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.ui.stopwatch.components.SettingRow
 import com.tina.timerzeer.ui.stopwatch.components.StopwatchTabBar
 import com.tina.timerzeer.ui.stopwatch.components.TimeBlock
+import com.tina.timerzeer.core.theme.TimerzeerTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -131,12 +132,10 @@ private fun StopWatchScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
-            onClick = { onIntent(StopwatchIntent.Start) }) {
-            Text(
-                text = stringResource(R.string.start),
-                color = Color.White
-            )
-        }
+            text = stringResource(R.string.start),
+            onClick = { onIntent(StopwatchIntent.Start) },
+        )
+
 //        Button(
 //            onClick = {
 //            },
@@ -153,9 +152,11 @@ private fun StopWatchScreen(
     }
 }
 
-//@Preview
-//@Composable
-//fun StopWatchPreview() {
-//    val stopWatchState = StopWatchState()
-//    StopWatchScreen(PaddingValues(), stopWatchState) {}
-//}
+@Preview
+@Composable
+fun StopWatchPreview() {
+    val stopWatchState = StopWatchState()
+    TimerzeerTheme {
+        StopWatchScreen(PaddingValues(), stopWatchState) {}
+    }
+}

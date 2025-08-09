@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.theme
+package com.tina.timerzeer.core.theme
 
 import androidx.compose.ui.graphics.Color
 
