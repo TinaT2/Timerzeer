@@ -3,4 +3,10 @@
     <string name="stopwatch_title">Stopwatch title</string>
     <string name="start">Start</string>
     <string name="error">error</string>
+    <string name="titleicon">titleIcon</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="select_theme">Select Theme</string>
+    <string name="value_default">Default</string>
 </resources>

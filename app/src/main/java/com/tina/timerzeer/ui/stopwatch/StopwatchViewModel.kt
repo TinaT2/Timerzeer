@@ -1,5 +1,6 @@
 package com.tina.timerzeer.ui.stopwatch
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -10,11 +11,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class StopwatchViewModel : ViewModel() {
+class StopwatchViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _state = MutableStateFlow(StopWatchState())
     val state: StateFlow<StopWatchState> = _state
 
+    companion object {
+        private const val KEY_SELECTED_INDEX = "selected_index"
+    }
+
     private var timerJob: Job? = null
+    private val _selectedIndex = savedStateHandle.getStateFlow(KEY_SELECTED_INDEX, 0)
+    val selectedTabIndex: StateFlow<Int> = _selectedIndex
 
     fun onIntent(intent: StopwatchIntent) {
         when (intent) {
