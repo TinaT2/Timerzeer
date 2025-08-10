@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerZeerError
@@ -97,6 +98,23 @@ fun TimerInputField(
 }
 
 @Composable
+fun HeadlineMediumTextField(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = typography.headlineMedium,
+        color = colorScheme.primary,
+        modifier = modifier,
+        textAlign = TextAlign.Center
+    )
+
+}
+
+@Composable
+fun CaptionTextField(text: String) {
+    Text(text = text, style = typography.labelLarge, color = colorScheme.onSecondary)
+}
+
+@Composable
 fun TimerOptionRow(
     text: String,
     leadingIcon: Int,
@@ -108,7 +126,10 @@ fun TimerOptionRow(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(RoundedCornerShapeNumber))
-            .background(shape = RoundedCornerShape(RoundedCornerShapeNumber), color = colorScheme.tertiary)
+            .background(
+                shape = RoundedCornerShape(RoundedCornerShapeNumber),
+                color = colorScheme.tertiary
+            )
             .clickable { onClick() }
             .padding(SizeS)
     ) {
