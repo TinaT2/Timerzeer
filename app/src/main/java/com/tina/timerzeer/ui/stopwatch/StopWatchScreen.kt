@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
+import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
 import com.tina.timerzeer.core.presentation.components.TimerOptionRow
@@ -46,9 +47,10 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun StopwatchScreenRoot(
-    innerPadding: PaddingValues
+    viewModel: StopwatchViewModel,
+    innerPadding: PaddingValues = PaddingValues(),
+    onTimerStarted: (Route) -> Unit = {}
 ) {
-    val viewModel: StopwatchViewModel = koinViewModel<StopwatchViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val selectedIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
 
@@ -62,7 +64,10 @@ fun StopwatchScreenRoot(
             state = state,
             selectedIndex = selectedIndex,
             onIntent = { intent ->
-                viewModel.onIntent(intent)
+                if (intent is StopwatchIntent.Start) {
+                    onTimerStarted(Route.StopwatchStarted)
+                } else
+                    viewModel.onIntent(intent)
             })
     }
 

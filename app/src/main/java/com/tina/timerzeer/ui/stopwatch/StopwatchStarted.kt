@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.presentation.components.CaptionTextField
 import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
@@ -31,6 +33,17 @@ import com.tina.timerzeer.mapper.toTimeComponents
 import com.tina.timerzeer.ui.components.LightDarkPreviews
 import com.tina.timerzeer.ui.components.ThemedPreview
 import com.tina.timerzeer.ui.components.TimeSelector
+
+
+@Composable
+fun RootStopWatchStarted(viewModel: StopwatchViewModel, onStop: (StopWatchState) -> Unit) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { viewModel.onIntent(StopwatchIntent.Start) }
+    StopwatchStarted(state.value, {
+        if (it is StopwatchIntent.Stop) onStop(state.value)
+        viewModel.onIntent(it)
+    })
+}
 
 @Composable
 fun StopwatchStarted(state: StopWatchState, onIntent: (StopwatchIntent) -> Unit) {
