@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,12 +38,11 @@ import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXXL
-import com.tina.timerzeer.core.theme.TimerzeerTheme
 import com.tina.timerzeer.mapper.toTimeComponents
 import com.tina.timerzeer.ui.components.LightDarkPreviews
 import com.tina.timerzeer.ui.components.SegmentedTab
+import com.tina.timerzeer.ui.components.ThemedPreview
 import com.tina.timerzeer.ui.components.TimeSelector
-import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -51,24 +51,32 @@ fun StopwatchScreenRoot(
     innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: (Route) -> Unit = {}
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val selectedIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
+    val stopWatchState by viewModel.stopwatchState.collectAsStateWithLifecycle()
+    val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier
             .padding(innerPadding)
             .background(colorScheme.background)
     ) { paddingValues ->
-        StopWatchScreen(
-            paddingValues,
-            state = state,
-            selectedIndex = selectedIndex,
-            onIntent = { intent ->
-                if (intent is StopwatchIntent.Start) {
-                    onTimerStarted(Route.StopwatchStarted)
-                } else
-                    viewModel.onIntent(intent)
-            })
+        if (userActionState.mode == TimerMode.STOPWATCH)
+            StopWatchScreen(
+                paddingValues,
+                stopWatchState = stopWatchState,
+                userActionState = userActionState,
+                onStopWatchIntent = { intent ->
+                    if (intent is StopwatchIntent.Start) {
+                        onTimerStarted(Route.StopwatchStarted)
+                    } else
+                        viewModel.onStopwatchIntent(intent)
+                },
+                onUserActionIntent = { intent ->
+                    viewModel.onUserAction(intent)
+                }
+            )
+        else {
+            Text("Hello dear")
+        }
     }
 
 }
@@ -76,9 +84,10 @@ fun StopwatchScreenRoot(
 @Composable
 private fun StopWatchScreen(
     paddingValues: PaddingValues,
-    state: StopWatchState,
-    selectedIndex: Int,
-    onIntent: (StopwatchIntent) -> Unit
+    stopWatchState: StopWatchState,
+    userActionState: UserActionState,
+    onStopWatchIntent: (StopwatchIntent) -> Unit,
+    onUserActionIntent: (UserActionIntent) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -117,25 +126,25 @@ private fun StopWatchScreen(
         ) {
             SegmentedTab(
                 listOf(
-                    ("Stopwatch" to R.drawable.property_1_clock_stopwatch),
-                    ("Countdown" to R.drawable.property_1_clock_fast_forward)
-                ), selected = selectedIndex, onSelect = {
-//todo
+                    (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                    (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
+                ), selected = userActionState.mode.ordinal, onSelect = {
+                    onUserActionIntent(UserActionIntent.OnModeChange(TimerMode.entries[it]))
                 })
         }
         Spacer(modifier = Modifier.height(SizeXXXL))
 
         TimerInputField(
-            value = state.title, error = state.errorMessage,
+            value = userActionState.title, error = stopWatchState.errorMessage,
             placeholder = stringResource(R.string.stopwatch_title)
         ) {
-            onIntent(StopwatchIntent.OnTitleChange(it))
+            onUserActionIntent(UserActionIntent.OnTitleChange(it))
         }
 
         Spacer(Modifier.height(SizeXL))
 
         Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = state.elapsedTime.toTimeComponents()
+            val time = stopWatchState.elapsedTime.toTimeComponents()
             TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
             TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
             TimeSelector(time.seconds, selectable = false, label = stringResource(R.string.seconds))
@@ -162,15 +171,27 @@ private fun StopWatchScreen(
 
         PrimaryButton(
             text = stringResource(R.string.start),
-            onClick = { onIntent(StopwatchIntent.Start) })
+            onClick = { onStopWatchIntent(StopwatchIntent.Start) })
     }
 }
 
 @LightDarkPreviews
 @Composable
-fun StopWatchPreview() {
-    val stopWatchState = StopWatchState()
-    TimerzeerTheme {
-        StopWatchScreen(PaddingValues(), stopWatchState, selectedIndex = 0) {}
+private fun StopWatchScreenPreview() {
+    ThemedPreview {
+        StopWatchScreen(
+            paddingValues = PaddingValues(),
+            stopWatchState = StopWatchState(
+                elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
+                isRunning = false,
+                errorMessage = null
+            ),
+            userActionState = UserActionState(
+                title = "Work Session",
+                mode = TimerMode.STOPWATCH
+            ),
+            onStopWatchIntent = {},
+            onUserActionIntent = {}
+        )
     }
 }

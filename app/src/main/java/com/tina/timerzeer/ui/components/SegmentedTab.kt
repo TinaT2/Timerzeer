@@ -18,15 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXS
 import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.ui.stopwatch.TimerMode
 
 @Composable
-fun SegmentedTab(tabList: List<Pair<String, Int>>, selected: Int, onSelect: (Int) -> Unit) {
+fun SegmentedTab(tabList: List<Pair<TimerMode, Int>>, selected: Int, onSelect: (Int) -> Unit) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
@@ -52,12 +54,12 @@ fun SegmentedTab(tabList: List<Pair<String, Int>>, selected: Int, onSelect: (Int
             ) {
                 Icon(
                     painter = painterResource(tab.second),
-                    contentDescription = tab.first,
+                    contentDescription = stringResource(tab.first.nameId),
                     tint = textColor
                 )
                 Spacer(Modifier.width(SizeXXS))
                 Text(
-                    text = tab.first,
+                    text = stringResource(tab.first.nameId),
                     color = textColor,
                     style = typography.bodyMedium
                 )
@@ -72,8 +74,8 @@ fun SegmentedTabPreview() {
     TimerzeerTheme {
         SegmentedTab(
             tabList = listOf(
-                ("Stopwatch" to R.drawable.property_1_clock_stopwatch),
-                ("Countdown" to R.drawable.property_1_clock_fast_forward)
+                (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
             ), selected = 0, onSelect = {})
     }
 }
@@ -84,8 +86,8 @@ fun SegmentedTabNightPreview() {
     TimerzeerTheme {
         SegmentedTab(
             tabList = listOf(
-                ("Stopwatch" to R.drawable.property_1_clock_stopwatch),
-                ("Countdown" to R.drawable.property_1_clock_fast_forward)
+                (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
             ), selected = 0, onSelect = {})
     }
 }

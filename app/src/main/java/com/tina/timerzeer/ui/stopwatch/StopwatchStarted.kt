@@ -37,16 +37,21 @@ import com.tina.timerzeer.ui.components.TimeSelector
 
 @Composable
 fun RootStopWatchStarted(viewModel: StopwatchViewModel, onStop: (StopWatchState) -> Unit) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { viewModel.onIntent(StopwatchIntent.Start) }
-    StopwatchStarted(state.value, {
-        if (it is StopwatchIntent.Stop) onStop(state.value)
-        viewModel.onIntent(it)
+    val stopwatchState = viewModel.stopwatchState.collectAsStateWithLifecycle()
+    val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { viewModel.onStopwatchIntent(StopwatchIntent.Start) }
+    StopwatchStarted(stopwatchState.value, userActionState.value, {
+        if (it is StopwatchIntent.Stop) onStop(stopwatchState.value)
+        viewModel.onStopwatchIntent(it)
     })
 }
 
 @Composable
-fun StopwatchStarted(state: StopWatchState, onIntent: (StopwatchIntent) -> Unit) {
+fun StopwatchStarted(
+    stopWatchState: StopWatchState,
+    userActionState: UserActionState,
+    onIntent: (StopwatchIntent) -> Unit
+) {
     var show: Boolean by remember { mutableStateOf(true) }
 
     Column(
@@ -56,10 +61,10 @@ fun StopwatchStarted(state: StopWatchState, onIntent: (StopwatchIntent) -> Unit)
     ) {
         Spacer(Modifier.weight(1.3f))
 
-        HeadlineMediumTextField(state.title)
+        HeadlineMediumTextField(userActionState.title)
 
         Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = state.elapsedTime.toTimeComponents()
+            val time = stopWatchState.elapsedTime.toTimeComponents()
             if (time.hours != 0)
                 TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
             TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
@@ -133,12 +138,13 @@ fun StopwatchStarted(state: StopWatchState, onIntent: (StopwatchIntent) -> Unit)
 @Composable
 fun StopwatchStartedPreview() {
     ThemedPreview {
-        val state = StopWatchState(
-            title = "how it could take long to get a \$100 skin",
+        val stopWatchState = StopWatchState(
             elapsedTime = 3661000L,
             isRunning = true
         ) // Example: 1 hour, 1 minute, 1 second
-        StopwatchStarted(state) {}
+        val userActionStateAction =
+            UserActionState(title = "how it could take long to get a \$100 skin")
+        StopwatchStarted(stopWatchState, userActionStateAction) {}
     }
 
 }

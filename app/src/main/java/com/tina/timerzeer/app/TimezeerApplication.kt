@@ -52,7 +52,7 @@ fun AppNavHost() {
             composable<Route.StopwatchStarted>() {
                 val sharedViewModel = it.sharedKoinViewModel<StopwatchViewModel>(navController)
                 RootStopWatchStarted(sharedViewModel) {
-                sharedViewModel.onIntent(StopwatchIntent.Stop)
+                sharedViewModel.onStopwatchIntent(StopwatchIntent.Stop)
                     navController.navigateUp()
                 }
             }
