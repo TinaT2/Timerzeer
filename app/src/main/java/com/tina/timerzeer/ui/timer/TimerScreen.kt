@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -89,58 +90,69 @@ private fun TimerScreen(
     onCountDownIntent: (CountDownIntent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = SizeS)
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            },
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(R.drawable.timezeer),
-            modifier = Modifier.fillMaxWidth(),
-            contentDescription = stringResource(
-                R.string.titleicon
-            ),
-            tint = Color.Unspecified
-        )
-        Spacer(modifier = Modifier.height(SizeXXXL))
-
-        Row(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(SizeXS)
-                .border(
-                    1.dp,
-                    colorScheme.tertiary,
-                    shape = RoundedCornerShape(RoundedCornerShapeNumber)
-                ),
-            horizontalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                },
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SegmentedTab(
-                listOf(
-                    (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
-                    (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-                ), selected = userActionState.mode.ordinal, onSelect = {
-                    onUserActionIntent(UserActionIntent.OnModeChange(TimerMode.entries[it]))
-                })
+            item {
+                Icon(
+                    painter = painterResource(R.drawable.timezeer),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentDescription = stringResource(
+                        R.string.titleicon
+                    ),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.height(SizeXXXL))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(SizeXS)
+                        .border(
+                            1.dp,
+                            colorScheme.tertiary,
+                            shape = RoundedCornerShape(RoundedCornerShapeNumber)
+                        ),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    SegmentedTab(
+                        listOf(
+                            (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                            (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
+                        ), selected = userActionState.mode.ordinal, onSelect = {
+                            onUserActionIntent(UserActionIntent.OnModeChange(TimerMode.entries[it]))
+                        })
+                }
+                Spacer(modifier = Modifier.height(SizeXXXL))
+
+                if (userActionState.mode == TimerMode.STOPWATCH)
+                    Stopwatch(userActionState, stopWatchState, onUserActionIntent)
+                else
+                    Countdown(
+                        userActionState,
+                        stopWatchState,
+                        onUserActionIntent,
+                        onCountDownIntent
+                    )
+
+                Spacer(Modifier.height(100.dp))
+            }
         }
-        Spacer(modifier = Modifier.height(SizeXXXL))
-
-        if (userActionState.mode == TimerMode.STOPWATCH)
-            Stopwatch(userActionState, stopWatchState, onUserActionIntent)
-        else
-            Countdown(userActionState, stopWatchState, onUserActionIntent, onCountDownIntent)
-
-        Spacer(Modifier.weight(1f))
-
         PrimaryButton(
+            modifier = Modifier.align(Alignment.BottomCenter),
             text = stringResource(R.string.start),
             onClick = { onStopWatchIntent(TimerIntent.Start) })
     }
