@@ -1,16 +1,17 @@
-package com.tina.timerzeer.ui.stopwatch
+package com.tina.timerzeer.ui.timer
 
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerZeerError
 
-data class StopWatchState(
+data class Timer(
     val elapsedTime: Long = 0L,
     val isRunning: Boolean = false,
     val errorMessage: TimerZeerError? = null
 )
 
 data class UserActionState(
-    val title: String = "",
+    val stopwatchTitle: String = "",
+    val countdownTitle: String = "",
     val mode: TimerMode = TimerMode.STOPWATCH
 )
 

@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.stopwatch
+package com.tina.timerzeer.ui.timer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,8 +45,8 @@ import com.tina.timerzeer.ui.components.TimeSelector
 
 
 @Composable
-fun StopwatchScreenRoot(
-    viewModel: StopwatchViewModel,
+fun TimerScreenRoot(
+    viewModel: TimerViewModel,
     innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: (Route) -> Unit = {}
 ) {
@@ -59,35 +58,35 @@ fun StopwatchScreenRoot(
             .padding(innerPadding)
             .background(colorScheme.background)
     ) { paddingValues ->
-        if (userActionState.mode == TimerMode.STOPWATCH)
-            StopWatchScreen(
-                paddingValues,
-                stopWatchState = stopWatchState,
-                userActionState = userActionState,
-                onStopWatchIntent = { intent ->
-                    if (intent is StopwatchIntent.Start) {
-                        onTimerStarted(Route.StopwatchStarted)
-                    } else
-                        viewModel.onStopwatchIntent(intent)
-                },
-                onUserActionIntent = { intent ->
-                    viewModel.onUserAction(intent)
-                }
-            )
-        else {
-            Text("Hello dear")
-        }
+        TimerScreen(
+            paddingValues,
+            stopWatchState = stopWatchState,
+            userActionState = userActionState,
+            onStopWatchIntent = { intent ->
+                if (intent is TimerIntent.Start) {
+                    onTimerStarted(Route.StopwatchStarted)
+                } else
+                    viewModel.onTimerIntent(intent)
+            },
+            onUserActionIntent = { intent ->
+                viewModel.onUserAction(intent)
+            },
+            onCountDownIntent = { intent ->
+                viewModel.onCountDownIntent(intent)
+            }
+        )
     }
 
 }
 
 @Composable
-private fun StopWatchScreen(
+private fun TimerScreen(
     paddingValues: PaddingValues,
-    stopWatchState: StopWatchState,
+    stopWatchState: Timer,
     userActionState: UserActionState,
-    onStopWatchIntent: (StopwatchIntent) -> Unit,
+    onStopWatchIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
+    onCountDownIntent: (CountDownIntent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -134,44 +133,112 @@ private fun StopWatchScreen(
         }
         Spacer(modifier = Modifier.height(SizeXXXL))
 
-        TimerInputField(
-            value = userActionState.title, error = stopWatchState.errorMessage,
-            placeholder = stringResource(R.string.stopwatch_title)
-        ) {
-            onUserActionIntent(UserActionIntent.OnTitleChange(it))
-        }
-
-        Spacer(Modifier.height(SizeXL))
-
-        Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = stopWatchState.elapsedTime.toTimeComponents()
-            TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
-            TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
-            TimeSelector(time.seconds, selectable = false, label = stringResource(R.string.seconds))
-        }
-        Spacer(Modifier.height(SizeXXXL))
-
-        TimerOptionRow(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_roller_brush,
-            trailingIcon = R.drawable.property_1_chevron_right
-        ) {
-            //TODO()
-        }
-        Spacer(Modifier.height(SizeXS))
-        TimerOptionRow(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_image_02,
-            trailingIcon = R.drawable.property_1_chevron_right
-        ) {
-            //TODO()
-        }
+        if (userActionState.mode == TimerMode.STOPWATCH)
+            Stopwatch(userActionState, stopWatchState, onUserActionIntent)
+        else
+            Countdown(userActionState, stopWatchState, onUserActionIntent, onCountDownIntent)
 
         Spacer(Modifier.weight(1f))
 
         PrimaryButton(
             text = stringResource(R.string.start),
-            onClick = { onStopWatchIntent(StopwatchIntent.Start) })
+            onClick = { onStopWatchIntent(TimerIntent.Start) })
+    }
+}
+
+@Composable
+private fun Stopwatch(
+    userActionState: UserActionState,
+    stopWatchState: Timer,
+    onUserActionIntent: (UserActionIntent) -> Unit
+) {
+    TimerInputField(
+        value = userActionState.stopwatchTitle, error = stopWatchState.errorMessage,
+        placeholder = stringResource(R.string.stopwatch_title)
+    ) {
+        onUserActionIntent(UserActionIntent.OnStopwatchTitleChange(it))
+    }
+
+    Spacer(Modifier.height(SizeXL))
+
+    Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+        val time = stopWatchState.elapsedTime.toTimeComponents()
+        TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
+        TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
+        TimeSelector(time.seconds, selectable = false, label = stringResource(R.string.seconds))
+    }
+    Spacer(Modifier.height(SizeXXXL))
+
+    TimerOptionRow(
+        text = stringResource(R.string.value_default),
+        leadingIcon = R.drawable.property_1_roller_brush,
+        trailingIcon = R.drawable.property_1_chevron_right
+    ) {
+        //TODO()
+    }
+    Spacer(Modifier.height(SizeXS))
+    TimerOptionRow(
+        text = stringResource(R.string.value_default),
+        leadingIcon = R.drawable.property_1_image_02,
+        trailingIcon = R.drawable.property_1_chevron_right
+    ) {
+        //TODO()
+    }
+}
+
+@Composable
+private fun Countdown(
+    userActionState: UserActionState,
+    stopWatchState: Timer,
+    onUserActionIntent: (UserActionIntent) -> Unit,
+    onCountDownIntent: (CountDownIntent) -> Unit
+) {
+    TimerInputField(
+        value = userActionState.countdownTitle, error = stopWatchState.errorMessage,
+        placeholder = stringResource(R.string.countdown_title)
+    ) {
+        onUserActionIntent(UserActionIntent.OnCountDownTitleChange(it))
+    }
+
+    Spacer(Modifier.height(SizeXL))
+
+    Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+        val time = stopWatchState.elapsedTime.toTimeComponents()
+        TimeSelector(
+            time.hours,
+            selectable = true,
+            label = stringResource(R.string.hours),
+            onIncrease = { onCountDownIntent(CountDownIntent.onHourIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.onHourDecrease) })
+        TimeSelector(
+            time.minutes,
+            selectable = true,
+            label = stringResource(R.string.minutes),
+            onIncrease = { onCountDownIntent(CountDownIntent.onMinutesIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.onMinutesDecrease) })
+        TimeSelector(
+            time.seconds,
+            selectable = true,
+            label = stringResource(R.string.seconds),
+            onIncrease = { onCountDownIntent(CountDownIntent.onSecondIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.onSecondDecrease) })
+    }
+    Spacer(Modifier.height(SizeXXXL))
+
+    TimerOptionRow(
+        text = stringResource(R.string.value_default),
+        leadingIcon = R.drawable.property_1_roller_brush,
+        trailingIcon = R.drawable.property_1_chevron_right
+    ) {
+        //TODO()
+    }
+    Spacer(Modifier.height(SizeXS))
+    TimerOptionRow(
+        text = stringResource(R.string.value_default),
+        leadingIcon = R.drawable.property_1_image_02,
+        trailingIcon = R.drawable.property_1_chevron_right
+    ) {
+        //TODO()
     }
 }
 
@@ -179,19 +246,20 @@ private fun StopWatchScreen(
 @Composable
 private fun StopWatchScreenPreview() {
     ThemedPreview {
-        StopWatchScreen(
+        TimerScreen(
             paddingValues = PaddingValues(),
-            stopWatchState = StopWatchState(
+            stopWatchState = Timer(
                 elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
                 isRunning = false,
                 errorMessage = null
             ),
             userActionState = UserActionState(
-                title = "Work Session",
+                stopwatchTitle = "Work Session",
                 mode = TimerMode.STOPWATCH
             ),
             onStopWatchIntent = {},
-            onUserActionIntent = {}
+            onUserActionIntent = {},
+            onCountDownIntent = {}
         )
     }
 }
