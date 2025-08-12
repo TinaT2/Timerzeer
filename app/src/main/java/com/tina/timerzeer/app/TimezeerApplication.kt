@@ -45,14 +45,13 @@ fun AppNavHost() {
         ) {
             composable<Route.Timer> {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
-                TimerScreenRoot(sharedViewModel) { route ->
+                TimerScreenRoot(sharedViewModel) {
                     navController.navigate(Route.TimerStarted)
                 }
             }
-            composable<Route.TimerStarted>() {
+            composable<Route.TimerStarted> {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
                 RootTimerStarted(sharedViewModel) {
-                sharedViewModel.onTimerIntent(TimerIntent.Stop)
                     navController.navigateUp()
                 }
             }

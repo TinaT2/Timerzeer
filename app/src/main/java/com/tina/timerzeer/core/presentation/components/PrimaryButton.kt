@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.core.theme.TimerzeerTheme
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
+import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 
 @Composable
 fun PrimaryButton(
@@ -26,7 +26,7 @@ fun PrimaryButton(
 ) {
     val colors = ButtonDefaults.buttonColors(
         containerColor = colorScheme.primary,
-        contentColor = colorScheme.surface,
+        disabledContainerColor = colorScheme.tertiary
     )
 
     Button(
@@ -41,7 +41,7 @@ fun PrimaryButton(
         Text(
             text = text,
             style = typography.bodyMedium,
-            color = colorScheme.surface,
+            color = if (enabled) colorScheme.surface else colorScheme.onSecondary,
             modifier = Modifier.padding(SizeXS)
         )
     }
@@ -50,7 +50,15 @@ fun PrimaryButton(
 @LightDarkPreviews
 @Composable
 fun PrimaryButtonPreview() {
-    TimerzeerTheme {
+    ThemedPreview {
         PrimaryButton("Button", onClick = { })
+    }
+}
+
+@LightDarkPreviews
+@Composable
+fun PrimaryButtonDisablePreview() {
+    ThemedPreview {
+        PrimaryButton("Button", enabled = false, onClick = { })
     }
 }

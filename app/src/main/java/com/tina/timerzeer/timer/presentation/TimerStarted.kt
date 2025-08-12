@@ -36,24 +36,29 @@ import com.tina.timerzeer.timer.presentation.components.TimeSelector
 
 
 @Composable
-fun RootTimerStarted(viewModel: TimerViewModel, onStop: (Timer) -> Unit) {
+fun RootTimerStarted(viewModel: TimerViewModel, onNavigateBack: () -> Unit) {
     val timerState = viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
-    TimerStarted(timerState.value, userActionState.value, {
-        if (it is TimerIntent.Stop) onStop(timerState.value)
+    TimerStarted(timerState.value, userActionState.value, onTimerIntent = {
         viewModel.onTimerIntent(it)
-    })
+    }, onCountdownIntent = { viewModel.onCountDownIntent(it) }, onNavigateBack = onNavigateBack)
 }
 
 @Composable
 fun TimerStarted(
     timerState: Timer,
     userActionState: UserActionState,
-    onIntent: (TimerIntent) -> Unit
+    onTimerIntent: (TimerIntent) -> Unit,
+    onCountdownIntent: (CountDownIntent) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
-
+    LaunchedEffect(timerState.isCountDownDone) {
+        if (timerState.isCountDownDone)
+            onNavigateBack()
+        onCountdownIntent(CountDownIntent.ResetIsCountDownDone)
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,15 +88,24 @@ fun TimerStarted(
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(R.drawable.property_1_stop, stringResource(R.string.stop)) {
-                    onIntent(TimerIntent.Stop)
+                    onTimerIntent(TimerIntent.Stop)
+                    onNavigateBack()
                 }
                 Spacer(Modifier.width(SizeXL))
-                RoundIconFilledMedium(
-                    R.drawable.property_1_pause_circle,
-                    stringResource(R.string.pause)
-                ) {
-                    onIntent(TimerIntent.Pause)
-                }
+                if (timerState.isRunning)
+                    RoundIconFilledMedium(
+                        R.drawable.property_1_pause_circle,
+                        stringResource(R.string.pause)
+                    ) {
+                        onTimerIntent(TimerIntent.Pause)
+                    }
+                else
+                    RoundIconFilledMedium(
+                        R.drawable.property_1_play,
+                        stringResource(R.string.play)
+                    ) {
+                        onTimerIntent(TimerIntent.Resume)
+                    }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(
                     R.drawable.property_1_lock_01,
@@ -109,7 +123,7 @@ fun TimerStarted(
             }
         } else {
             RoundIconOutlinedSmall(
-                R.drawable.property_1_eye_off,
+                R.drawable.property_1_eye,
                 stringResource(R.string.show_ui)
             ) {
                 show = true
@@ -144,7 +158,7 @@ fun TimerStartedPreview() {
         ) // Example: 1 hour, 1 minute, 1 second
         val userActionStateAction =
             UserActionState(timerTitle = "how it could take long to get a \$100 skin")
-        TimerStarted(timerState, userActionStateAction) {}
+        TimerStarted(timerState, userActionStateAction, {}, {}, {})
     }
 
 }

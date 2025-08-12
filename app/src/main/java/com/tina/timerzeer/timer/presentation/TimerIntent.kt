@@ -15,10 +15,11 @@ sealed interface UserActionIntent {
 }
 
 sealed interface CountDownIntent{
-    data object onSecondIncrease: CountDownIntent
-    data object onSecondDecrease: CountDownIntent
-    data object onMinutesIncrease: CountDownIntent
-    data object onMinutesDecrease: CountDownIntent
-    data object onHourIncrease: CountDownIntent
-    data object onHourDecrease: CountDownIntent
+    data object OnSecondIncrease: CountDownIntent
+    data object OnSecondDecrease: CountDownIntent
+    data object OnMinutesIncrease: CountDownIntent
+    data object OnMinutesDecrease: CountDownIntent
+    data object OnHourIncrease: CountDownIntent
+    data object OnHourDecrease: CountDownIntent
+    data object ResetIsCountDownDone: CountDownIntent
 }
