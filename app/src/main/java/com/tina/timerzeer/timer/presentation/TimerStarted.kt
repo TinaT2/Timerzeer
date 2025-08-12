@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +33,6 @@ import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.components.TimeSelector
-import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
@@ -94,12 +92,20 @@ fun TimerStarted(
                     onNavigateBack()
                 }
                 Spacer(Modifier.width(SizeXL))
-                RoundIconFilledMedium(
-                    R.drawable.property_1_pause_circle,
-                    stringResource(R.string.pause)
-                ) {
-                    onTimerIntent(TimerIntent.Pause)
-                }
+                if (timerState.isRunning)
+                    RoundIconFilledMedium(
+                        R.drawable.property_1_pause_circle,
+                        stringResource(R.string.pause)
+                    ) {
+                        onTimerIntent(TimerIntent.Pause)
+                    }
+                else
+                    RoundIconFilledMedium(
+                        R.drawable.property_1_play,
+                        stringResource(R.string.play)
+                    ) {
+                        onTimerIntent(TimerIntent.Resume)
+                    }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(
                     R.drawable.property_1_lock_01,
