@@ -6,7 +6,9 @@ import com.tina.timerzeer.core.domain.TimerZeerError
 data class Timer(
     val elapsedTime: Long = 0L,
     val isRunning: Boolean = false,
-    val errorMessage: TimerZeerError? = null
+    val errorMessage: TimerZeerError? = null,
+    val countDownInitTime: Long = 0L,
+    val isCountDownDone: Boolean = false,
 )
 
 data class UserActionState(

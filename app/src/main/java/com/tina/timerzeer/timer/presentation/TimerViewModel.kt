@@ -16,7 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+
 class TimerViewModel() : ViewModel() {
+
+    companion object {
+        private const val COUNTDOWN_DONE_DELAY_MS = 2000L
+    }
+
     private val _timerState = MutableStateFlow(Timer())
     val timerState: StateFlow<Timer> = _timerState
     private val _userActionState = MutableStateFlow(UserActionState())
@@ -27,6 +33,10 @@ class TimerViewModel() : ViewModel() {
     fun onTimerIntent(intent: TimerIntent) {
         when (intent) {
             TimerIntent.Start -> {
+                if (userActionState.value.mode == TimerMode.COUNTDOWN)
+                    _timerState.update {
+                        it.copy(elapsedTime = it.countDownInitTime)
+                    }
                 if (_timerState.value.isRunning) return
                 _timerState.update { it.copy(isRunning = true) }
                 startTimer()
@@ -55,9 +65,25 @@ class TimerViewModel() : ViewModel() {
                     _timerState.update { it.copy(elapsedTime = it.elapsedTime + 1000) }
                 else {
                     _timerState.update { it.copy(elapsedTime = it.elapsedTime - 1000) }
-                    if (_timerState.value.elapsedTime == 0L)
-                        onTimerIntent(TimerIntent.Stop)
+                    if (_timerState.value.elapsedTime == 0L) {
+                        finishCountdown()
+                    }
                 }
+            }
+        }
+    }
+
+    private fun finishCountdown() {
+        timerJob?.cancel()
+        viewModelScope.launch {
+            delay(COUNTDOWN_DONE_DELAY_MS)
+            _timerState.update { it.copy(isCountDownDone = true) }
+            delay(1000)
+            _timerState.update {
+                it.copy(
+                    elapsedTime = it.countDownInitTime,
+                    isRunning = false
+                )
             }
         }
     }
@@ -88,28 +114,32 @@ class TimerViewModel() : ViewModel() {
 
     fun onCountDownIntent(intent: CountDownIntent) {
         when (intent) {
-            CountDownIntent.onHourDecrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.minusHour()) }
+            CountDownIntent.OnHourDecrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.minusHour()) }
             }
 
-            CountDownIntent.onHourIncrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.plusHour()) }
+            CountDownIntent.OnHourIncrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.plusHour()) }
             }
 
-            CountDownIntent.onMinutesDecrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.minusMinute()) }
+            CountDownIntent.OnMinutesDecrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.minusMinute()) }
             }
 
-            CountDownIntent.onMinutesIncrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.plusMinute()) }
+            CountDownIntent.OnMinutesIncrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.plusMinute()) }
             }
 
-            CountDownIntent.onSecondDecrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.minusSecond()) }
+            CountDownIntent.OnSecondDecrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.minusSecond()) }
             }
 
-            CountDownIntent.onSecondIncrease -> {
-                _timerState.update { it.copy(elapsedTime = it.elapsedTime.plusSecond()) }
+            CountDownIntent.OnSecondIncrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.plusSecond()) }
+            }
+
+            CountDownIntent.ResetIsCountDownDone -> {
+                _timerState.update { it.copy(isCountDownDone = false) }
             }
         }
     }

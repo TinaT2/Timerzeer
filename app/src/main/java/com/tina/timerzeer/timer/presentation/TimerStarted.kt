@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,27 +34,33 @@ import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.components.TimeSelector
+import kotlinx.coroutines.CoroutineScope
 
 
 @Composable
-fun RootTimerStarted(viewModel: TimerViewModel, onStop: (Timer) -> Unit) {
+fun RootTimerStarted(viewModel: TimerViewModel, onNavigateBack: () -> Unit) {
     val timerState = viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
-    TimerStarted(timerState.value, userActionState.value, {
-        if (it is TimerIntent.Stop) onStop(timerState.value)
+    TimerStarted(timerState.value, userActionState.value, onTimerIntent = {
         viewModel.onTimerIntent(it)
-    })
+    }, onCountdownIntent = { viewModel.onCountDownIntent(it) }, onNavigateBack = onNavigateBack)
 }
 
 @Composable
 fun TimerStarted(
     timerState: Timer,
     userActionState: UserActionState,
-    onIntent: (TimerIntent) -> Unit
+    onTimerIntent: (TimerIntent) -> Unit,
+    onCountdownIntent: (CountDownIntent) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
-
+    LaunchedEffect(timerState.isCountDownDone) {
+        if (timerState.isCountDownDone)
+            onNavigateBack()
+        onCountdownIntent(CountDownIntent.ResetIsCountDownDone)
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,14 +90,15 @@ fun TimerStarted(
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(R.drawable.property_1_stop, stringResource(R.string.stop)) {
-                    onIntent(TimerIntent.Stop)
+                    onTimerIntent(TimerIntent.Stop)
+                    onNavigateBack()
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconFilledMedium(
                     R.drawable.property_1_pause_circle,
                     stringResource(R.string.pause)
                 ) {
-                    onIntent(TimerIntent.Pause)
+                    onTimerIntent(TimerIntent.Pause)
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(
@@ -144,7 +152,7 @@ fun TimerStartedPreview() {
         ) // Example: 1 hour, 1 minute, 1 second
         val userActionStateAction =
             UserActionState(timerTitle = "how it could take long to get a \$100 skin")
-        TimerStarted(timerState, userActionStateAction) {}
+        TimerStarted(timerState, userActionStateAction, {}, {}, {})
     }
 
 }

@@ -63,7 +63,7 @@ fun TimerScreenRoot(
             paddingValues,
             timerState = timerState,
             userActionState = userActionState,
-            onStopWatchIntent = { intent ->
+            onTimerIntent = { intent ->
                 if (intent is TimerIntent.Start) {
                     onTimerStarted(Route.TimerStarted)
                 } else
@@ -85,7 +85,7 @@ private fun TimerScreen(
     paddingValues: PaddingValues,
     timerState: Timer,
     userActionState: UserActionState,
-    onStopWatchIntent: (TimerIntent) -> Unit,
+    onTimerIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
     onCountDownIntent: (CountDownIntent) -> Unit
 ) {
@@ -154,7 +154,7 @@ private fun TimerScreen(
         PrimaryButton(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = stringResource(R.string.start),
-            onClick = { onStopWatchIntent(TimerIntent.Start) })
+            onClick = { onTimerIntent(TimerIntent.Start) })
     }
 }
 
@@ -215,25 +215,25 @@ private fun Countdown(
     Spacer(Modifier.height(SizeXL))
 
     Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-        val time = timerState.elapsedTime.toTimeComponents()
+        val time = timerState.countDownInitTime.toTimeComponents()
         TimeSelector(
             time.hours,
             selectable = true,
             label = stringResource(R.string.hours),
-            onIncrease = { onCountDownIntent(CountDownIntent.onHourIncrease) },
-            onDecrease = { onCountDownIntent(CountDownIntent.onHourDecrease) })
+            onIncrease = { onCountDownIntent(CountDownIntent.OnHourIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.OnHourDecrease) })
         TimeSelector(
             time.minutes,
             selectable = true,
             label = stringResource(R.string.minutes),
-            onIncrease = { onCountDownIntent(CountDownIntent.onMinutesIncrease) },
-            onDecrease = { onCountDownIntent(CountDownIntent.onMinutesDecrease) })
+            onIncrease = { onCountDownIntent(CountDownIntent.OnMinutesIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.OnMinutesDecrease) })
         TimeSelector(
             time.seconds,
             selectable = true,
             label = stringResource(R.string.seconds),
-            onIncrease = { onCountDownIntent(CountDownIntent.onSecondIncrease) },
-            onDecrease = { onCountDownIntent(CountDownIntent.onSecondDecrease) })
+            onIncrease = { onCountDownIntent(CountDownIntent.OnSecondIncrease) },
+            onDecrease = { onCountDownIntent(CountDownIntent.OnSecondDecrease) })
     }
     Spacer(Modifier.height(SizeXXXL))
 
@@ -269,7 +269,7 @@ private fun TimerhScreenPreview() {
                 timerTitle = "Work Session",
                 mode = TimerMode.STOPWATCH
             ),
-            onStopWatchIntent = {},
+            onTimerIntent = {},
             onUserActionIntent = {},
             onCountDownIntent = {}
         )
