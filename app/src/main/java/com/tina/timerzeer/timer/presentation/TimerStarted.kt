@@ -123,7 +123,7 @@ fun TimerStarted(
             }
         } else {
             RoundIconOutlinedSmall(
-                R.drawable.property_1_eye_off,
+                R.drawable.property_1_eye,
                 stringResource(R.string.show_ui)
             ) {
                 show = true

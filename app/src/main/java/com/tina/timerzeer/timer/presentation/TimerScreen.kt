@@ -154,6 +154,7 @@ private fun TimerScreen(
         PrimaryButton(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = stringResource(R.string.start),
+            enabled = if (userActionState.mode == TimerMode.COUNTDOWN) timerState.countDownInitTime != 0L else true,
             onClick = { onTimerIntent(TimerIntent.Start) })
     }
 }
