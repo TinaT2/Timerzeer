@@ -57,7 +57,7 @@ fun TimeSelector(
         Text(
             text = label,
             modifier = Modifier.padding(top = SizeS),
-            color = colorScheme.onSurface,
+            color = colorScheme.onSecondary,
             style = typography.labelLarge
         )
     }

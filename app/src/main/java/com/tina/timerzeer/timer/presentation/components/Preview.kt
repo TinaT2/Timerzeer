@@ -14,6 +14,7 @@ fun ThemedPreview(content: @Composable () -> Unit) {
 
 @Preview(
     name = "Light Mode",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
     showBackground = true,
     backgroundColor = 0xFFFAFCFC
 )

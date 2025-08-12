@@ -115,13 +115,16 @@ fun CaptionTextField(text: String) {
 }
 
 @Composable
-fun TimerOptionRow(
+fun TextOptionButton(
     text: String,
     leadingIcon: Int,
     trailingIcon: Int,
     modifier: Modifier = Modifier,
+    enabled: Boolean,
     onClick: () -> Unit
 ) {
+    val textColor = if (enabled) colorScheme.onPrimary else colorScheme.onSecondary
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -131,7 +134,8 @@ fun TimerOptionRow(
                 color = colorScheme.tertiary
             )
             .clickable { onClick() }
-            .padding(SizeS)
+            .padding(SizeS),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(leadingIcon),
@@ -144,7 +148,7 @@ fun TimerOptionRow(
         Text(
             text = text,
             style = typography.bodyMedium,
-            color = colorScheme.onSecondary,
+            color = textColor,
             modifier = Modifier.weight(1f)
         )
 
@@ -161,12 +165,27 @@ fun TimerOptionRow(
 
 @LightDarkPreviews
 @Composable
-fun TimerOptionRowPreview() {
+fun TextOptionButtonEnabledPreview() {
     TimerzeerTheme {
-        TimerOptionRow(
+        TextOptionButton(
             text = "Timer Option",
             leadingIcon = R.drawable.property_1_roller_brush,
             trailingIcon = R.drawable.property_1_chevron_right,
+            enabled = true,
+            onClick = {}
+        )
+    }
+}
+
+@LightDarkPreviews
+@Composable
+fun TextOptionButtonDisabledPreview() {
+    TimerzeerTheme {
+        TextOptionButton(
+            text = "Timer Option",
+            leadingIcon = R.drawable.property_1_roller_brush,
+            trailingIcon = R.drawable.property_1_chevron_right,
+            enabled = false,
             onClick = {}
         )
     }

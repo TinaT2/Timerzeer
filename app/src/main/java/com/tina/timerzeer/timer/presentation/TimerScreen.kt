@@ -30,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.app.Route
+import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
-import com.tina.timerzeer.core.presentation.components.TimerOptionRow
+import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
@@ -182,18 +183,20 @@ private fun Stopwatch(
     }
     Spacer(Modifier.height(SizeXXXL))
 
-    TimerOptionRow(
+    TextOptionButton(
         text = stringResource(R.string.value_default),
         leadingIcon = R.drawable.property_1_roller_brush,
-        trailingIcon = R.drawable.property_1_chevron_right
+        trailingIcon = R.drawable.property_1_chevron_right,
+        enabled = false
     ) {
         //TODO()
     }
     Spacer(Modifier.height(SizeXS))
-    TimerOptionRow(
+    TextOptionButton(
         text = stringResource(R.string.value_default),
         leadingIcon = R.drawable.property_1_image_02,
-        trailingIcon = R.drawable.property_1_chevron_right
+        trailingIcon = R.drawable.property_1_chevron_right,
+        enabled = false
     ) {
         //TODO()
     }
@@ -215,7 +218,7 @@ private fun Countdown(
 
     Spacer(Modifier.height(SizeXL))
 
-    Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+    Row {
         val time = timerState.countDownInitTime.toTimeComponents()
         TimeSelector(
             time.hours,
@@ -236,20 +239,37 @@ private fun Countdown(
             onIncrease = { onCountDownIntent(CountDownIntent.OnSecondIncrease) },
             onDecrease = { onCountDownIntent(CountDownIntent.OnSecondDecrease) })
     }
+    Spacer(Modifier.height(SizeXL))
+
+    OutlinedPrimaryButton(text = "Set by date", leadingIcon = R.drawable.property_1_calendar) {
+        //TODO()
+    }
+
     Spacer(Modifier.height(SizeXXXL))
 
-    TimerOptionRow(
+    TextOptionButton(
         text = stringResource(R.string.value_default),
         leadingIcon = R.drawable.property_1_roller_brush,
-        trailingIcon = R.drawable.property_1_chevron_right
+        trailingIcon = R.drawable.property_1_chevron_right,
+        enabled = false
     ) {
         //TODO()
     }
     Spacer(Modifier.height(SizeXS))
-    TimerOptionRow(
+    TextOptionButton(
         text = stringResource(R.string.value_default),
         leadingIcon = R.drawable.property_1_image_02,
-        trailingIcon = R.drawable.property_1_chevron_right
+        trailingIcon = R.drawable.property_1_chevron_right,
+        enabled = false
+    ) {
+        //TODO()
+    }
+    Spacer(Modifier.height(SizeXS))
+    TextOptionButton(
+        text = stringResource(R.string.value_default),
+        leadingIcon = R.drawable.property_1_flash,
+        trailingIcon = R.drawable.property_1_chevron_right,
+        enabled = false
     ) {
         //TODO()
     }
@@ -257,7 +277,7 @@ private fun Countdown(
 
 @LightDarkPreviews
 @Composable
-private fun TimerhScreenPreview() {
+private fun StopwatchScreenPreview() {
     ThemedPreview {
         TimerScreen(
             paddingValues = PaddingValues(),
@@ -269,6 +289,27 @@ private fun TimerhScreenPreview() {
             userActionState = UserActionState(
                 timerTitle = "Work Session",
                 mode = TimerMode.STOPWATCH
+            ),
+            onTimerIntent = {},
+            onUserActionIntent = {},
+            onCountDownIntent = {}
+        )
+    }
+}
+@LightDarkPreviews
+@Composable
+private fun CountdownScreenPreview() {
+    ThemedPreview {
+        TimerScreen(
+            paddingValues = PaddingValues(),
+            timerState = Timer(
+                elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
+                isRunning = false,
+                errorMessage = null
+            ),
+            userActionState = UserActionState(
+                timerTitle = "Work Session",
+                mode = TimerMode.COUNTDOWN
             ),
             onTimerIntent = {},
             onUserActionIntent = {},
