@@ -1,5 +1,11 @@
 package com.tina.timerzeer.timer.presentation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -34,8 +40,7 @@ fun TimeSelector(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (selectable)
-            ThemedArrowIcon(Icons.Default.KeyboardArrowUp, onIncrease)
+        ThemedArrowIcon(Icons.Default.KeyboardArrowUp, visible = selectable, onIncrease)
 
         Box(
             modifier = Modifier
@@ -50,9 +55,7 @@ fun TimeSelector(
                 modifier = Modifier.padding(horizontal = SizeM, vertical = SizeS)
             )
         }
-
-        if (selectable)
-            ThemedArrowIcon(Icons.Default.KeyboardArrowDown) { onDecrease() }
+        ThemedArrowIcon(Icons.Default.KeyboardArrowDown, visible = selectable) { onDecrease() }
 
         Text(
             text = label,
@@ -66,18 +69,29 @@ fun TimeSelector(
 @Composable
 private fun ThemedArrowIcon(
     imageVector: ImageVector,
+    visible: Boolean,
     onIncrease: () -> Unit,
 ) {
-    IconButton(
-        onClick = onIncrease,
-        modifier = Modifier
-            .background(colorScheme.primary, shape = RoundedCornerShape(50))
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 500)) + slideInVertically(
+            animationSpec = tween(durationMillis = 1000)
+        ) { it / 2 },
+        exit = fadeOut(animationSpec = tween(durationMillis = 500)) + slideOutVertically(
+            animationSpec = tween(durationMillis = 1000)
+        ) { it / 2 }
     ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = "Increase",
-            tint = colorScheme.surface
-        )
+        IconButton(
+            onClick = onIncrease,
+            modifier = Modifier
+                .background(colorScheme.primary, shape = RoundedCornerShape(50))
+        ) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = "Increase",
+                tint = colorScheme.surface
+            )
+        }
     }
 }
 
