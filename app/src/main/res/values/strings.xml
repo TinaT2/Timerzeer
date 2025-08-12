@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Timerzeer</string>
     <string name="stopwatch_title">Stopwatch title</string>
+    <string name="countdown_title">Countdown title</string>
     <string name="start">Start</string>
     <string name="error">error</string>
     <string name="titleicon">titleIcon</string>

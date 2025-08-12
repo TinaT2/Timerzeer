@@ -13,3 +13,29 @@ fun Long.toTimeComponents(): TimeComponents {
     val seconds = (totalSeconds % 60).toInt()
     return TimeComponents(hours, minutes, seconds)
 }
+
+fun Long.plusHour(): Long {
+    return this + 3600000
+}
+
+fun Long.minusHour(): Long {
+    return (this - 3600000).coerceAtLeast(0)
+}
+
+fun Long.plusMinute(): Long {
+    return this + 60000
+}
+
+fun Long.minusMinute(): Long {
+    return (this - 60000).coerceAtLeast(0)
+}
+
+fun Long.plusSecond(): Long {
+    return this + 1000
+}
+
+fun Long.minusSecond(): Long {
+    return (this - 1000).coerceAtLeast(0)
+}
+
+

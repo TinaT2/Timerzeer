@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.stopwatch
+package com.tina.timerzeer.ui.timer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,21 +36,21 @@ import com.tina.timerzeer.ui.components.TimeSelector
 
 
 @Composable
-fun RootStopWatchStarted(viewModel: StopwatchViewModel, onStop: (StopWatchState) -> Unit) {
+fun RootTimerStarted(viewModel: TimerViewModel, onStop: (Timer) -> Unit) {
     val stopwatchState = viewModel.stopwatchState.collectAsStateWithLifecycle()
     val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { viewModel.onStopwatchIntent(StopwatchIntent.Start) }
-    StopwatchStarted(stopwatchState.value, userActionState.value, {
-        if (it is StopwatchIntent.Stop) onStop(stopwatchState.value)
-        viewModel.onStopwatchIntent(it)
+    LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
+    TimerStarted(stopwatchState.value, userActionState.value, {
+        if (it is TimerIntent.Stop) onStop(stopwatchState.value)
+        viewModel.onTimerIntent(it)
     })
 }
 
 @Composable
-fun StopwatchStarted(
-    stopWatchState: StopWatchState,
+fun TimerStarted(
+    stopWatchState: Timer,
     userActionState: UserActionState,
-    onIntent: (StopwatchIntent) -> Unit
+    onIntent: (TimerIntent) -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
 
@@ -61,7 +61,7 @@ fun StopwatchStarted(
     ) {
         Spacer(Modifier.weight(1.3f))
 
-        HeadlineMediumTextField(userActionState.title)
+        HeadlineMediumTextField(userActionState.stopwatchTitle)
 
         Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
             val time = stopWatchState.elapsedTime.toTimeComponents()
@@ -83,14 +83,14 @@ fun StopwatchStarted(
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(R.drawable.property_1_stop, stringResource(R.string.stop)) {
-                    onIntent(StopwatchIntent.Stop)
+                    onIntent(TimerIntent.Stop)
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconFilledMedium(
                     R.drawable.property_1_pause_circle,
                     stringResource(R.string.pause)
                 ) {
-                    onIntent(StopwatchIntent.Pause)
+                    onIntent(TimerIntent.Pause)
                 }
                 Spacer(Modifier.width(SizeXL))
                 RoundIconOutlinedSmall(
@@ -138,13 +138,13 @@ fun StopwatchStarted(
 @Composable
 fun StopwatchStartedPreview() {
     ThemedPreview {
-        val stopWatchState = StopWatchState(
+        val stopWatchState = Timer(
             elapsedTime = 3661000L,
             isRunning = true
         ) // Example: 1 hour, 1 minute, 1 second
         val userActionStateAction =
-            UserActionState(title = "how it could take long to get a \$100 skin")
-        StopwatchStarted(stopWatchState, userActionStateAction) {}
+            UserActionState(stopwatchTitle = "how it could take long to get a \$100 skin")
+        TimerStarted(stopWatchState, userActionStateAction) {}
     }
 
 }

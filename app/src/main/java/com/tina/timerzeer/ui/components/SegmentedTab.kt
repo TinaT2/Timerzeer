@@ -25,7 +25,7 @@ import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXS
 import com.tina.timerzeer.core.theme.TimerzeerTheme
-import com.tina.timerzeer.ui.stopwatch.TimerMode
+import com.tina.timerzeer.ui.timer.TimerMode
 
 @Composable
 fun SegmentedTab(tabList: List<Pair<TimerMode, Int>>, selected: Int, onSelect: (Int) -> Unit) {
