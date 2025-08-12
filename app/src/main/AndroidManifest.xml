@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Timerzeer">
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".app.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Timerzeer">

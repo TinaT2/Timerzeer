@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.timer
+package com.tina.timerzeer.timer.presentation
 
 sealed interface TimerIntent {
     data object Start : TimerIntent

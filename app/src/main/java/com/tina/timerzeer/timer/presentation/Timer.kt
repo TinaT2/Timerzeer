@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.timer
+package com.tina.timerzeer.timer.presentation
 
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerZeerError
@@ -10,7 +10,7 @@ data class Timer(
 )
 
 data class UserActionState(
-    val stopwatchTitle: String = "",
+    val timerTitle: String = "",
     val countdownTitle: String = "",
     val mode: TimerMode = TimerMode.STOPWATCH
 )

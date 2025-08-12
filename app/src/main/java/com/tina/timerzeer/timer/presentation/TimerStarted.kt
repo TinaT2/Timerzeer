@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.timer
+package com.tina.timerzeer.timer.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,26 +29,26 @@ import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXXL
-import com.tina.timerzeer.mapper.toTimeComponents
-import com.tina.timerzeer.ui.components.LightDarkPreviews
-import com.tina.timerzeer.ui.components.ThemedPreview
-import com.tina.timerzeer.ui.components.TimeSelector
+import com.tina.timerzeer.timer.data.mapper.toTimeComponents
+import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
+import com.tina.timerzeer.timer.presentation.components.ThemedPreview
+import com.tina.timerzeer.timer.presentation.components.TimeSelector
 
 
 @Composable
 fun RootTimerStarted(viewModel: TimerViewModel, onStop: (Timer) -> Unit) {
-    val stopwatchState = viewModel.stopwatchState.collectAsStateWithLifecycle()
+    val timerState = viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
-    TimerStarted(stopwatchState.value, userActionState.value, {
-        if (it is TimerIntent.Stop) onStop(stopwatchState.value)
+    TimerStarted(timerState.value, userActionState.value, {
+        if (it is TimerIntent.Stop) onStop(timerState.value)
         viewModel.onTimerIntent(it)
     })
 }
 
 @Composable
 fun TimerStarted(
-    stopWatchState: Timer,
+    timerState: Timer,
     userActionState: UserActionState,
     onIntent: (TimerIntent) -> Unit
 ) {
@@ -61,10 +61,10 @@ fun TimerStarted(
     ) {
         Spacer(Modifier.weight(1.3f))
 
-        HeadlineMediumTextField(userActionState.stopwatchTitle)
+        HeadlineMediumTextField(userActionState.timerTitle)
 
         Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = stopWatchState.elapsedTime.toTimeComponents()
+            val time = timerState.elapsedTime.toTimeComponents()
             if (time.hours != 0)
                 TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
             TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
@@ -136,15 +136,15 @@ fun TimerStarted(
 
 @LightDarkPreviews
 @Composable
-fun StopwatchStartedPreview() {
+fun TimerStartedPreview() {
     ThemedPreview {
-        val stopWatchState = Timer(
+        val timerState = Timer(
             elapsedTime = 3661000L,
             isRunning = true
         ) // Example: 1 hour, 1 minute, 1 second
         val userActionStateAction =
-            UserActionState(stopwatchTitle = "how it could take long to get a \$100 skin")
-        TimerStarted(stopWatchState, userActionStateAction) {}
+            UserActionState(timerTitle = "how it could take long to get a \$100 skin")
+        TimerStarted(timerState, userActionStateAction) {}
     }
 
 }

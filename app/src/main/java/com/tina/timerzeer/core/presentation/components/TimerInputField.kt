@@ -34,7 +34,7 @@ import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXS
 import com.tina.timerzeer.core.theme.TimerzeerTheme
-import com.tina.timerzeer.ui.components.LightDarkPreviews
+import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import kotlin.math.max
 
 @Composable

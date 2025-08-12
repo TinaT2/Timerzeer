@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.components
+package com.tina.timerzeer.timer.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -12,10 +12,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.tina.timerzeer.di.initKoin
 import com.tina.timerzeer.di.timerModule
-import com.tina.timerzeer.ui.timer.RootTimerStarted
-import com.tina.timerzeer.ui.timer.TimerIntent
-import com.tina.timerzeer.ui.timer.TimerScreenRoot
-import com.tina.timerzeer.ui.timer.TimerViewModel
+import com.tina.timerzeer.timer.presentation.RootTimerStarted
+import com.tina.timerzeer.timer.presentation.TimerIntent
+import com.tina.timerzeer.timer.presentation.TimerScreenRoot
+import com.tina.timerzeer.timer.presentation.TimerViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,15 +41,15 @@ fun AppNavHost() {
         startDestination = Route.TimerGraph
     ) {
         navigation<Route.TimerGraph>(
-            startDestination = Route.Stopwatch
+            startDestination = Route.Timer
         ) {
-            composable<Route.Stopwatch> {
+            composable<Route.Timer> {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
                 TimerScreenRoot(sharedViewModel) { route ->
-                    navController.navigate(Route.StopwatchStarted)
+                    navController.navigate(Route.TimerStarted)
                 }
             }
-            composable<Route.StopwatchStarted>() {
+            composable<Route.TimerStarted>() {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
                 RootTimerStarted(sharedViewModel) {
                 sharedViewModel.onTimerIntent(TimerIntent.Stop)

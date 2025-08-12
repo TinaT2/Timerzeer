@@ -1,4 +1,4 @@
-package com.tina.timerzeer.ui.timer
+package com.tina.timerzeer.timer.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,11 +38,11 @@ import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXXL
-import com.tina.timerzeer.mapper.toTimeComponents
-import com.tina.timerzeer.ui.components.LightDarkPreviews
-import com.tina.timerzeer.ui.components.SegmentedTab
-import com.tina.timerzeer.ui.components.ThemedPreview
-import com.tina.timerzeer.ui.components.TimeSelector
+import com.tina.timerzeer.timer.data.mapper.toTimeComponents
+import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
+import com.tina.timerzeer.timer.presentation.components.SegmentedTab
+import com.tina.timerzeer.timer.presentation.components.ThemedPreview
+import com.tina.timerzeer.timer.presentation.components.TimeSelector
 
 
 @Composable
@@ -51,7 +51,7 @@ fun TimerScreenRoot(
     innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: (Route) -> Unit = {}
 ) {
-    val stopWatchState by viewModel.stopwatchState.collectAsStateWithLifecycle()
+    val timerState by viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -61,11 +61,11 @@ fun TimerScreenRoot(
     ) { paddingValues ->
         TimerScreen(
             paddingValues,
-            stopWatchState = stopWatchState,
+            timerState = timerState,
             userActionState = userActionState,
             onStopWatchIntent = { intent ->
                 if (intent is TimerIntent.Start) {
-                    onTimerStarted(Route.StopwatchStarted)
+                    onTimerStarted(Route.TimerStarted)
                 } else
                     viewModel.onTimerIntent(intent)
             },
@@ -83,7 +83,7 @@ fun TimerScreenRoot(
 @Composable
 private fun TimerScreen(
     paddingValues: PaddingValues,
-    stopWatchState: Timer,
+    timerState: Timer,
     userActionState: UserActionState,
     onStopWatchIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
@@ -139,11 +139,11 @@ private fun TimerScreen(
                 Spacer(modifier = Modifier.height(SizeXXXL))
 
                 if (userActionState.mode == TimerMode.STOPWATCH)
-                    Stopwatch(userActionState, stopWatchState, onUserActionIntent)
+                    Stopwatch(userActionState, timerState, onUserActionIntent)
                 else
                     Countdown(
                         userActionState,
-                        stopWatchState,
+                        timerState,
                         onUserActionIntent,
                         onCountDownIntent
                     )
@@ -161,11 +161,11 @@ private fun TimerScreen(
 @Composable
 private fun Stopwatch(
     userActionState: UserActionState,
-    stopWatchState: Timer,
+    timerState: Timer,
     onUserActionIntent: (UserActionIntent) -> Unit
 ) {
     TimerInputField(
-        value = userActionState.stopwatchTitle, error = stopWatchState.errorMessage,
+        value = userActionState.timerTitle, error = timerState.errorMessage,
         placeholder = stringResource(R.string.stopwatch_title)
     ) {
         onUserActionIntent(UserActionIntent.OnStopwatchTitleChange(it))
@@ -174,7 +174,7 @@ private fun Stopwatch(
     Spacer(Modifier.height(SizeXL))
 
     Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-        val time = stopWatchState.elapsedTime.toTimeComponents()
+        val time = timerState.elapsedTime.toTimeComponents()
         TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
         TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
         TimeSelector(time.seconds, selectable = false, label = stringResource(R.string.seconds))
@@ -201,12 +201,12 @@ private fun Stopwatch(
 @Composable
 private fun Countdown(
     userActionState: UserActionState,
-    stopWatchState: Timer,
+    timerState: Timer,
     onUserActionIntent: (UserActionIntent) -> Unit,
     onCountDownIntent: (CountDownIntent) -> Unit
 ) {
     TimerInputField(
-        value = userActionState.countdownTitle, error = stopWatchState.errorMessage,
+        value = userActionState.countdownTitle, error = timerState.errorMessage,
         placeholder = stringResource(R.string.countdown_title)
     ) {
         onUserActionIntent(UserActionIntent.OnCountDownTitleChange(it))
@@ -215,7 +215,7 @@ private fun Countdown(
     Spacer(Modifier.height(SizeXL))
 
     Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-        val time = stopWatchState.elapsedTime.toTimeComponents()
+        val time = timerState.elapsedTime.toTimeComponents()
         TimeSelector(
             time.hours,
             selectable = true,
@@ -256,17 +256,17 @@ private fun Countdown(
 
 @LightDarkPreviews
 @Composable
-private fun StopWatchScreenPreview() {
+private fun TimerhScreenPreview() {
     ThemedPreview {
         TimerScreen(
             paddingValues = PaddingValues(),
-            stopWatchState = Timer(
+            timerState = Timer(
                 elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
                 isRunning = false,
                 errorMessage = null
             ),
             userActionState = UserActionState(
-                stopwatchTitle = "Work Session",
+                timerTitle = "Work Session",
                 mode = TimerMode.STOPWATCH
             ),
             onStopWatchIntent = {},

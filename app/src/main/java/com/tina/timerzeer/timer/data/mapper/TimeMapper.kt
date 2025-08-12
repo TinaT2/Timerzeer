@@ -1,4 +1,4 @@
-package com.tina.timerzeer.mapper
+package com.tina.timerzeer.timer.data.mapper
 
 data class TimeComponents(
     val hours: Int,

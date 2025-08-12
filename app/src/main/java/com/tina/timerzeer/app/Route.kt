@@ -8,8 +8,8 @@ sealed interface Route {
     data object TimerGraph:Route
 
     @Serializable
-    data object Stopwatch : Route
+    data object Timer : Route
 
     @Serializable
-    data object StopwatchStarted : Route
+    data object TimerStarted : Route
 }
