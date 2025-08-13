@@ -81,7 +81,6 @@ class TimerViewModel() : ViewModel() {
             delay(1000)
             _timerState.update {
                 it.copy(
-                    elapsedTime = it.countDownInitTime,
                     isRunning = false
                 )
             }
@@ -108,12 +107,6 @@ class TimerViewModel() : ViewModel() {
                 _userActionState.update {
                     it.copy(countdownTitle = action.name)
                 }
-            }
-
-            is UserActionIntent.OnThemeChange ->{
-//                _userActionState.update {
-//                    it.copy(onThemeChangeClicked = !it.isDarkTheme)
-//                }
             }
         }
     }

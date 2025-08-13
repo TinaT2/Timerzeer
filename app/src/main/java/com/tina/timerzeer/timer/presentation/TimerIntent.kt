@@ -12,7 +12,6 @@ sealed interface UserActionIntent {
     data class OnStopwatchTitleChange(val name: String) : UserActionIntent
     data class OnCountDownTitleChange(val name: String) : UserActionIntent
     data class OnModeChange(val mode: TimerMode) : UserActionIntent
-    data object OnThemeChange: UserActionIntent
 }
 
 sealed interface CountDownIntent{

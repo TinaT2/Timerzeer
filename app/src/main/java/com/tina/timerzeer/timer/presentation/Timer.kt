@@ -15,9 +15,6 @@ data class UserActionState(
     val timerTitle: String = "",
     val countdownTitle: String = "",
     val mode: TimerMode = TimerMode.STOPWATCH,
-    val onThemeChangeClicked: () -> Unit = {},
-    val onBackgroundChangeClicked: () -> Unit = {},
-    val onAnimationChangeClicked: () -> Unit = {},
 )
 
 enum class TimerMode(val nameId: Int) {
