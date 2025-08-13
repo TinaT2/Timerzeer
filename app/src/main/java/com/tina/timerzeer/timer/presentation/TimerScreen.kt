@@ -71,6 +71,7 @@ fun TimerScreenRoot(
     Scaffold(
         modifier = Modifier
             .padding(innerPadding)
+            .padding(top = SizeXL)
             .background(colorScheme.background)
     ) { paddingValues ->
         TimerScreen(
