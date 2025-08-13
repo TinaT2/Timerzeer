@@ -4,7 +4,7 @@
     <string name="countdown_title">Countdown title</string>
     <string name="start">Start</string>
     <string name="error">error</string>
-    <string name="titleicon">titleIcon</string>
+    <string name="titleIcon">title Icon</string>
     <string name="hours">Hours</string>
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>
@@ -20,9 +20,16 @@
     <string name="show_ui">show UI</string>
     <string name="stopwatch">Stopwatch</string>
     <string name="countdown">Countdown</string>
+    <string name="timer_style">Timer style</string>
     <string name="timerstyle_default">Default</string>
     <string name="timerstyle_classic">Classic</string>
     <string name="timerstyle_minimal">Minimal</string>
     <string name="timerstyle_digital">Digital</string>
-    <string name="timer_style">Timer style</string>
+    <string name="background_theme">Background theme</string>
+    <string name="background_theme_dark">Dark</string>
+    <string name="background_theme_galaxy">Galaxy</string>
+    <string name="background_theme_digital">Digital</string>
+    <string name="ending_animation">Ending Animation</string>
+    <string name="ending_animation_fly_ribbons">Flying Ribbons</string>
+    <string name="ending_animation_Explosives">Explosives</string>
 </resources>

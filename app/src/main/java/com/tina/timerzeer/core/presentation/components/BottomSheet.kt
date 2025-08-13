@@ -28,11 +28,14 @@ import com.tina.timerzeer.core.theme.SizeL
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXL
 import com.tina.timerzeer.core.theme.SizeXXXL
-import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimerStyleBottomSheet(
+fun DefaultBottomSheet(
+    title: Int,
+    leadingIcon: Int,
+    optionList: List<Int>,
     onDismiss: () -> Unit,
     onStyleSelected: (String) -> Unit = {}
 ) {
@@ -55,22 +58,21 @@ fun TimerStyleBottomSheet(
         ) {
 
             HeadlineSmallTextField(
-                textId = R.string.timer_style,
-                leadingIcon = R.drawable.property_1_roller_brush
+                textId = title,
+                leadingIcon = leadingIcon
             )
             Spacer(Modifier.height(SizeXL))
 
             // List of styles
-            TimerStyleOption(
+            DefaultStyleOption(
                 R.string.timerstyle_default,
                 color = colorScheme.secondary
-            )//manrope 500
-            BottomSheetDivider()
-            TimerStyleOption(R.string.timerstyle_classic)//bookman_old_style 300
-            BottomSheetDivider()
-            TimerStyleOption(R.string.timerstyle_minimal)//fauna_one 400
-            BottomSheetDivider()
-            TimerStyleOption(R.string.timerstyle_digital)//digital_numbers 400
+            )
+
+            optionList.onEach {
+                BottomSheetDivider()
+                DefaultStyleOption(it)
+            }
 
             Spacer(Modifier.height(SizeXL))
         }
@@ -89,7 +91,7 @@ private fun BottomSheetDivider() {
 }
 
 @Composable
-private fun TimerStyleOption(
+private fun DefaultStyleOption(
     nameId: Int,
     fontFamily: FontFamily? = null,
     color: Color = colorScheme.onPrimary,
@@ -108,14 +110,4 @@ private fun TimerStyleOption(
             color = color
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@LightDarkPreviews
-@Composable
-fun TimerStyleBottomSheetPreview() {
-    TimerStyleBottomSheet(
-        onDismiss = {},
-        onStyleSelected = {}
-    )
 }

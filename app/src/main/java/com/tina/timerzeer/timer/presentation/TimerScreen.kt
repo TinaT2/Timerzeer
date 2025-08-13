@@ -35,13 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.app.Route
+import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
-import com.tina.timerzeer.core.presentation.components.TimerStyleBottomSheet
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
@@ -64,7 +64,9 @@ fun TimerScreenRoot(
     val timerState by viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
 
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showTimerStyleBottomSheet by remember { mutableStateOf(false) }
+    var showBackgroundThemeBottomSheet by remember { mutableStateOf(false) }
+    var showEndingAnimationBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -87,14 +89,50 @@ fun TimerScreenRoot(
             onCountDownIntent = { intent ->
                 viewModel.onCountDownIntent(intent)
             },
-            onThemeChange = {showBottomSheet = true}
+            onStyleChange = { showTimerStyleBottomSheet = true },
+            onBackgroundThemeChange = { showBackgroundThemeBottomSheet = true },
+            onEndingAnimationChange = { showEndingAnimationBottomSheet = true }
         )
 
-        if (showBottomSheet) {
-            TimerStyleBottomSheet(onDismiss = {
-                showBottomSheet = false
-            }, onStyleSelected = {})
+        if (showTimerStyleBottomSheet) {
+            DefaultBottomSheet(
+                title = R.string.timer_style,
+                leadingIcon = R.drawable.property_1_roller_brush,
+                optionList = listOf(
+                    R.string.timerstyle_classic,
+                    R.string.timerstyle_minimal,
+                    R.string.timerstyle_digital
+                ),
+                onDismiss = {
+                    showTimerStyleBottomSheet = false
+                }, onStyleSelected = {})
         }
+        if (showBackgroundThemeBottomSheet) {
+            DefaultBottomSheet(
+                title = R.string.background_theme,
+                leadingIcon = R.drawable.property_1_image_02,
+                optionList = listOf(
+                    R.string.background_theme_dark,
+                    R.string.background_theme_galaxy,
+                    R.string.background_theme_digital
+                ),
+                onDismiss = {
+                    showBackgroundThemeBottomSheet = false
+                }, onStyleSelected = {})
+        }
+        if (showEndingAnimationBottomSheet) {
+            DefaultBottomSheet(
+                title = R.string.ending_animation,
+                leadingIcon = R.drawable.property_1_flash,
+                optionList = listOf(
+                    R.string.ending_animation_fly_ribbons,
+                    R.string.ending_animation_Explosives
+                ),
+                onDismiss = {
+                    showEndingAnimationBottomSheet = false
+                }, onStyleSelected = {})
+        }
+
     }
 
 }
@@ -107,7 +145,9 @@ private fun TimerScreen(
     onTimerIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
     onCountDownIntent: (CountDownIntent) -> Unit,
-    onThemeChange: () -> Unit = {}
+    onStyleChange: () -> Unit = {},
+    onBackgroundThemeChange: () -> Unit = {},
+    onEndingAnimationChange: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     Box(
@@ -131,7 +171,7 @@ private fun TimerScreen(
                     painter = painterResource(R.drawable.timezeer),
                     modifier = Modifier.fillMaxWidth(),
                     contentDescription = stringResource(
-                        R.string.titleicon
+                        R.string.titleIcon
                     ),
                     tint = Color.Unspecified
                 )
@@ -185,7 +225,7 @@ private fun TimerScreen(
                     trailingIcon = R.drawable.property_1_chevron_right,
                     enabled = false
                 ) {
-                    onThemeChange()
+                    onStyleChange()
                 }
                 Spacer(Modifier.height(SizeXS))
                 TextOptionButton(
@@ -194,21 +234,20 @@ private fun TimerScreen(
                     trailingIcon = R.drawable.property_1_chevron_right,
                     enabled = false
                 ) {
-                    //TODO()
+                    onBackgroundThemeChange()
                 }
+                Spacer(Modifier.height(SizeXS))
 
                 SmoothFieldFadeAnimatedVisibility(userActionState.mode == TimerMode.COUNTDOWN) {
-                    Spacer(Modifier.height(SizeXS))
                     TextOptionButton(
                         text = stringResource(R.string.value_default),
                         leadingIcon = R.drawable.property_1_flash,
                         trailingIcon = R.drawable.property_1_chevron_right,
                         enabled = false
                     ) {
-                        //TODO()
+                        onEndingAnimationChange()
                     }
                 }
-
 
                 Spacer(Modifier.height(100.dp))
             }
