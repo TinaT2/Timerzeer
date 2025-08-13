@@ -94,3 +94,6 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
 [timerzeer.webm](https://github.com/user-attachments/assets/1b8293b9-e605-4e9b-bfd3-6464e6114254)
 
 ---
+
+## 📱 Sample Android App
+[timerzeer.apk](https://drive.google.com/file/d/1duzR0oPviuJRFMFRhVEfdLOfGEUNKJw5/view?usp=sharing)
