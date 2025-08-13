@@ -83,7 +83,7 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
 
 ## 📸 Screenshots
 
-| Stopwatch Screen | Stopwatch Started | Timer Style Bottom Sheet |
+| Stopwatch Screen | Countdown Screen | Timer Full Screen |
 |------------------|------------------|--------------------------|
 |<img width="300" alt="image" src="https://github.com/user-attachments/assets/bbfe665a-cb09-4907-bd86-b6f7d5869447" />|<img width="300" alt="image" src="https://github.com/user-attachments/assets/69d78f1f-d31f-4c8b-b36a-6b11cad17600" />|<img width="300" alt="image" src="https://github.com/user-attachments/assets/a3283d26-5f64-4df4-b874-5212e26516b7" />
 " />
@@ -91,6 +91,6 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
 ---
 
 ## 🎥 Demo Video
-[timerzeer.webm](https://github.com/user-attachments/assets/363389cd-bca5-4a4c-8f7d-2c8537c51e1e)
+[timerzeer.webm](https://github.com/user-attachments/assets/1b8293b9-e605-4e9b-bfd3-6464e6114254)
 
 ---
