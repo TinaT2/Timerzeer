@@ -1,6 +1,9 @@
 package com.tina.timerzeer.app
 
 import android.app.Application
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -13,7 +16,6 @@ import androidx.navigation.navigation
 import com.tina.timerzeer.di.initKoin
 import com.tina.timerzeer.di.timerModule
 import com.tina.timerzeer.timer.presentation.RootTimerStarted
-import com.tina.timerzeer.timer.presentation.TimerIntent
 import com.tina.timerzeer.timer.presentation.TimerScreenRoot
 import com.tina.timerzeer.timer.presentation.TimerViewModel
 import org.koin.android.ext.koin.androidContext
@@ -43,13 +45,19 @@ fun AppNavHost() {
         navigation<Route.TimerGraph>(
             startDestination = Route.Timer
         ) {
-            composable<Route.Timer> {
+            composable<Route.Timer>(
+                enterTransition = { fadeIn(animationSpec = tween(durationMillis = (1000))) },
+                exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
+            ) {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
                 TimerScreenRoot(sharedViewModel) {
                     navController.navigate(Route.TimerStarted)
                 }
             }
-            composable<Route.TimerStarted> {
+            composable<Route.TimerStarted>(
+                enterTransition = { fadeIn(animationSpec = tween(durationMillis = (1000))) },
+                exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
+            ) {
                 val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
                 RootTimerStarted(sharedViewModel) {
                     navController.navigateUp()
