@@ -57,13 +57,15 @@ fun TimerInputField(
             placeholder = {
                 Text(
                     placeholder,
-                    style = typography.bodyMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = typography.bodyMedium.copy(textAlign = TextAlign.Center),
                     color = colorScheme.onSecondary
                 )
             },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
                 .border(
                     width = 1.dp,
                     color = borderColor,
@@ -83,7 +85,7 @@ fun TimerInputField(
             ),
             isError = error != null,
             shape = RoundedCornerShape(RoundedCornerShapeNumber),
-            textStyle = typography.bodyMedium
+            textStyle = typography.bodyMedium.copy(textAlign = TextAlign.Center),
         )
 
         if (error != null) {
@@ -165,6 +167,32 @@ fun TextOptionButton(
 
 @LightDarkPreviews
 @Composable
+fun TimerInputFieldPlaceHolderPreview() {
+    TimerzeerTheme {
+        TimerInputField(
+            value = "",
+            placeholder = "Enter time",
+            error = null,
+            onValueChange = {}
+        )
+    }
+}
+
+@LightDarkPreviews
+@Composable
+fun TimerInputFieldPreview() {
+    TimerzeerTheme {
+        TimerInputField(
+            value = "10",
+            placeholder = "Enter time",
+            error = null,
+            onValueChange = {}
+        )
+    }
+}
+
+@LightDarkPreviews
+@Composable
 fun TextOptionButtonEnabledPreview() {
     TimerzeerTheme {
         TextOptionButton(
@@ -194,42 +222,17 @@ fun TextOptionButtonDisabledPreview() {
 
 @LightDarkPreviews
 @Composable
-fun TimerInputFieldPreview() {
-    TimerzeerTheme {
-        TimerInputField(
-            value = "10",
-            placeholder = "Enter time",
-            error = null,
-            onValueChange = {}
-        )
-    }
-}
-
-@LightDarkPreviews
-@Composable
 fun TimerInputFieldErrorPreview() {
     TimerzeerTheme {
         TimerInputField(
             value = "error32",
-            placeholder = "Enter time",
-            error = null,
-            onValueChange = {}
-        )
-    }
-}
-
-@LightDarkPreviews
-@Composable
-fun TimerInputFieldPlaceHolderPreview() {
-    TimerzeerTheme {
-        TimerInputField(
-            value = "",
             placeholder = "Enter time",
             error = UnknownError,
             onValueChange = {}
         )
     }
 }
+
 
 
 
