@@ -1,9 +1,5 @@
 package com.tina.timerzeer.timer.presentation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -37,6 +33,7 @@ import com.tina.timerzeer.R
 import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
+import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
@@ -145,30 +142,14 @@ private fun TimerScreen(
                 Spacer(modifier = Modifier.height(SizeXXXL))
 
                 Box {
-                    AnimatedVisibility(
+                    SmoothSwitchTabFadeAnimatedVisibility(
                         userActionState.mode == TimerMode.STOPWATCH,
-                        enter = fadeIn(
-                            animationSpec = tween(durationMillis = 500),
-                            initialAlpha = 0.3f
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(durationMillis = 500),
-                            targetAlpha = 1f
-                        )
                     ) {
                         Stopwatch(userActionState, timerState, onUserActionIntent)
                     }
 
-                    AnimatedVisibility(
+                    SmoothSwitchTabFadeAnimatedVisibility(
                         userActionState.mode == TimerMode.COUNTDOWN,
-                        enter = fadeIn(
-                            animationSpec = tween(durationMillis = 500),
-                            initialAlpha = 0.3f
-                        ),
-                        exit = fadeOut(
-                            animationSpec = tween(durationMillis = 500),
-                            targetAlpha = 1f
-                        )
                     ) {
                         Countdown(
                             userActionState,

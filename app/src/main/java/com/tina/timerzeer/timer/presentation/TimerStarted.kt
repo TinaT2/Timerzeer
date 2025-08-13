@@ -3,6 +3,7 @@ package com.tina.timerzeer.timer.presentation
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,6 +31,8 @@ import com.tina.timerzeer.core.presentation.components.CaptionTextField
 import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
 import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
+import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
+import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXXL
@@ -113,61 +116,65 @@ fun TimerStarted(
             }
 
             Spacer(Modifier.weight(1f))
-
-            if (show) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RoundIconOutlinedSmall(
-                        R.drawable.property_1_eye_off,
-                        stringResource(R.string.hide_ui)
-                    ) {
-                        show = false
-                    }
-                    Spacer(Modifier.width(SizeXL))
-                    RoundIconOutlinedSmall(
-                        R.drawable.property_1_stop,
-                        stringResource(R.string.stop)
-                    ) {
-                        onTimerIntent(TimerIntent.Stop)
-                        onNavigateBack()
-                    }
-                    Spacer(Modifier.width(SizeXL))
-                    if (timerState.isRunning)
-                        RoundIconFilledMedium(
-                            R.drawable.property_1_pause_circle,
-                            stringResource(R.string.pause)
+            Box (contentAlignment = Alignment.Center){
+                SmoothFieldFadeAnimatedVisibility(visible = show) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RoundIconOutlinedSmall(
+                            R.drawable.property_1_eye_off,
+                            stringResource(R.string.hide_ui)
                         ) {
-                            onTimerIntent(TimerIntent.Pause)
+                            show = false
                         }
-                    else
-                        RoundIconFilledMedium(
-                            R.drawable.property_1_play,
-                            stringResource(R.string.play)
+                        Spacer(Modifier.width(SizeXL))
+                        RoundIconOutlinedSmall(
+                            R.drawable.property_1_stop,
+                            stringResource(R.string.stop)
                         ) {
-                            onTimerIntent(TimerIntent.Resume)
+                            onTimerIntent(TimerIntent.Stop)
+                            onNavigateBack()
                         }
-                    Spacer(Modifier.width(SizeXL))
-                    RoundIconOutlinedSmall(
-                        R.drawable.property_1_lock_01,
-                        stringResource(R.string.lock)
-                    ) {
-                        //TODO
-                    }
-                    Spacer(Modifier.width(SizeXL))
-                    RoundIconOutlinedSmall(
-                        R.drawable.property_1_share_06,
-                        stringResource(R.string.share)
-                    ) {
-                        //TODO()
+                        Spacer(Modifier.width(SizeXL))
+                        if (timerState.isRunning)
+                            RoundIconFilledMedium(
+                                R.drawable.property_1_pause_circle,
+                                stringResource(R.string.pause)
+                            ) {
+                                onTimerIntent(TimerIntent.Pause)
+                            }
+                        else
+                            RoundIconFilledMedium(
+                                R.drawable.property_1_play,
+                                stringResource(R.string.play)
+                            ) {
+                                onTimerIntent(TimerIntent.Resume)
+                            }
+                        Spacer(Modifier.width(SizeXL))
+                        RoundIconOutlinedSmall(
+                            R.drawable.property_1_lock_01,
+                            stringResource(R.string.lock)
+                        ) {
+                            //TODO
+                        }
+                        Spacer(Modifier.width(SizeXL))
+                        RoundIconOutlinedSmall(
+                            R.drawable.property_1_share_06,
+                            stringResource(R.string.share)
+                        ) {
+                            //TODO()
+                        }
                     }
                 }
-            } else {
-                RoundIconOutlinedSmall(
-                    R.drawable.property_1_eye,
-                    stringResource(R.string.show_ui)
-                ) {
-                    show = true
+
+                SmoothFieldFadeAnimatedVisibility(visible = !show) {
+                    RoundIconOutlinedSmall(
+                        R.drawable.property_1_eye,
+                        stringResource(R.string.show_ui)
+                    ) {
+                        show = true
+                    }
                 }
             }
+
 
             Spacer(Modifier.weight(1f))
             Row(
