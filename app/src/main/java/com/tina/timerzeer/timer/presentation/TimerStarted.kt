@@ -32,7 +32,6 @@ import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
 import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
-import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXXL
@@ -186,7 +185,7 @@ fun TimerStarted(
                     painter = painterResource(R.drawable.timezeer),
                     modifier = Modifier.height(SizeS),
                     contentDescription = stringResource(
-                        R.string.titleicon
+                        R.string.titleIcon
                     ),
                     tint = Color.Unspecified
                 )
