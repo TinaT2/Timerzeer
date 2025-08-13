@@ -1,5 +1,7 @@
 package com.tina.timerzeer.timer.presentation
 
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +43,22 @@ import com.tina.timerzeer.timer.presentation.components.TimeSelector
 fun RootTimerStarted(viewModel: TimerViewModel, onNavigateBack: () -> Unit) {
     val timerState = viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    DisposableEffect(Unit) {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.onTimerIntent(TimerIntent.Stop)
+                onNavigateBack()
+            }
+        }
+        backDispatcher?.addCallback(callback)
+
+        onDispose {
+            callback.remove()
+        }
+    }
+
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
     TimerStarted(timerState.value, userActionState.value, onTimerIntent = {
         viewModel.onTimerIntent(it)
