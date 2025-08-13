@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,92 +60,113 @@ fun TimerStarted(
             onNavigateBack()
         onCountdownIntent(CountDownIntent.ResetIsCountDownDone)
     }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(Modifier.weight(1.3f))
 
-        HeadlineMediumTextField(userActionState.timerTitle)
-
-        Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = timerState.elapsedTime.toTimeComponents()
-            if (time.hours != 0)
-                TimeSelector(time.hours, selectable = false, label = stringResource(R.string.hours))
-            TimeSelector(time.minutes, selectable = false, label = stringResource(R.string.minutes))
-            TimeSelector(time.seconds, selectable = false, label = stringResource(R.string.seconds))
-        }
-
-        Spacer(Modifier.weight(1f))
-
-        if (show) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RoundIconOutlinedSmall(
-                    R.drawable.property_1_eye_off,
-                    stringResource(R.string.hide_ui)
-                ) {
-                    show = false
-                }
-                Spacer(Modifier.width(SizeXL))
-                RoundIconOutlinedSmall(R.drawable.property_1_stop, stringResource(R.string.stop)) {
-                    onTimerIntent(TimerIntent.Stop)
-                    onNavigateBack()
-                }
-                Spacer(Modifier.width(SizeXL))
-                if (timerState.isRunning)
-                    RoundIconFilledMedium(
-                        R.drawable.property_1_pause_circle,
-                        stringResource(R.string.pause)
-                    ) {
-                        onTimerIntent(TimerIntent.Pause)
-                    }
-                else
-                    RoundIconFilledMedium(
-                        R.drawable.property_1_play,
-                        stringResource(R.string.play)
-                    ) {
-                        onTimerIntent(TimerIntent.Resume)
-                    }
-                Spacer(Modifier.width(SizeXL))
-                RoundIconOutlinedSmall(
-                    R.drawable.property_1_lock_01,
-                    stringResource(R.string.lock)
-                ) {
-                    //TODO
-                }
-                Spacer(Modifier.width(SizeXL))
-                RoundIconOutlinedSmall(
-                    R.drawable.property_1_share_06,
-                    stringResource(R.string.share)
-                ) {
-                    //TODO()
-                }
-            }
-        } else {
-            RoundIconOutlinedSmall(
-                R.drawable.property_1_eye,
-                stringResource(R.string.show_ui)
-            ) {
-                show = true
-            }
-        }
-
-        Spacer(Modifier.weight(1f))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            CaptionTextField(stringResource(R.string.powered_by))
-            Icon(
-                painter = painterResource(R.drawable.timezeer),
-                modifier = Modifier.height(SizeS),
-                contentDescription = stringResource(
-                    R.string.titleicon
-                ),
-                tint = Color.Unspecified
-            )
+            Spacer(Modifier.weight(1.3f))
+
+            HeadlineMediumTextField(if (userActionState.mode == TimerMode.COUNTDOWN) userActionState.countdownTitle else userActionState.timerTitle)
+
+            Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+                val time = timerState.elapsedTime.toTimeComponents()
+                if (time.hours != 0)
+                    TimeSelector(
+                        time.hours,
+                        selectable = false,
+                        label = stringResource(R.string.hours)
+                    )
+                TimeSelector(
+                    time.minutes,
+                    selectable = false,
+                    label = stringResource(R.string.minutes)
+                )
+                TimeSelector(
+                    time.seconds,
+                    selectable = false,
+                    label = stringResource(R.string.seconds)
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            if (show) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RoundIconOutlinedSmall(
+                        R.drawable.property_1_eye_off,
+                        stringResource(R.string.hide_ui)
+                    ) {
+                        show = false
+                    }
+                    Spacer(Modifier.width(SizeXL))
+                    RoundIconOutlinedSmall(
+                        R.drawable.property_1_stop,
+                        stringResource(R.string.stop)
+                    ) {
+                        onTimerIntent(TimerIntent.Stop)
+                        onNavigateBack()
+                    }
+                    Spacer(Modifier.width(SizeXL))
+                    if (timerState.isRunning)
+                        RoundIconFilledMedium(
+                            R.drawable.property_1_pause_circle,
+                            stringResource(R.string.pause)
+                        ) {
+                            onTimerIntent(TimerIntent.Pause)
+                        }
+                    else
+                        RoundIconFilledMedium(
+                            R.drawable.property_1_play,
+                            stringResource(R.string.play)
+                        ) {
+                            onTimerIntent(TimerIntent.Resume)
+                        }
+                    Spacer(Modifier.width(SizeXL))
+                    RoundIconOutlinedSmall(
+                        R.drawable.property_1_lock_01,
+                        stringResource(R.string.lock)
+                    ) {
+                        //TODO
+                    }
+                    Spacer(Modifier.width(SizeXL))
+                    RoundIconOutlinedSmall(
+                        R.drawable.property_1_share_06,
+                        stringResource(R.string.share)
+                    ) {
+                        //TODO()
+                    }
+                }
+            } else {
+                RoundIconOutlinedSmall(
+                    R.drawable.property_1_eye,
+                    stringResource(R.string.show_ui)
+                ) {
+                    show = true
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CaptionTextField(stringResource(R.string.powered_by))
+                Icon(
+                    painter = painterResource(R.drawable.timezeer),
+                    modifier = Modifier.height(SizeS),
+                    contentDescription = stringResource(
+                        R.string.titleicon
+                    ),
+                    tint = Color.Unspecified
+                )
+            }
         }
+
     }
 }
 
