@@ -112,6 +112,29 @@ fun HeadlineMediumTextField(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun HeadlineSmallTextField(textId: Int, modifier: Modifier = Modifier, leadingIcon: Int? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        leadingIcon?.let {
+            Icon(
+                painter = painterResource(it),
+                contentDescription = stringResource(textId),
+                tint = colorScheme.primary
+            )
+            Spacer(Modifier.width(SizeXS))
+        }
+
+        Text(
+            text = stringResource(textId),
+            style = typography.headlineSmall,
+            color = colorScheme.secondary,
+            modifier = modifier,
+            textAlign = TextAlign.Center
+        )
+
+    }
+}
+
+@Composable
 fun CaptionTextField(text: String) {
     Text(text = text, style = typography.labelLarge, color = colorScheme.onSecondary)
 }

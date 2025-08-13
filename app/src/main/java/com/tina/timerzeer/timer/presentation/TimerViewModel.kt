@@ -109,6 +109,12 @@ class TimerViewModel() : ViewModel() {
                     it.copy(countdownTitle = action.name)
                 }
             }
+
+            is UserActionIntent.OnThemeChange ->{
+//                _userActionState.update {
+//                    it.copy(onThemeChangeClicked = !it.isDarkTheme)
+//                }
+            }
         }
     }
 

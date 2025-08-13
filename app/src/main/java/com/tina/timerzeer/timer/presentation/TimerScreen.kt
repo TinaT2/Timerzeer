@@ -15,11 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +37,11 @@ import com.tina.timerzeer.R
 import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
+import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
+import com.tina.timerzeer.core.presentation.components.TimerStyleBottomSheet
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
@@ -48,6 +54,7 @@ import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.components.TimeSelector
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreenRoot(
     viewModel: TimerViewModel,
@@ -56,6 +63,8 @@ fun TimerScreenRoot(
 ) {
     val timerState by viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
+
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -77,8 +86,15 @@ fun TimerScreenRoot(
             },
             onCountDownIntent = { intent ->
                 viewModel.onCountDownIntent(intent)
-            }
+            },
+            onThemeChange = {showBottomSheet = true}
         )
+
+        if (showBottomSheet) {
+            TimerStyleBottomSheet(onDismiss = {
+                showBottomSheet = false
+            }, onStyleSelected = {})
+        }
     }
 
 }
@@ -90,7 +106,8 @@ private fun TimerScreen(
     userActionState: UserActionState,
     onTimerIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
-    onCountDownIntent: (CountDownIntent) -> Unit
+    onCountDownIntent: (CountDownIntent) -> Unit,
+    onThemeChange: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     Box(
@@ -159,6 +176,40 @@ private fun TimerScreen(
                         )
                     }
                 }
+
+                Spacer(Modifier.height(SizeXXXL))
+
+                TextOptionButton(
+                    text = stringResource(R.string.value_default),
+                    leadingIcon = R.drawable.property_1_roller_brush,
+                    trailingIcon = R.drawable.property_1_chevron_right,
+                    enabled = false
+                ) {
+                    onThemeChange()
+                }
+                Spacer(Modifier.height(SizeXS))
+                TextOptionButton(
+                    text = stringResource(R.string.value_default),
+                    leadingIcon = R.drawable.property_1_image_02,
+                    trailingIcon = R.drawable.property_1_chevron_right,
+                    enabled = false
+                ) {
+                    //TODO()
+                }
+
+                SmoothFieldFadeAnimatedVisibility(userActionState.mode == TimerMode.COUNTDOWN) {
+                    Spacer(Modifier.height(SizeXS))
+                    TextOptionButton(
+                        text = stringResource(R.string.value_default),
+                        leadingIcon = R.drawable.property_1_flash,
+                        trailingIcon = R.drawable.property_1_chevron_right,
+                        enabled = false
+                    ) {
+                        //TODO()
+                    }
+                }
+
+
                 Spacer(Modifier.height(100.dp))
             }
         }
@@ -203,25 +254,6 @@ fun Stopwatch(
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.seconds)
             )
-        }
-        Spacer(Modifier.height(SizeXXXL))
-
-        TextOptionButton(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_roller_brush,
-            trailingIcon = R.drawable.property_1_chevron_right,
-            enabled = false
-        ) {
-            //TODO()
-        }
-        Spacer(Modifier.height(SizeXS))
-        TextOptionButton(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_image_02,
-            trailingIcon = R.drawable.property_1_chevron_right,
-            enabled = false
-        ) {
-            //TODO()
         }
     }
 }
@@ -270,34 +302,6 @@ private fun Countdown(
             //TODO()
         }
 
-        Spacer(Modifier.height(SizeXXXL))
-
-        TextOptionButton(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_roller_brush,
-            trailingIcon = R.drawable.property_1_chevron_right,
-            enabled = false
-        ) {
-            //TODO()
-        }
-        Spacer(Modifier.height(SizeXS))
-        TextOptionButton(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_image_02,
-            trailingIcon = R.drawable.property_1_chevron_right,
-            enabled = false
-        ) {
-            //TODO()
-        }
-        Spacer(Modifier.height(SizeXS))
-        TextOptionButton(
-            text = stringResource(R.string.value_default),
-            leadingIcon = R.drawable.property_1_flash,
-            trailingIcon = R.drawable.property_1_chevron_right,
-            enabled = false
-        ) {
-            //TODO()
-        }
     }
 }
 
