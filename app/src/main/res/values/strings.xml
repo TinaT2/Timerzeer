@@ -32,4 +32,7 @@
     <string name="ending_animation">Ending Animation</string>
     <string name="ending_animation_fly_ribbons">Flying Ribbons</string>
     <string name="ending_animation_Explosives">Explosives</string>
+    <string name="set_date">Set date</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 </resources>
