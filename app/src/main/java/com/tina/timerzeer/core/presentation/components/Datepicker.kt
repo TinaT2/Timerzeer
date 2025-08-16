@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
+import com.tina.timerzeer.core.theme.SizeM
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXL
@@ -57,7 +58,7 @@ fun StyledDatePicker(onDateSelected: (Long) -> Unit, onDismiss: () -> Unit) {
         confirmButton = {
             Text(
                 stringResource(R.string.confirm), Modifier
-                    .padding(SizeXS)
+                    .padding(SizeM)
                     .clickable {
                         datePickerState.selectedDateMillis?.let {
                             onDateSelected(it)
@@ -68,7 +69,7 @@ fun StyledDatePicker(onDateSelected: (Long) -> Unit, onDismiss: () -> Unit) {
         dismissButton = {
             Text(
                 text = stringResource(R.string.cancel), modifier = Modifier
-                    .padding(SizeXS)
+                    .padding(SizeM)
                     .clickable {
                         onDismiss()
                     })

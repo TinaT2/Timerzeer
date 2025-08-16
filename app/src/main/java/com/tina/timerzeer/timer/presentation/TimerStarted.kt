@@ -115,7 +115,10 @@ fun TimerStarted(
             }
 
             Spacer(Modifier.weight(1f))
-            Box (contentAlignment = Alignment.Center){
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.weight(2f)
+            ) {
                 SmoothFieldFadeAnimatedVisibility(visible = show) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RoundIconOutlinedSmall(
@@ -165,11 +168,13 @@ fun TimerStarted(
                 }
 
                 SmoothFieldFadeAnimatedVisibility(visible = !show) {
-                    RoundIconOutlinedSmall(
-                        R.drawable.property_1_eye,
-                        stringResource(R.string.show_ui)
-                    ) {
-                        show = true
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RoundIconOutlinedSmall(
+                            R.drawable.property_1_eye,
+                            stringResource(R.string.show_ui)
+                        ) {
+                            show = true
+                        }
                     }
                 }
             }
