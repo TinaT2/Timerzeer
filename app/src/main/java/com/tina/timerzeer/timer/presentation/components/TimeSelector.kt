@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,7 +46,9 @@ fun TimeSelector(
         Box(
             modifier = Modifier
                 .padding(SizeS)
-                .border(1.dp, colorScheme.tertiary, shape = CircleShape),
+                .widthIn(min = 90.dp)
+                .border(1.dp, colorScheme.tertiary, shape = CircleShape)
+                ,
             contentAlignment = Alignment.Center
         ) {
             Text(

@@ -1,5 +1,6 @@
 package com.tina.timerzeer.timer.presentation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -40,6 +41,7 @@ import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
+import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.TimerInputField
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
@@ -67,12 +69,13 @@ fun TimerScreenRoot(
     var showTimerStyleBottomSheet by remember { mutableStateOf(false) }
     var showBackgroundThemeBottomSheet by remember { mutableStateOf(false) }
     var showEndingAnimationBottomSheet by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
             .padding(innerPadding)
-            .padding(top = SizeXL)
             .background(colorScheme.background)
+            .padding(top = SizeXL)
     ) { paddingValues ->
         TimerScreen(
             paddingValues,
@@ -92,7 +95,8 @@ fun TimerScreenRoot(
             },
             onStyleChange = { showTimerStyleBottomSheet = true },
             onBackgroundThemeChange = { showBackgroundThemeBottomSheet = true },
-            onEndingAnimationChange = { showEndingAnimationBottomSheet = true }
+            onEndingAnimationChange = { showEndingAnimationBottomSheet = true },
+            onShowDatePicker = { showDatePicker = true }
         )
 
         if (showTimerStyleBottomSheet) {
@@ -134,6 +138,14 @@ fun TimerScreenRoot(
                 }, onStyleSelected = {})
         }
 
+        AnimatedVisibility(showDatePicker) {
+            StyledDatePicker(onDateSelected = {
+                //TODO()
+            }) {
+                showDatePicker = false
+            }
+        }
+
     }
 
 }
@@ -149,6 +161,7 @@ private fun TimerScreen(
     onStyleChange: () -> Unit = {},
     onBackgroundThemeChange: () -> Unit = {},
     onEndingAnimationChange: () -> Unit = {},
+    onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     Box(
@@ -214,7 +227,7 @@ private fun TimerScreen(
                             timerState,
                             onUserActionIntent,
                             onCountDownIntent
-                        )
+                        ) { onShowDatePicker() }
                     }
                 }
 
@@ -303,7 +316,8 @@ private fun Countdown(
     userActionState: UserActionState,
     timerState: Timer,
     onUserActionIntent: (UserActionIntent) -> Unit,
-    onCountDownIntent: (CountDownIntent) -> Unit
+    onCountDownIntent: (CountDownIntent) -> Unit,
+    onShowDatePicker: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
@@ -339,7 +353,7 @@ private fun Countdown(
         Spacer(Modifier.height(SizeXL))
 
         OutlinedPrimaryButton(text = "Set by date", leadingIcon = R.drawable.property_1_calendar) {
-            //TODO()
+            onShowDatePicker()
         }
 
     }
