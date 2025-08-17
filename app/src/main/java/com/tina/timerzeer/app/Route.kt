@@ -1,5 +1,6 @@
 package com.tina.timerzeer.app
 
+import com.tina.timerzeer.timer.presentation.TimerMode
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
@@ -11,5 +12,5 @@ sealed interface Route {
     data object Timer : Route
 
     @Serializable
-    data object TimerStarted : Route
+    data class TimerFullScreen(val mode: TimerMode, val title:String,val time:Long? = null) : Route
 }

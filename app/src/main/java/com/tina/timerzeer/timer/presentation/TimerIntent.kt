@@ -12,17 +12,14 @@ sealed interface UserActionIntent {
     data class OnStopwatchTitleChange(val name: String) : UserActionIntent
     data class OnCountDownTitleChange(val name: String) : UserActionIntent
     data class OnModeChange(val mode: TimerMode) : UserActionIntent
-}
-
-sealed interface CountDownIntent{
-    data object OnSecondIncrease: CountDownIntent
-    data object OnSecondDecrease: CountDownIntent
-    data object OnMinutesIncrease: CountDownIntent
-    data object OnMinutesDecrease: CountDownIntent
-    data object OnHourIncrease: CountDownIntent
-    data object OnHourDecrease: CountDownIntent
-    data object OnDayIncrease: CountDownIntent
-    data object OnDayDecrease: CountDownIntent
-    data object ResetIsCountDownDone: CountDownIntent
-    data class SetDate(val countDownInitTimer:Long): CountDownIntent
+    data object OnSecondIncrease: UserActionIntent
+    data object OnSecondDecrease: UserActionIntent
+    data object OnMinutesIncrease: UserActionIntent
+    data object OnMinutesDecrease: UserActionIntent
+    data object OnHourIncrease: UserActionIntent
+    data object OnHourDecrease: UserActionIntent
+    data object OnDayIncrease: UserActionIntent
+    data object OnDayDecrease: UserActionIntent
+    data object ResetIsCountDownDone: UserActionIntent
+    data class SetDate(val countDownInitTimer:Long): UserActionIntent
 }
