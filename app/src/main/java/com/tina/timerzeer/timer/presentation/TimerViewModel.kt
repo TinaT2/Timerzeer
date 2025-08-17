@@ -2,9 +2,11 @@ package com.tina.timerzeer.timer.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tina.timerzeer.timer.data.mapper.minusDay
 import com.tina.timerzeer.timer.data.mapper.minusHour
 import com.tina.timerzeer.timer.data.mapper.minusMinute
 import com.tina.timerzeer.timer.data.mapper.minusSecond
+import com.tina.timerzeer.timer.data.mapper.plusDay
 import com.tina.timerzeer.timer.data.mapper.plusHour
 import com.tina.timerzeer.timer.data.mapper.plusMinute
 import com.tina.timerzeer.timer.data.mapper.plusSecond
@@ -137,8 +139,20 @@ class TimerViewModel() : ViewModel() {
                 _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.plusSecond()) }
             }
 
+            CountDownIntent.OnDayDecrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.minusDay()) }
+            }
+
+            CountDownIntent.OnDayIncrease -> {
+                _timerState.update { it.copy(countDownInitTime = it.countDownInitTime.plusDay()) }
+            }
+
             CountDownIntent.ResetIsCountDownDone -> {
                 _timerState.update { it.copy(isCountDownDone = false) }
+            }
+
+            is CountDownIntent.SetDate -> {
+                _timerState.update { it.copy(countDownInitTime = intent.countDownInitTimer) }
             }
         }
     }

@@ -96,12 +96,14 @@ fun TimerStarted(
 
             Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
                 val time = timerState.elapsedTime.toTimeComponents()
-                if (time.hours != 0)
+                SmoothFieldFadeAnimatedVisibility(time.hours != 0L) {
                     TimeSelector(
                         time.hours,
                         selectable = false,
                         label = stringResource(R.string.hours)
                     )
+                }
+
                 TimeSelector(
                     time.minutes,
                     selectable = false,

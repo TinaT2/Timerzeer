@@ -1,6 +1,5 @@
 package com.tina.timerzeer.timer.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -138,9 +137,11 @@ fun TimerScreenRoot(
                 }, onStyleSelected = {})
         }
 
-        AnimatedVisibility(showDatePicker) {
+        SmoothFieldFadeAnimatedVisibility(showDatePicker) {
             StyledDatePicker(onDateSelected = {
-                //TODO()
+                val now = System.currentTimeMillis()
+                val diff = (it - now).coerceAtLeast(0)
+                viewModel.onCountDownIntent(CountDownIntent.SetDate(diff))
             }) {
                 showDatePicker = false
             }
@@ -331,6 +332,15 @@ private fun Countdown(
 
         Row {
             val time = timerState.countDownInitTime.toTimeComponents()
+            SmoothFieldFadeAnimatedVisibility(time.days > 0) {
+                TimeSelector(
+                    time.days,
+                    selectable = userActionState.mode == TimerMode.COUNTDOWN,
+                    label = stringResource(R.string.days),
+                    onIncrease = {onCountDownIntent(CountDownIntent.OnDayIncrease)},
+                    onDecrease = {onCountDownIntent(CountDownIntent.OnDayDecrease)},
+                )
+            }
             TimeSelector(
                 time.hours,
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,

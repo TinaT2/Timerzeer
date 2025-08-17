@@ -21,5 +21,8 @@ sealed interface CountDownIntent{
     data object OnMinutesDecrease: CountDownIntent
     data object OnHourIncrease: CountDownIntent
     data object OnHourDecrease: CountDownIntent
+    data object OnDayIncrease: CountDownIntent
+    data object OnDayDecrease: CountDownIntent
     data object ResetIsCountDownDone: CountDownIntent
+    data class SetDate(val countDownInitTimer:Long): CountDownIntent
 }
