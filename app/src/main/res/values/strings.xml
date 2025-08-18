@@ -5,6 +5,7 @@
     <string name="start">Start</string>
     <string name="error">error</string>
     <string name="titleIcon">title Icon</string>
+    <string name="days">Days</string>
     <string name="hours">Hours</string>
     <string name="minutes">Minutes</string>
     <string name="seconds">Seconds</string>

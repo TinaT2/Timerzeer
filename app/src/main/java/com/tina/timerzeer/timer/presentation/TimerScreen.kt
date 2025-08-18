@@ -1,6 +1,5 @@
 package com.tina.timerzeer.timer.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -35,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
-import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
@@ -61,15 +59,10 @@ import com.tina.timerzeer.timer.presentation.components.TimeSelector
 fun TimerScreenRoot(
     viewModel: TimerViewModel,
     innerPadding: PaddingValues = PaddingValues(),
-    onTimerStarted: (Route) -> Unit = {}
+    onTimerStarted: () -> Unit = {}
 ) {
-    val timerState by viewModel.timerState.collectAsStateWithLifecycle()
     val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
-
-    var showTimerStyleBottomSheet by remember { mutableStateOf(false) }
-    var showBackgroundThemeBottomSheet by remember { mutableStateOf(false) }
-    var showEndingAnimationBottomSheet by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
+    var uiOverlay: UiOverlay by remember { mutableStateOf(UiOverlay.None) }
 
     Scaffold(
         modifier = Modifier
@@ -79,40 +72,35 @@ fun TimerScreenRoot(
     ) { paddingValues ->
         TimerScreen(
             paddingValues,
-            timerState = timerState,
             userActionState = userActionState,
-            onTimerIntent = { intent ->
-                if (intent is TimerIntent.Start) {
-                    onTimerStarted(Route.TimerStarted)
-                } else
-                    viewModel.onTimerIntent(intent)
+            onTimerStarted = {
+                onTimerStarted()
             },
             onUserActionIntent = { intent ->
                 viewModel.onUserAction(intent)
             },
-            onCountDownIntent = { intent ->
-                viewModel.onCountDownIntent(intent)
-            },
-            onStyleChange = { showTimerStyleBottomSheet = true },
-            onBackgroundThemeChange = { showBackgroundThemeBottomSheet = true },
-            onEndingAnimationChange = { showEndingAnimationBottomSheet = true },
-            onShowDatePicker = { showDatePicker = true }
+            onStyleChange = { uiOverlay = UiOverlay.TimerStyle },
+            onBackgroundThemeChange = { uiOverlay = UiOverlay.BackgroundTheme },
+            onEndingAnimationChange = { uiOverlay = UiOverlay.EndingAnimation },
+            onShowDatePicker = { uiOverlay = UiOverlay.DatePicker }
         )
 
-        if (showTimerStyleBottomSheet) {
-            DefaultBottomSheet(
-                title = R.string.timer_style,
-                leadingIcon = R.drawable.property_1_roller_brush,
-                optionList = listOf(
-                    R.string.timerstyle_classic,
-                    R.string.timerstyle_minimal,
-                    R.string.timerstyle_digital
-                ),
-                onDismiss = {
-                    showTimerStyleBottomSheet = false
-                }, onStyleSelected = {})
-        }
-        if (showBackgroundThemeBottomSheet) {
+        UIOverlays(
+            uiOverlay,
+            { viewModel.onUserAction(it) },
+            onDismiss = { uiOverlay = UiOverlay.None })
+    }
+
+}
+
+@Composable
+private fun UIOverlays(
+    uiOverlay: UiOverlay,
+    onUserAction: (UserActionIntent) -> Unit,
+    onDismiss: () -> Unit
+) {
+    when (uiOverlay) {
+        UiOverlay.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
                 leadingIcon = R.drawable.property_1_image_02,
@@ -122,10 +110,21 @@ fun TimerScreenRoot(
                     R.string.background_theme_digital
                 ),
                 onDismiss = {
-                    showBackgroundThemeBottomSheet = false
+                    onDismiss()
                 }, onStyleSelected = {})
         }
-        if (showEndingAnimationBottomSheet) {
+
+        UiOverlay.DatePicker -> {
+            StyledDatePicker(onDateSelected = {
+                val now = System.currentTimeMillis()
+                val diff = (it - now).coerceAtLeast(0)
+                onUserAction(UserActionIntent.SetDate(diff))
+            }) {
+                onDismiss()
+            }
+        }
+
+        UiOverlay.EndingAnimation -> {
             DefaultBottomSheet(
                 title = R.string.ending_animation,
                 leadingIcon = R.drawable.property_1_flash,
@@ -134,30 +133,48 @@ fun TimerScreenRoot(
                     R.string.ending_animation_Explosives
                 ),
                 onDismiss = {
-                    showEndingAnimationBottomSheet = false
+                    onDismiss()
                 }, onStyleSelected = {})
         }
 
-        AnimatedVisibility(showDatePicker) {
-            StyledDatePicker(onDateSelected = {
-                //TODO()
-            }) {
-                showDatePicker = false
-            }
+        UiOverlay.None -> {
+            //Nothing
         }
 
+        UiOverlay.TimerStyle -> {
+            DefaultBottomSheet(
+                title = R.string.timer_style,
+                leadingIcon = R.drawable.property_1_roller_brush,
+                optionList = listOf(
+                    R.string.timerstyle_classic,
+                    R.string.timerstyle_minimal,
+                    R.string.timerstyle_digital
+                ),
+                onDismiss = {
+                    onDismiss()
+                }, onStyleSelected = {})
+        }
     }
+}
 
+@LightDarkPreviews
+@Composable
+private fun UIOverlaysPreview() {
+    ThemedPreview {
+        UIOverlays(
+            uiOverlay = UiOverlay.DatePicker,
+            onUserAction = {},
+            onDismiss = {}
+        )
+    }
 }
 
 @Composable
 private fun TimerScreen(
     paddingValues: PaddingValues,
-    timerState: Timer,
+    onTimerStarted: () -> Unit,
     userActionState: UserActionState,
-    onTimerIntent: (TimerIntent) -> Unit,
     onUserActionIntent: (UserActionIntent) -> Unit,
-    onCountDownIntent: (CountDownIntent) -> Unit,
     onStyleChange: () -> Unit = {},
     onBackgroundThemeChange: () -> Unit = {},
     onEndingAnimationChange: () -> Unit = {},
@@ -216,7 +233,7 @@ private fun TimerScreen(
                     SmoothSwitchTabFadeAnimatedVisibility(
                         userActionState.mode == TimerMode.STOPWATCH,
                     ) {
-                        Stopwatch(userActionState, timerState, onUserActionIntent)
+                        Stopwatch(userActionState, onUserActionIntent)
                     }
 
                     SmoothSwitchTabFadeAnimatedVisibility(
@@ -224,9 +241,7 @@ private fun TimerScreen(
                     ) {
                         Countdown(
                             userActionState,
-                            timerState,
-                            onUserActionIntent,
-                            onCountDownIntent
+                            onUserActionIntent
                         ) { onShowDatePicker() }
                     }
                 }
@@ -269,20 +284,19 @@ private fun TimerScreen(
         PrimaryButton(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = stringResource(R.string.start),
-            enabled = if (userActionState.mode == TimerMode.COUNTDOWN) timerState.countDownInitTime != 0L else true,
-            onClick = { onTimerIntent(TimerIntent.Start) })
+            enabled = if (userActionState.mode == TimerMode.COUNTDOWN) userActionState.countDownInitTime != 0L else true,
+            onClick = { onTimerStarted() })
     }
 }
 
 @Composable
 fun Stopwatch(
     userActionState: UserActionState,
-    timerState: Timer,
     onUserActionIntent: (UserActionIntent) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
-            value = userActionState.timerTitle, error = timerState.errorMessage,
+            value = userActionState.timerTitle, error = userActionState.errorMessage,
             placeholder = stringResource(R.string.stopwatch_title)
         ) {
             onUserActionIntent(UserActionIntent.OnStopwatchTitleChange(it))
@@ -290,8 +304,13 @@ fun Stopwatch(
 
         Spacer(Modifier.height(SizeXL))
 
-        Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
-            val time = timerState.elapsedTime.toTimeComponents()
+        Row(
+            modifier = Modifier
+                .padding(vertical = SizeXXXL)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            val time = 0L.toTimeComponents()
             TimeSelector(
                 time.hours,
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,
@@ -314,14 +333,12 @@ fun Stopwatch(
 @Composable
 private fun Countdown(
     userActionState: UserActionState,
-    timerState: Timer,
     onUserActionIntent: (UserActionIntent) -> Unit,
-    onCountDownIntent: (CountDownIntent) -> Unit,
     onShowDatePicker: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
-            value = userActionState.countdownTitle, error = timerState.errorMessage,
+            value = userActionState.countdownTitle, error = userActionState.errorMessage,
             placeholder = stringResource(R.string.countdown_title)
         ) {
             onUserActionIntent(UserActionIntent.OnCountDownTitleChange(it))
@@ -329,26 +346,35 @@ private fun Countdown(
 
         Spacer(Modifier.height(SizeXL))
 
-        Row {
-            val time = timerState.countDownInitTime.toTimeComponents()
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            val time = userActionState.countDownInitTime.toTimeComponents()
+            SmoothFieldFadeAnimatedVisibility(time.days > 0) {
+                TimeSelector(
+                    time.days,
+                    selectable = userActionState.mode == TimerMode.COUNTDOWN,
+                    label = stringResource(R.string.days),
+                    onIncrease = { onUserActionIntent(UserActionIntent.OnDayIncrease) },
+                    onDecrease = { onUserActionIntent(UserActionIntent.OnDayDecrease) },
+                )
+            }
             TimeSelector(
                 time.hours,
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.hours),
-                onIncrease = { onCountDownIntent(CountDownIntent.OnHourIncrease) },
-                onDecrease = { onCountDownIntent(CountDownIntent.OnHourDecrease) })
+                onIncrease = { onUserActionIntent(UserActionIntent.OnHourIncrease) },
+                onDecrease = { onUserActionIntent(UserActionIntent.OnHourDecrease) })
             TimeSelector(
                 time.minutes,
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.minutes),
-                onIncrease = { onCountDownIntent(CountDownIntent.OnMinutesIncrease) },
-                onDecrease = { onCountDownIntent(CountDownIntent.OnMinutesDecrease) })
+                onIncrease = { onUserActionIntent(UserActionIntent.OnMinutesIncrease) },
+                onDecrease = { onUserActionIntent(UserActionIntent.OnMinutesDecrease) })
             TimeSelector(
                 time.seconds,
                 selectable = userActionState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.seconds),
-                onIncrease = { onCountDownIntent(CountDownIntent.OnSecondIncrease) },
-                onDecrease = { onCountDownIntent(CountDownIntent.OnSecondDecrease) })
+                onIncrease = { onUserActionIntent(UserActionIntent.OnSecondIncrease) },
+                onDecrease = { onUserActionIntent(UserActionIntent.OnSecondDecrease) })
         }
         Spacer(Modifier.height(SizeXL))
 
@@ -365,18 +391,14 @@ private fun StopwatchScreenPreview() {
     ThemedPreview {
         TimerScreen(
             paddingValues = PaddingValues(),
-            timerState = Timer(
-                elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
-                isRunning = false,
-                errorMessage = null
-            ),
             userActionState = UserActionState(
                 timerTitle = "Work Session",
-                mode = TimerMode.STOPWATCH
+                mode = TimerMode.STOPWATCH,
+                countDownInitTime = 3661000L,
+                errorMessage = null
             ),
-            onTimerIntent = {},
             onUserActionIntent = {},
-            onCountDownIntent = {}
+            onTimerStarted = {}
         )
     }
 }
@@ -387,18 +409,14 @@ private fun CountdownScreenPreview() {
     ThemedPreview {
         TimerScreen(
             paddingValues = PaddingValues(),
-            timerState = Timer(
-                elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
-                isRunning = false,
-                errorMessage = null
-            ),
             userActionState = UserActionState(
                 timerTitle = "Work Session",
-                mode = TimerMode.COUNTDOWN
+                mode = TimerMode.COUNTDOWN,
+                countDownInitTime = 3661000L,
+                errorMessage = null
             ),
-            onTimerIntent = {},
             onUserActionIntent = {},
-            onCountDownIntent = {}
+            onTimerStarted = {}
         )
     }
 }

@@ -32,7 +32,7 @@ import com.tina.timerzeer.core.theme.SizeS
 
 @Composable
 fun TimeSelector(
-    value: Int,
+    value: Long,
     label: String,
     selectable: Boolean,
     onIncrease: () -> Unit = {},
@@ -45,7 +45,7 @@ fun TimeSelector(
 
         Box(
             modifier = Modifier
-                .padding(SizeS)
+                .padding(vertical = SizeS)
                 .widthIn(min = 90.dp)
                 .border(1.dp, colorScheme.tertiary, shape = CircleShape)
                 ,

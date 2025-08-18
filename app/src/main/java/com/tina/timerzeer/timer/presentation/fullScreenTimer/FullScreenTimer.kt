@@ -1,4 +1,4 @@
-package com.tina.timerzeer.timer.presentation
+package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -36,15 +37,17 @@ import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXXL
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
+import com.tina.timerzeer.timer.presentation.Timer
+import com.tina.timerzeer.timer.presentation.TimerIntent
+import com.tina.timerzeer.timer.presentation.TimerMode
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.components.TimeSelector
 
 
 @Composable
-fun RootTimerStarted(viewModel: TimerViewModel, onNavigateBack: () -> Unit) {
+fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> Unit) {
     val timerState = viewModel.timerState.collectAsStateWithLifecycle()
-    val userActionState = viewModel.userActionState.collectAsStateWithLifecycle()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     DisposableEffect(Unit) {
@@ -62,24 +65,21 @@ fun RootTimerStarted(viewModel: TimerViewModel, onNavigateBack: () -> Unit) {
     }
 
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
-    TimerStarted(timerState.value, userActionState.value, onTimerIntent = {
+    TimerStarted(timerState.value, onTimerIntent = {
         viewModel.onTimerIntent(it)
-    }, onCountdownIntent = { viewModel.onCountDownIntent(it) }, onNavigateBack = onNavigateBack)
+    }, onNavigateBack = onNavigateBack)
 }
 
 @Composable
 fun TimerStarted(
     timerState: Timer,
-    userActionState: UserActionState,
     onTimerIntent: (TimerIntent) -> Unit,
-    onCountdownIntent: (CountDownIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone)
             onNavigateBack()
-        onCountdownIntent(CountDownIntent.ResetIsCountDownDone)
     }
 
     Scaffold { paddingValues ->
@@ -92,16 +92,25 @@ fun TimerStarted(
         ) {
             Spacer(Modifier.weight(1.3f))
 
-            HeadlineMediumTextField(if (userActionState.mode == TimerMode.COUNTDOWN) userActionState.countdownTitle else userActionState.timerTitle)
+            HeadlineMediumTextField(timerState.title)
 
-            Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 val time = timerState.elapsedTime.toTimeComponents()
-                if (time.hours != 0)
+                SmoothFieldFadeAnimatedVisibility(time.days != 0L) {
+                    TimeSelector(
+                        time.days,
+                        selectable = false,
+                        label = stringResource(R.string.days)
+                    )
+                }
+                SmoothFieldFadeAnimatedVisibility(time.hours != 0L) {
                     TimeSelector(
                         time.hours,
                         selectable = false,
                         label = stringResource(R.string.hours)
                     )
+                }
+
                 TimeSelector(
                     time.minutes,
                     selectable = false,
@@ -179,7 +188,6 @@ fun TimerStarted(
                 }
             }
 
-
             Spacer(Modifier.weight(1f))
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -206,11 +214,11 @@ fun TimerStartedPreview() {
     ThemedPreview {
         val timerState = Timer(
             elapsedTime = 3661000L,
-            isRunning = true
-        ) // Example: 1 hour, 1 minute, 1 second
-        val userActionStateAction =
-            UserActionState(timerTitle = "how it could take long to get a \$100 skin")
-        TimerStarted(timerState, userActionStateAction, {}, {}, {})
+            isRunning = true,
+            title = "Title",
+            mode = TimerMode.STOPWATCH
+        )
+        TimerStarted(timerState, {}, {})
     }
 
 }

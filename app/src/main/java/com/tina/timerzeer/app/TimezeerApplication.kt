@@ -13,11 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.tina.timerzeer.di.initKoin
 import com.tina.timerzeer.di.timerModule
-import com.tina.timerzeer.timer.presentation.RootTimerStarted
+import com.tina.timerzeer.timer.presentation.TimerMode
 import com.tina.timerzeer.timer.presentation.TimerScreenRoot
 import com.tina.timerzeer.timer.presentation.TimerViewModel
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.RootTimerStarted
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,17 +52,27 @@ fun AppNavHost() {
                 enterTransition = { fadeIn(animationSpec = tween(durationMillis = (1000))) },
                 exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
             ) {
-                val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
+                val sharedViewModel = koinViewModel<TimerViewModel>()
                 TimerScreenRoot(sharedViewModel) {
-                    navController.navigate(Route.TimerStarted)
+                    val userActionState = sharedViewModel.userActionState.value
+                    navController.navigate(
+                        Route.TimerFullScreen(
+                            userActionState.mode,
+                            if (userActionState.mode == TimerMode.STOPWATCH)
+                                userActionState.timerTitle
+                            else userActionState.countdownTitle,
+                            userActionState.countDownInitTime
+                        )
+                    )
                 }
             }
-            composable<Route.TimerStarted>(
+            composable<Route.TimerFullScreen>(
                 enterTransition = { fadeIn(animationSpec = tween(durationMillis = (1000))) },
                 exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
             ) {
-                val sharedViewModel = it.sharedKoinViewModel<TimerViewModel>(navController)
-                RootTimerStarted(sharedViewModel) {
+                val viewModel = koinViewModel<FullScreenTimerViewModel>()
+
+                RootTimerStarted(viewModel) {
                     navController.navigateUp()
                 }
             }
