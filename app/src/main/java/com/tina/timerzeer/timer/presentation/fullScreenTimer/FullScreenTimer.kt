@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -93,8 +94,15 @@ fun TimerStarted(
 
             HeadlineMediumTextField(timerState.title)
 
-            Row(modifier = Modifier.padding(vertical = SizeXXXL)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 val time = timerState.elapsedTime.toTimeComponents()
+                SmoothFieldFadeAnimatedVisibility(time.days != 0L) {
+                    TimeSelector(
+                        time.days,
+                        selectable = false,
+                        label = stringResource(R.string.days)
+                    )
+                }
                 SmoothFieldFadeAnimatedVisibility(time.hours != 0L) {
                     TimeSelector(
                         time.hours,

@@ -305,8 +305,10 @@ fun Stopwatch(
         Spacer(Modifier.height(SizeXL))
 
         Row(
-            modifier = Modifier.padding(vertical = SizeXXXL),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .padding(vertical = SizeXXXL)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             val time = 0L.toTimeComponents()
             TimeSelector(
@@ -344,10 +346,7 @@ private fun Countdown(
 
         Spacer(Modifier.height(SizeXL))
 
-        Row(
-            modifier = Modifier.padding(horizontal = SizeXS),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             val time = userActionState.countDownInitTime.toTimeComponents()
             SmoothFieldFadeAnimatedVisibility(time.days > 0) {
                 TimeSelector(
