@@ -45,7 +45,7 @@ fun TimeSelector(
 
         Box(
             modifier = Modifier
-                .padding(SizeS)
+                .padding(vertical = SizeS)
                 .widthIn(min = 90.dp)
                 .border(1.dp, colorScheme.tertiary, shape = CircleShape)
                 ,

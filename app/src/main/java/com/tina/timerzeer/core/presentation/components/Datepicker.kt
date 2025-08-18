@@ -1,5 +1,6 @@
 package com.tina.timerzeer.core.presentation.components
 
+import android.icu.util.Calendar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -20,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
+import com.tina.timerzeer.core.domain.util.startOfDayInMillis
 import com.tina.timerzeer.core.theme.SizeM
 import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXL
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.components.ThemedPreview
@@ -31,7 +33,18 @@ import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StyledDatePicker(onDateSelected: (Long) -> Unit, onDismiss: () -> Unit) {
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= System.currentTimeMillis().startOfDayInMillis()
+            }
+
+            override fun isSelectableYear(year: Int): Boolean {
+                return year >= Calendar.getInstance().get(Calendar.YEAR)
+            }
+        })
+
     val datePickerColors = DatePickerDefaults.colors(
         containerColor = colorScheme.background,
         headlineContentColor = colorScheme.primary,
