@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
-import com.tina.timerzeer.timer.presentation.Timer
-import com.tina.timerzeer.timer.presentation.TimerIntent
-import com.tina.timerzeer.timer.presentation.TimerMode
+import com.tina.timerzeer.core.domain.TimerMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,9 +27,9 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
 
     private var timerJob: Job? = null
 
-    fun onTimerIntent(intent: TimerIntent) {
+    fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
-            TimerIntent.Start -> {
+            TimerFullScreenIntent.Start -> {
                 if (_timerState.value.mode == TimerMode.COUNTDOWN)
                     args.time?.let {
                         _timerState.update { timer ->
@@ -43,24 +41,24 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
                 startTimer()
             }
 
-            TimerIntent.Pause -> {
+            TimerFullScreenIntent.Pause -> {
                 timerJob?.cancel()
                 _timerState.update { it.copy(isRunning = false) }
             }
 
-            TimerIntent.Resume -> {
+            TimerFullScreenIntent.Resume -> {
                 if (!_timerState.value.isRunning) {
                     _timerState.update { it.copy(isRunning = true) }
                     startTimer()
                 }
             }
 
-            TimerIntent.Stop -> {
+            TimerFullScreenIntent.Stop -> {
                 timerJob?.cancel()
                 _timerState.update { it.copy(elapsedTime = 0L, isRunning = false) }
             }
 
-            TimerIntent.Tick -> {
+            TimerFullScreenIntent.Tick -> {
                 if (!_timerState.value.isRunning) return
                 if (_timerState.value.mode == TimerMode.STOPWATCH)
                     _timerState.update { it.copy(elapsedTime = it.elapsedTime + 1000) }
@@ -93,7 +91,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
         timerJob = viewModelScope.launch {
             while (isActive) {
                 delay(1000)
-                onTimerIntent(TimerIntent.Tick)
+                onTimerIntent(TimerFullScreenIntent.Tick)
             }
         }
     }

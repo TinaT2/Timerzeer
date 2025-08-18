@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
+import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.CaptionTextField
 import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
 import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
@@ -35,11 +36,7 @@ import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXXXL
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
-import com.tina.timerzeer.timer.presentation.Timer
-import com.tina.timerzeer.timer.presentation.TimerIntent
-import com.tina.timerzeer.timer.presentation.TimerMode
 import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.components.TimeSelector
@@ -53,7 +50,7 @@ fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> 
     DisposableEffect(Unit) {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                viewModel.onTimerIntent(TimerIntent.Stop)
+                viewModel.onTimerIntent(TimerFullScreenIntent.Stop)
                 onNavigateBack()
             }
         }
@@ -64,7 +61,7 @@ fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> 
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerIntent.Start) }
+    LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerFullScreenIntent.Start) }
     TimerStarted(timerState.value, onTimerIntent = {
         viewModel.onTimerIntent(it)
     }, onNavigateBack = onNavigateBack)
@@ -73,7 +70,7 @@ fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> 
 @Composable
 fun TimerStarted(
     timerState: Timer,
-    onTimerIntent: (TimerIntent) -> Unit,
+    onTimerIntent: (TimerFullScreenIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
@@ -94,7 +91,10 @@ fun TimerStarted(
 
             HeadlineMediumTextField(timerState.title)
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 val time = timerState.elapsedTime.toTimeComponents()
                 SmoothFieldFadeAnimatedVisibility(time.days != 0L) {
                     TimeSelector(
@@ -141,7 +141,7 @@ fun TimerStarted(
                             R.drawable.property_1_stop,
                             stringResource(R.string.stop)
                         ) {
-                            onTimerIntent(TimerIntent.Stop)
+                            onTimerIntent(TimerFullScreenIntent.Stop)
                             onNavigateBack()
                         }
                         Spacer(Modifier.width(SizeXL))
@@ -150,14 +150,14 @@ fun TimerStarted(
                                 R.drawable.property_1_pause_circle,
                                 stringResource(R.string.pause)
                             ) {
-                                onTimerIntent(TimerIntent.Pause)
+                                onTimerIntent(TimerFullScreenIntent.Pause)
                             }
                         else
                             RoundIconFilledMedium(
                                 R.drawable.property_1_play,
                                 stringResource(R.string.play)
                             ) {
-                                onTimerIntent(TimerIntent.Resume)
+                                onTimerIntent(TimerFullScreenIntent.Resume)
                             }
                         Spacer(Modifier.width(SizeXL))
                         RoundIconOutlinedSmall(

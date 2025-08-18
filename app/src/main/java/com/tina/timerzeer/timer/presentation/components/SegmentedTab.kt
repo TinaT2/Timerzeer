@@ -21,11 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.tina.timerzeer.R
+import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXS
 import com.tina.timerzeer.core.theme.TimerzeerTheme
-import com.tina.timerzeer.timer.presentation.TimerMode
 
 @Composable
 fun SegmentedTab(tabList: List<Pair<TimerMode, Int>>, selected: Int, onSelect: (Int) -> Unit) {
