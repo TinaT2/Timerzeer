@@ -62,11 +62,7 @@ fun TimerScreenRoot(
     onTimerStarted: () -> Unit = {}
 ) {
     val userActionState by viewModel.userActionState.collectAsStateWithLifecycle()
-
-    var showTimerStyleBottomSheet by remember { mutableStateOf(false) }
-    var showBackgroundThemeBottomSheet by remember { mutableStateOf(false) }
-    var showEndingAnimationBottomSheet by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
+    var uiOverlay: UiOverlay by remember { mutableStateOf(UiOverlay.None) }
 
     Scaffold(
         modifier = Modifier
@@ -83,26 +79,28 @@ fun TimerScreenRoot(
             onUserActionIntent = { intent ->
                 viewModel.onUserAction(intent)
             },
-            onStyleChange = { showTimerStyleBottomSheet = true },
-            onBackgroundThemeChange = { showBackgroundThemeBottomSheet = true },
-            onEndingAnimationChange = { showEndingAnimationBottomSheet = true },
-            onShowDatePicker = { showDatePicker = true }
+            onStyleChange = { uiOverlay = UiOverlay.TimerStyle },
+            onBackgroundThemeChange = { uiOverlay = UiOverlay.BackgroundTheme },
+            onEndingAnimationChange = { uiOverlay = UiOverlay.EndingAnimation },
+            onShowDatePicker = { uiOverlay = UiOverlay.DatePicker }
         )
 
-        if (showTimerStyleBottomSheet) {
-            DefaultBottomSheet(
-                title = R.string.timer_style,
-                leadingIcon = R.drawable.property_1_roller_brush,
-                optionList = listOf(
-                    R.string.timerstyle_classic,
-                    R.string.timerstyle_minimal,
-                    R.string.timerstyle_digital
-                ),
-                onDismiss = {
-                    showTimerStyleBottomSheet = false
-                }, onStyleSelected = {})
-        }
-        if (showBackgroundThemeBottomSheet) {
+        UIOverlays(
+            uiOverlay,
+            { viewModel.onUserAction(it) },
+            onDismiss = { uiOverlay = UiOverlay.None })
+    }
+
+}
+
+@Composable
+private fun UIOverlays(
+    uiOverlay: UiOverlay,
+    onUserAction: (UserActionIntent) -> Unit,
+    onDismiss: () -> Unit
+) {
+    when (uiOverlay) {
+        UiOverlay.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
                 leadingIcon = R.drawable.property_1_image_02,
@@ -112,10 +110,21 @@ fun TimerScreenRoot(
                     R.string.background_theme_digital
                 ),
                 onDismiss = {
-                    showBackgroundThemeBottomSheet = false
+                    onDismiss()
                 }, onStyleSelected = {})
         }
-        if (showEndingAnimationBottomSheet) {
+
+        UiOverlay.DatePicker -> {
+            StyledDatePicker(onDateSelected = {
+                val now = System.currentTimeMillis()
+                val diff = (it - now).coerceAtLeast(0)
+                onUserAction(UserActionIntent.SetDate(diff))
+            }) {
+                onDismiss()
+            }
+        }
+
+        UiOverlay.EndingAnimation -> {
             DefaultBottomSheet(
                 title = R.string.ending_animation,
                 leadingIcon = R.drawable.property_1_flash,
@@ -124,22 +133,40 @@ fun TimerScreenRoot(
                     R.string.ending_animation_Explosives
                 ),
                 onDismiss = {
-                    showEndingAnimationBottomSheet = false
+                    onDismiss()
                 }, onStyleSelected = {})
         }
 
-        SmoothFieldFadeAnimatedVisibility(showDatePicker) {
-            StyledDatePicker(onDateSelected = {
-                val now = System.currentTimeMillis()
-                val diff = (it - now).coerceAtLeast(0)
-                viewModel.onUserAction(UserActionIntent.SetDate(diff))
-            }) {
-                showDatePicker = false
-            }
+        UiOverlay.None -> {
+            //Nothing
         }
 
+        UiOverlay.TimerStyle -> {
+            DefaultBottomSheet(
+                title = R.string.timer_style,
+                leadingIcon = R.drawable.property_1_roller_brush,
+                optionList = listOf(
+                    R.string.timerstyle_classic,
+                    R.string.timerstyle_minimal,
+                    R.string.timerstyle_digital
+                ),
+                onDismiss = {
+                    onDismiss()
+                }, onStyleSelected = {})
+        }
     }
+}
 
+@LightDarkPreviews
+@Composable
+private fun UIOverlaysPreview() {
+    ThemedPreview {
+        UIOverlays(
+            uiOverlay = UiOverlay.DatePicker,
+            onUserAction = {},
+            onDismiss = {}
+        )
+    }
 }
 
 @Composable

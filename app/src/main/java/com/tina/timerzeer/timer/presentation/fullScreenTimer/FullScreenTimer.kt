@@ -79,7 +79,6 @@ fun TimerStarted(
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone)
             onNavigateBack()
-        //todo ? onCountdownIntent(CountDownIntent.ResetIsCountDownDone)
     }
 
     Scaffold { paddingValues ->

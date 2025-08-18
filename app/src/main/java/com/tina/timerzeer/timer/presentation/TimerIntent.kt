@@ -20,6 +20,13 @@ sealed interface UserActionIntent {
     data object OnHourDecrease: UserActionIntent
     data object OnDayIncrease: UserActionIntent
     data object OnDayDecrease: UserActionIntent
-    data object ResetIsCountDownDone: UserActionIntent
     data class SetDate(val countDownInitTimer:Long): UserActionIntent
+}
+
+sealed interface UiOverlay {
+    data object None : UiOverlay
+    data object TimerStyle : UiOverlay
+    data object BackgroundTheme : UiOverlay
+    data object EndingAnimation : UiOverlay
+    data object DatePicker : UiOverlay
 }

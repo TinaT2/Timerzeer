@@ -75,10 +75,6 @@ class TimerViewModel() : ViewModel() {
                 _userActionState.update { it.copy(countDownInitTime = it.countDownInitTime.plusDay()) }
             }
 
-            UserActionIntent.ResetIsCountDownDone -> {
-                //todo _userActionState.update { it.copy(isCountDownDone = false) }
-            }
-
             is UserActionIntent.SetDate -> {
                 _userActionState.update { it.copy(countDownInitTime = action.countDownInitTimer) }
             }
