@@ -49,10 +49,10 @@ import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXXL
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
-import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
-import com.tina.timerzeer.timer.presentation.components.SegmentedTab
-import com.tina.timerzeer.timer.presentation.components.ThemedPreview
-import com.tina.timerzeer.timer.presentation.components.TimeSelector
+import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
+import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
+import com.tina.timerzeer.core.presentation.components.ThemedPreview
+import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 
 
 @OptIn(ExperimentalMaterial3Api::class)

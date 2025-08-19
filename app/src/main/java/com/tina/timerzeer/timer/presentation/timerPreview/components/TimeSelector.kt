@@ -1,4 +1,4 @@
-package com.tina.timerzeer.timer.presentation.components
+package com.tina.timerzeer.timer.presentation.timerPreview.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
+import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.theme.SizeM
 import com.tina.timerzeer.core.theme.SizeS
 

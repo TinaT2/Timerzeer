@@ -26,8 +26,6 @@ import com.tina.timerzeer.core.domain.util.startOfDayInMillis
 import com.tina.timerzeer.core.theme.SizeM
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXXL
-import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
-import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 
 
 @OptIn(ExperimentalMaterial3Api::class)

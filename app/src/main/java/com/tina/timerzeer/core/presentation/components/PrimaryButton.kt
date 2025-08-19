@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
-import com.tina.timerzeer.timer.presentation.components.ThemedPreview
 
 @Composable
 fun PrimaryButton(
