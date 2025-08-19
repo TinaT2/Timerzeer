@@ -37,7 +37,7 @@ fun DefaultBottomSheet(
     leadingIcon: Int,
     optionList: List<Int>,
     onDismiss: () -> Unit,
-    onStyleSelected: (String) -> Unit = {}
+    onStyleSelected: (Int) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState()
 
@@ -66,12 +66,12 @@ fun DefaultBottomSheet(
             // List of styles
             DefaultStyleOption(
                 R.string.timerstyle_default,
-                color = colorScheme.secondary
+                color = colorScheme.secondary,
+                onStyleSelected = onStyleSelected
             )
-
             optionList.onEach {
                 BottomSheetDivider()
-                DefaultStyleOption(it)
+                DefaultStyleOption(it,onStyleSelected = onStyleSelected)
             }
 
             Spacer(Modifier.height(SizeXL))
@@ -95,12 +95,12 @@ private fun DefaultStyleOption(
     nameId: Int,
     fontFamily: FontFamily? = null,
     color: Color = colorScheme.onPrimary,
-    onStyleSelected: () -> Unit = {}
+    onStyleSelected: (nameId:Int) -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onStyleSelected() }
+            .clickable { onStyleSelected(nameId) }
             .padding(vertical = SizeL),
         contentAlignment = Alignment.Center
     ) {

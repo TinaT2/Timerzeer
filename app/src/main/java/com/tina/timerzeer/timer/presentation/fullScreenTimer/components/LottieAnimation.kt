@@ -7,11 +7,10 @@ import androidx.compose.ui.layout.ContentScale
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.tina.timerzeer.R
 
 @Composable
-fun LottieLoader(modifier: Modifier = Modifier) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.celebration_ribbon))
+fun LottieLoader(modifier: Modifier = Modifier, resId: Int) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(resId))
 
     LottieAnimation(
         modifier = modifier,

@@ -1,6 +1,8 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.timer.data.mapper.minusDay
 import com.tina.timerzeer.timer.data.mapper.minusHour
 import com.tina.timerzeer.timer.data.mapper.minusMinute
@@ -11,16 +13,34 @@ import com.tina.timerzeer.timer.data.mapper.plusMinute
 import com.tina.timerzeer.timer.data.mapper.plusSecond
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
-class TimerViewModel() : ViewModel() {
+class TimerViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
 
     private val _timerPreviewState = MutableStateFlow(TimerPreviewState())
-    val timerPreviewState: StateFlow<TimerPreviewState> = _timerPreviewState
+    val timerPreviewState: StateFlow<TimerPreviewState> =
+        _timerPreviewState.onStart { observeSettings() }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _timerPreviewState.value
+        )
 
     private var timerJob: Job? = null
+
+    fun observeSettings() {
+        viewModelScope.launch {
+            settingsRepository.settingsFlow.collectLatest {
+
+            }
+        }
+    }
 
     fun onUserAction(action: TimerPreviewIntent) {
         when (action) {
@@ -43,6 +63,7 @@ class TimerViewModel() : ViewModel() {
                     it.copy(countdownTitle = action.name)
                 }
             }
+
             TimerPreviewIntent.OnHourDecrease -> {
                 _timerPreviewState.update { it.copy(countDownInitTime = it.countDownInitTime.minusHour()) }
             }
@@ -77,6 +98,13 @@ class TimerViewModel() : ViewModel() {
 
             is TimerPreviewIntent.SetDate -> {
                 _timerPreviewState.update { it.copy(countDownInitTime = action.countDownInitTimer) }
+            }
+
+            is TimerPreviewIntent.SetEndingAnimation -> {
+                viewModelScope.launch {
+                    settingsRepository.saveEndingAnimation(action.endingAnimation)
+                }
+
             }
         }
     }

@@ -11,4 +11,5 @@ data class Timer(
     val isRunning: Boolean = false,
     val errorMessage: TimerZeerError? = null,
     val isCountDownDone: Boolean = false,
+    val currentAnimation: Int? = null
 )

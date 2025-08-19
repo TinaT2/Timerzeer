@@ -36,22 +36,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
+import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
+import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.components.TimerInputField
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXXL
+import com.tina.timerzeer.core.theme.endingAnimations
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
-import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
-import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 
 
@@ -129,13 +130,13 @@ private fun UIOverlays(
             DefaultBottomSheet(
                 title = R.string.ending_animation,
                 leadingIcon = R.drawable.property_1_flash,
-                optionList = listOf(
-                    R.string.ending_animation_fly_ribbons,
-                    R.string.ending_animation_Explosives
-                ),
+                optionList = endingAnimations.keys.toList(),
                 onDismiss = {
                     onDismiss()
-                }, onStyleSelected = {})
+                }, onStyleSelected = { nameId ->
+                    endingAnimations[nameId]
+                        ?.let { onUserAction(TimerPreviewIntent.SetEndingAnimation(it)) }
+                })
         }
 
         UiOverlayIntent.None -> {

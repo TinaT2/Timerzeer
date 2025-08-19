@@ -5,17 +5,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
+import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
-class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: SettingsRepository) :
+    ViewModel() {
 
     companion object {
         const val COUNTDOWN_DONE_DELAY_MS = 5000L
@@ -23,7 +29,13 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
 
     val args = savedStateHandle.toRoute<Route.TimerFullScreen>()
     private val _timerState = MutableStateFlow(Timer(title = args.title, mode = args.mode))
-    val timerState: StateFlow<Timer> = _timerState
+    val timerState: StateFlow<Timer> = _timerState.onStart {
+        viewModelScope.launch {
+            repository.settingsFlow.collectLatest {
+                _timerState.update { it.copy(currentAnimation = it.currentAnimation) }
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _timerState.value)
 
     private var timerJob: Job? = null
 
