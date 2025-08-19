@@ -2,6 +2,8 @@ package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -26,20 +29,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.CaptionTextField
 import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
+import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
+import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
-import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
-import com.tina.timerzeer.core.presentation.components.ThemedPreview
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel.Companion.COUNTDOWN_DONE_DELAY_MS
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLoader
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -62,9 +69,19 @@ fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> 
     }
 
     LaunchedEffect(Unit) { viewModel.onTimerIntent(TimerFullScreenIntent.Start) }
-    TimerStarted(timerState.value, onTimerIntent = {
-        viewModel.onTimerIntent(it)
-    }, onNavigateBack = onNavigateBack)
+    Box(modifier = Modifier.fillMaxSize()) {
+        TimerStarted(timerState.value, onTimerIntent = {
+            viewModel.onTimerIntent(it)
+        }, onNavigateBack = onNavigateBack)
+        AnimatedVisibility(timerState.value.isCountDownDone) {
+            LottieLoader(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(900.dp)
+                    .background(colorScheme.background.copy(alpha = 0.3f))
+            )
+        }
+    }
 }
 
 @Composable
@@ -75,11 +92,14 @@ fun TimerStarted(
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
     LaunchedEffect(timerState.isCountDownDone) {
-        if (timerState.isCountDownDone)
+        if (timerState.isCountDownDone) {
+            delay(COUNTDOWN_DONE_DELAY_MS)
             onNavigateBack()
+        }
     }
 
     Scaffold { paddingValues ->
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -204,7 +224,6 @@ fun TimerStarted(
                 )
             }
         }
-
     }
 }
 

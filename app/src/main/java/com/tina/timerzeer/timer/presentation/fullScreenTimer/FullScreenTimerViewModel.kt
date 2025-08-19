@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     companion object {
-        private const val COUNTDOWN_DONE_DELAY_MS = 2000L
+        const val COUNTDOWN_DONE_DELAY_MS = 5000L
     }
 
     val args = savedStateHandle.toRoute<Route.TimerFullScreen>()
@@ -75,7 +75,6 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
     private fun finishCountdown() {
         timerJob?.cancel()
         viewModelScope.launch {
-            delay(COUNTDOWN_DONE_DELAY_MS)
             _timerState.update { it.copy(isCountDownDone = true) }
             delay(1000)
             _timerState.update {
