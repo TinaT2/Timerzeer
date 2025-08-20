@@ -35,6 +35,7 @@ import com.tina.timerzeer.core.theme.SizeXXXL
 fun DefaultBottomSheet(
     title: Int,
     leadingIcon: Int,
+    selected: Int,
     optionList: List<Int>,
     onDismiss: () -> Unit,
     onStyleSelected: (Int) -> Unit = {}
@@ -64,12 +65,13 @@ fun DefaultBottomSheet(
             Spacer(Modifier.height(SizeXL))
 
             optionList.onEach {
-                if(it==R.string.value_default)
+                if (it == selected) {
                     DefaultStyleOption(
-                        R.string.timerstyle_default,
+                        it,
                         color = colorScheme.secondary,
                         onStyleSelected = onStyleSelected
                     )
+                }
                 else {
                     BottomSheetDivider()
                     DefaultStyleOption(it, onStyleSelected = onStyleSelected)
@@ -97,7 +99,7 @@ private fun DefaultStyleOption(
     nameId: Int,
     fontFamily: FontFamily? = null,
     color: Color = colorScheme.onPrimary,
-    onStyleSelected: (nameId:Int) -> Unit = {}
+    onStyleSelected: (nameId: Int) -> Unit = {}
 ) {
     Box(
         modifier = Modifier

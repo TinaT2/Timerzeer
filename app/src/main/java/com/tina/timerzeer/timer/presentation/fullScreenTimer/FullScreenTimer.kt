@@ -114,7 +114,7 @@ fun TimerStarted(
                             .align(Alignment.Center)
                             .background(colorScheme.background.copy(alpha = 0.3f))
                             .zIndex(2f),
-                        resId = timerState.currentAnimation
+                        resId = endingAnimations[timerState.currentAnimation]
                             ?: endingAnimations[R.string.value_default]!!
                     )
                 }

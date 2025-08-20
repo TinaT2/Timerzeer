@@ -10,23 +10,23 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     val settingsFlow = dataStore.data
 
-    suspend fun saveEndingAnimation(animationId: Int) {
+    suspend fun saveEndingAnimation(nameId: Int) {
         dataStore.edit { preferences ->
             preferences[intPreferencesKey(DataStoreFields.ENDING_ANIMATION.name)] =
-                animationId
+                nameId
         }
     }
 
-    suspend fun saveBackgroundTheme(backgroundId: Int) {
+    suspend fun saveBackgroundTheme(nameId: Int) {
         dataStore.edit { preferences ->
             preferences[intPreferencesKey(DataStoreFields.BACKGROUND.name)] =
-                backgroundId
+                nameId
         }
     }
 
-    suspend fun saveFontStyle(fontStyle: Int) {
+    suspend fun saveFontStyle(nameId: Int) {
         dataStore.edit { preferences ->
-            preferences[intPreferencesKey(DataStoreFields.FONT_STYLE.name)] = fontStyle
+            preferences[intPreferencesKey(DataStoreFields.FONT_STYLE.name)] = nameId
         }
     }
 }

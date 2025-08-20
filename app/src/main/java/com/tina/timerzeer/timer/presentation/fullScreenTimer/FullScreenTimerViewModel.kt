@@ -9,6 +9,9 @@ import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.core.theme.backgrounds
+import com.tina.timerzeer.core.theme.endingAnimations
+import com.tina.timerzeer.core.theme.fontStyles
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +42,13 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
                     it.copy(
                         currentAnimation = settings[intPreferencesKey(
                             DataStoreFields.ENDING_ANIMATION.name
-                        )]
+                        )]?: endingAnimations.keys.first(),
+                        currentBackground = settings[intPreferencesKey(
+                            name = DataStoreFields.BACKGROUND.name
+                        )]?: backgrounds.keys.first(),
+                        currentFontStyle = settings[intPreferencesKey(
+                            name = DataStoreFields.FONT_STYLE.name
+                        )]?: fontStyles.keys.first()
                     )
                 }
             }
