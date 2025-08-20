@@ -17,6 +17,7 @@ sealed interface TimerPreviewIntent {
     data object OnDayDecrease : TimerPreviewIntent
     data class SetDate(val countDownInitTimer: Long) : TimerPreviewIntent
     data class SetEndingAnimation(val endingAnimation: Int): TimerPreviewIntent
+    data class SetBackground(val backgroundId: Int): TimerPreviewIntent
 }
 
 sealed interface UiOverlayIntent {

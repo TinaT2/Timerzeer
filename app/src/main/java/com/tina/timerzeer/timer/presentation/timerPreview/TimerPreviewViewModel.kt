@@ -114,7 +114,12 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
                 viewModelScope.launch {
                     settingsRepository.saveEndingAnimation(action.endingAnimation)
                 }
+            }
 
+            is TimerPreviewIntent.SetBackground -> {
+                viewModelScope.launch {
+                    settingsRepository.saveBackgroundTheme(action.backgroundId)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,40 +64,51 @@ import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelecto
 @Composable
 fun TimerScreenRoot(
     viewModel: TimerPreviewViewModel,
-    innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: () -> Unit = {}
 ) {
     val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
     var uiOverlayIntent: UiOverlayIntent by remember { mutableStateOf(UiOverlayIntent.None) }
+    val bgColor = backgrounds[timerPreviewState.currentBackground]?.let { Color.Transparent }
+        ?: colorScheme.background
 
-    Scaffold(
-        modifier = Modifier
-            .padding(innerPadding)
-            .background(colorScheme.background)
-            .padding(top = SizeXL)
-    ) { paddingValues ->
-        TimerScreen(
-            paddingValues,
-            timerPreviewState = timerPreviewState,
-            onTimerStarted = {
-                onTimerStarted()
-            },
-            onUserActionIntent = { intent ->
-                viewModel.onUserAction(intent)
-            },
-            onStyleChange = { uiOverlayIntent = UiOverlayIntent.TimerStyle },
-            onBackgroundThemeChange = { uiOverlayIntent = UiOverlayIntent.BackgroundTheme },
-            onEndingAnimationChange = { uiOverlayIntent = UiOverlayIntent.EndingAnimation },
-            onShowDatePicker = { uiOverlayIntent = UiOverlayIntent.DatePicker }
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        backgrounds[timerPreviewState.currentBackground]?.let {
+            Image(
+                painterResource(it),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
 
-        UIOverlays(
-            state = timerPreviewState,
-            uiOverlayIntent,
-            { viewModel.onUserAction(it) },
-            onDismiss = { uiOverlayIntent = UiOverlayIntent.None })
+        Scaffold(
+            modifier = Modifier
+                .background(bgColor)
+                .padding(top = SizeXL),
+            containerColor = bgColor
+        ) { paddingValues ->
+            TimerScreen(
+                paddingValues,
+                timerPreviewState = timerPreviewState,
+                onTimerStarted = {
+                    onTimerStarted()
+                },
+                onUserActionIntent = { intent ->
+                    viewModel.onUserAction(intent)
+                },
+                onStyleChange = { uiOverlayIntent = UiOverlayIntent.TimerStyle },
+                onBackgroundThemeChange = { uiOverlayIntent = UiOverlayIntent.BackgroundTheme },
+                onEndingAnimationChange = { uiOverlayIntent = UiOverlayIntent.EndingAnimation },
+                onShowDatePicker = { uiOverlayIntent = UiOverlayIntent.DatePicker }
+            )
+
+            UIOverlays(
+                state = timerPreviewState,
+                uiOverlayIntent,
+                { viewModel.onUserAction(it) },
+                onDismiss = { uiOverlayIntent = UiOverlayIntent.None })
+        }
     }
-
 }
 
 @Composable
@@ -114,7 +127,10 @@ private fun UIOverlays(
                 optionList = backgrounds.keys.toList(),
                 onDismiss = {
                     onDismiss()
-                }, onStyleSelected = {})
+                }, onItemSelected = { backgroundId ->
+                    onUserAction(TimerPreviewIntent.SetBackground(backgroundId))
+                    onDismiss()
+                })
         }
 
         UiOverlayIntent.DatePicker -> {
@@ -135,7 +151,7 @@ private fun UIOverlays(
                 optionList = endingAnimations.keys.toList(),
                 onDismiss = {
                     onDismiss()
-                }, onStyleSelected = { nameId ->
+                }, onItemSelected = { nameId ->
                     onUserAction(TimerPreviewIntent.SetEndingAnimation(nameId))
                     onDismiss()
                 })
@@ -153,7 +169,7 @@ private fun UIOverlays(
                 optionList = fontStyles.keys.toList(),
                 onDismiss = {
                     onDismiss()
-                }, onStyleSelected = {})
+                }, onItemSelected = {})
         }
     }
 }
