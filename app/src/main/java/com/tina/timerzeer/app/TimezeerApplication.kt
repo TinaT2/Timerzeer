@@ -19,7 +19,7 @@ import com.tina.timerzeer.di.timerModule
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.RootTimerStarted
 import com.tina.timerzeer.timer.presentation.timerPreview.TimerScreenRoot
-import com.tina.timerzeer.timer.presentation.timerPreview.TimerViewModel
+import com.tina.timerzeer.timer.presentation.timerPreview.TimerPreviewViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,7 +51,7 @@ fun AppNavHost() {
                 enterTransition = { fadeIn(animationSpec = tween(durationMillis = (1000))) },
                 exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
             ) {
-                val sharedViewModel = koinViewModel<TimerViewModel>()
+                val sharedViewModel = koinViewModel<TimerPreviewViewModel>()
                 TimerScreenRoot(sharedViewModel) {
                     val userActionState = sharedViewModel.timerPreviewState.value
                     navController.navigate(

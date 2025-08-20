@@ -35,9 +35,10 @@ import com.tina.timerzeer.core.theme.SizeXXXL
 fun DefaultBottomSheet(
     title: Int,
     leadingIcon: Int,
+    selected: Int,
     optionList: List<Int>,
     onDismiss: () -> Unit,
-    onStyleSelected: (String) -> Unit = {}
+    onStyleSelected: (Int) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState()
 
@@ -63,15 +64,18 @@ fun DefaultBottomSheet(
             )
             Spacer(Modifier.height(SizeXL))
 
-            // List of styles
-            DefaultStyleOption(
-                R.string.timerstyle_default,
-                color = colorScheme.secondary
-            )
-
             optionList.onEach {
-                BottomSheetDivider()
-                DefaultStyleOption(it)
+                if (it == selected) {
+                    DefaultStyleOption(
+                        it,
+                        color = colorScheme.secondary,
+                        onStyleSelected = onStyleSelected
+                    )
+                }
+                else {
+                    BottomSheetDivider()
+                    DefaultStyleOption(it, onStyleSelected = onStyleSelected)
+                }
             }
 
             Spacer(Modifier.height(SizeXL))
@@ -95,12 +99,12 @@ private fun DefaultStyleOption(
     nameId: Int,
     fontFamily: FontFamily? = null,
     color: Color = colorScheme.onPrimary,
-    onStyleSelected: () -> Unit = {}
+    onStyleSelected: (nameId: Int) -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onStyleSelected() }
+            .clickable { onStyleSelected(nameId) }
             .padding(vertical = SizeL),
         contentAlignment = Alignment.Center
     ) {

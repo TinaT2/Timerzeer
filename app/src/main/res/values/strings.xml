@@ -22,7 +22,6 @@
     <string name="stopwatch">Stopwatch</string>
     <string name="countdown">Countdown</string>
     <string name="timer_style">Timer style</string>
-    <string name="timerstyle_default">Default</string>
     <string name="timerstyle_classic">Classic</string>
     <string name="timerstyle_minimal">Minimal</string>
     <string name="timerstyle_digital">Digital</string>

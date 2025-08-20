@@ -1,24 +1,32 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
+import com.tina.timerzeer.core.data.dataStore.DataStoreFields
+import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.core.theme.backgrounds
+import com.tina.timerzeer.core.theme.endingAnimations
+import com.tina.timerzeer.core.theme.fontStyles
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
-class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: SettingsRepository) :
+    ViewModel() {
 
     companion object {
-        private const val COUNTDOWN_DONE_DELAY_MS = 2000L
+        const val COUNTDOWN_DONE_DELAY_MS = 3000L
     }
 
     val args = savedStateHandle.toRoute<Route.TimerFullScreen>()
@@ -26,6 +34,26 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
     val timerState: StateFlow<Timer> = _timerState
 
     private var timerJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            repository.settingsFlow.collectLatest { settings ->
+                _timerState.update {
+                    it.copy(
+                        currentAnimation = settings[intPreferencesKey(
+                            DataStoreFields.ENDING_ANIMATION.name
+                        )]?: endingAnimations.keys.first(),
+                        currentBackground = settings[intPreferencesKey(
+                            name = DataStoreFields.BACKGROUND.name
+                        )]?: backgrounds.keys.first(),
+                        currentFontStyle = settings[intPreferencesKey(
+                            name = DataStoreFields.FONT_STYLE.name
+                        )]?: fontStyles.keys.first()
+                    )
+                }
+            }
+        }
+    }
 
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
@@ -75,14 +103,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) : ViewModel()
     private fun finishCountdown() {
         timerJob?.cancel()
         viewModelScope.launch {
-            delay(COUNTDOWN_DONE_DELAY_MS)
-            _timerState.update { it.copy(isCountDownDone = true) }
-            delay(1000)
-            _timerState.update {
-                it.copy(
-                    isRunning = false
-                )
-            }
+            _timerState.update { it.copy(isCountDownDone = true,  isRunning = false) }
         }
     }
 

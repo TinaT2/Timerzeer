@@ -1,6 +1,13 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tina.timerzeer.core.data.dataStore.DataStoreFields
+import com.tina.timerzeer.core.data.repository.SettingsRepository
+import com.tina.timerzeer.core.theme.backgrounds
+import com.tina.timerzeer.core.theme.endingAnimations
+import com.tina.timerzeer.core.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.minusDay
 import com.tina.timerzeer.timer.data.mapper.minusHour
 import com.tina.timerzeer.timer.data.mapper.minusMinute
@@ -12,15 +19,38 @@ import com.tina.timerzeer.timer.data.mapper.plusSecond
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
-class TimerViewModel() : ViewModel() {
+class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
 
     private val _timerPreviewState = MutableStateFlow(TimerPreviewState())
-    val timerPreviewState: StateFlow<TimerPreviewState> = _timerPreviewState
-
+    val timerPreviewState: StateFlow<TimerPreviewState> =
+        _timerPreviewState
     private var timerJob: Job? = null
+
+
+    init {
+        viewModelScope.launch {
+            settingsRepository.settingsFlow.collectLatest { settings ->
+                _timerPreviewState.update {
+                    it.copy(
+                        currentAnimation = settings[intPreferencesKey(
+                            DataStoreFields.ENDING_ANIMATION.name
+                        )]?: endingAnimations.keys.first(),
+                        currentBackground = settings[intPreferencesKey(
+                            name = DataStoreFields.BACKGROUND.name
+                        )]?: backgrounds.keys.first(),
+                        currentFontStyle = settings[intPreferencesKey(
+                            name = DataStoreFields.FONT_STYLE.name
+                        )]?: fontStyles.keys.first()
+                    )
+                }
+            }
+        }
+    }
 
     fun onUserAction(action: TimerPreviewIntent) {
         when (action) {
@@ -43,6 +73,7 @@ class TimerViewModel() : ViewModel() {
                     it.copy(countdownTitle = action.name)
                 }
             }
+
             TimerPreviewIntent.OnHourDecrease -> {
                 _timerPreviewState.update { it.copy(countDownInitTime = it.countDownInitTime.minusHour()) }
             }
@@ -77,6 +108,13 @@ class TimerViewModel() : ViewModel() {
 
             is TimerPreviewIntent.SetDate -> {
                 _timerPreviewState.update { it.copy(countDownInitTime = action.countDownInitTimer) }
+            }
+
+            is TimerPreviewIntent.SetEndingAnimation -> {
+                viewModelScope.launch {
+                    settingsRepository.saveEndingAnimation(action.endingAnimation)
+                }
+
             }
         }
     }

@@ -36,33 +36,36 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
+import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
+import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.components.TimerInputField
 import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXL
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXXL
+import com.tina.timerzeer.core.theme.backgrounds
+import com.tina.timerzeer.core.theme.endingAnimations
+import com.tina.timerzeer.core.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
-import com.tina.timerzeer.timer.presentation.components.LightDarkPreviews
-import com.tina.timerzeer.timer.presentation.components.SegmentedTab
-import com.tina.timerzeer.timer.presentation.components.ThemedPreview
-import com.tina.timerzeer.timer.presentation.components.TimeSelector
+import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
+import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreenRoot(
-    viewModel: TimerViewModel,
+    viewModel: TimerPreviewViewModel,
     innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: () -> Unit = {}
 ) {
-    val userActionState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
+    val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
     var uiOverlayIntent: UiOverlayIntent by remember { mutableStateOf(UiOverlayIntent.None) }
 
     Scaffold(
@@ -73,7 +76,7 @@ fun TimerScreenRoot(
     ) { paddingValues ->
         TimerScreen(
             paddingValues,
-            timerPreviewState = userActionState,
+            timerPreviewState = timerPreviewState,
             onTimerStarted = {
                 onTimerStarted()
             },
@@ -87,6 +90,7 @@ fun TimerScreenRoot(
         )
 
         UIOverlays(
+            state = timerPreviewState,
             uiOverlayIntent,
             { viewModel.onUserAction(it) },
             onDismiss = { uiOverlayIntent = UiOverlayIntent.None })
@@ -96,6 +100,7 @@ fun TimerScreenRoot(
 
 @Composable
 private fun UIOverlays(
+    state: TimerPreviewState,
     uiOverlayIntent: UiOverlayIntent,
     onUserAction: (TimerPreviewIntent) -> Unit,
     onDismiss: () -> Unit
@@ -104,12 +109,9 @@ private fun UIOverlays(
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
+                selected = state.currentBackground ?: backgrounds.keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
-                optionList = listOf(
-                    R.string.background_theme_dark,
-                    R.string.background_theme_galaxy,
-                    R.string.background_theme_digital
-                ),
+                optionList = backgrounds.keys.toList(),
                 onDismiss = {
                     onDismiss()
                 }, onStyleSelected = {})
@@ -128,14 +130,15 @@ private fun UIOverlays(
         UiOverlayIntent.EndingAnimation -> {
             DefaultBottomSheet(
                 title = R.string.ending_animation,
+                selected = state.currentAnimation ?: endingAnimations.keys.first(),
                 leadingIcon = R.drawable.property_1_flash,
-                optionList = listOf(
-                    R.string.ending_animation_fly_ribbons,
-                    R.string.ending_animation_Explosives
-                ),
+                optionList = endingAnimations.keys.toList(),
                 onDismiss = {
                     onDismiss()
-                }, onStyleSelected = {})
+                }, onStyleSelected = { nameId ->
+                    onUserAction(TimerPreviewIntent.SetEndingAnimation(nameId))
+                    onDismiss()
+                })
         }
 
         UiOverlayIntent.None -> {
@@ -145,28 +148,13 @@ private fun UIOverlays(
         UiOverlayIntent.TimerStyle -> {
             DefaultBottomSheet(
                 title = R.string.timer_style,
+                selected = state.currentFontStyle ?: fontStyles.keys.first(),
                 leadingIcon = R.drawable.property_1_roller_brush,
-                optionList = listOf(
-                    R.string.timerstyle_classic,
-                    R.string.timerstyle_minimal,
-                    R.string.timerstyle_digital
-                ),
+                optionList = fontStyles.keys.toList(),
                 onDismiss = {
                     onDismiss()
                 }, onStyleSelected = {})
         }
-    }
-}
-
-@LightDarkPreviews
-@Composable
-private fun UIOverlaysPreview() {
-    ThemedPreview {
-        UIOverlays(
-            uiOverlayIntent = UiOverlayIntent.DatePicker,
-            onUserAction = {},
-            onDismiss = {}
-        )
     }
 }
 

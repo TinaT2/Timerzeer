@@ -16,32 +16,33 @@ import com.tina.timerzeer.core.theme.SizeM
 import com.tina.timerzeer.core.theme.SizeXS
 
 @Composable
-fun RoundIconOutlinedSmall(painterResource: Int, contentDescription: String,onClick:()->Unit) {
+fun RoundIconOutlinedSmall(painterResource: Int, contentDescription: String,enabled: Boolean, onClick: () -> Unit) {
     Icon(
         painter = painterResource(painterResource),
         modifier = Modifier
             .clip(CircleShape)
             .border(1.dp, shape = CircleShape, color = colorScheme.primary)
             .padding(SizeXS)
-            .clickable{
-                onClick()
-            },
+            .clickable(enabled = enabled,onClick = onClick),
         tint = colorScheme.primary,
         contentDescription = contentDescription
     )
 }
 
 @Composable
-fun RoundIconFilledMedium(painterResource: Int, contentDescription: String,onClick:()->Unit) {
+fun RoundIconFilledMedium(
+    painterResource: Int,
+    contentDescription: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     Icon(
         painter = painterResource(painterResource),
         modifier = Modifier
             .clip(CircleShape)
-            .background( shape = CircleShape, color = colorScheme.primary)
+            .background(shape = CircleShape, color = colorScheme.primary)
             .padding(SizeM)
-            .clickable{
-                onClick()
-            },
+            .clickable(enabled = enabled, onClick = onClick),
         tint = colorScheme.surface,
         contentDescription = contentDescription
     )
