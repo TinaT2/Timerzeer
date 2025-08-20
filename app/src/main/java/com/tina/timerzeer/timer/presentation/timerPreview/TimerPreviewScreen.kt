@@ -59,7 +59,7 @@ import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelecto
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreenRoot(
-    viewModel: TimerViewModel,
+    viewModel: TimerPreviewViewModel,
     innerPadding: PaddingValues = PaddingValues(),
     onTimerStarted: () -> Unit = {}
 ) {
@@ -136,6 +136,7 @@ private fun UIOverlays(
                 }, onStyleSelected = { nameId ->
                     endingAnimations[nameId]
                         ?.let { onUserAction(TimerPreviewIntent.SetEndingAnimation(it)) }
+                    onDismiss()
                 })
         }
 
@@ -156,18 +157,6 @@ private fun UIOverlays(
                     onDismiss()
                 }, onStyleSelected = {})
         }
-    }
-}
-
-@LightDarkPreviews
-@Composable
-private fun UIOverlaysPreview() {
-    ThemedPreview {
-        UIOverlays(
-            uiOverlayIntent = UiOverlayIntent.DatePicker,
-            onUserAction = {},
-            onDismiss = {}
-        )
     }
 }
 

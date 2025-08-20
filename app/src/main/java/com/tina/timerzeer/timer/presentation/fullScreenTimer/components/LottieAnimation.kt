@@ -15,6 +15,6 @@ fun LottieLoader(modifier: Modifier = Modifier, resId: Int) {
     LottieAnimation(
         modifier = modifier,
         composition = composition,
-        contentScale = ContentScale.FillBounds
+        contentScale = ContentScale.Fit
     )
 }

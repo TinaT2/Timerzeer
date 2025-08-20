@@ -1,20 +1,19 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
+import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -24,20 +23,28 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
     ViewModel() {
 
     companion object {
-        const val COUNTDOWN_DONE_DELAY_MS = 5000L
+        const val COUNTDOWN_DONE_DELAY_MS = 3000L
     }
 
     val args = savedStateHandle.toRoute<Route.TimerFullScreen>()
     private val _timerState = MutableStateFlow(Timer(title = args.title, mode = args.mode))
-    val timerState: StateFlow<Timer> = _timerState.onStart {
-        viewModelScope.launch {
-            repository.settingsFlow.collectLatest {
-                _timerState.update { it.copy(currentAnimation = it.currentAnimation) }
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _timerState.value)
+    val timerState: StateFlow<Timer> = _timerState
 
     private var timerJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            repository.settingsFlow.collectLatest { settings ->
+                _timerState.update {
+                    it.copy(
+                        currentAnimation = settings[intPreferencesKey(
+                            DataStoreFields.ENDING_ANIMATION.name
+                        )]
+                    )
+                }
+            }
+        }
+    }
 
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
@@ -87,13 +94,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
     private fun finishCountdown() {
         timerJob?.cancel()
         viewModelScope.launch {
-            _timerState.update { it.copy(isCountDownDone = true) }
-            delay(1000)
-            _timerState.update {
-                it.copy(
-                    isRunning = false
-                )
-            }
+            _timerState.update { it.copy(isCountDownDone = true,  isRunning = false) }
         }
     }
 

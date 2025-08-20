@@ -13,35 +13,18 @@ import com.tina.timerzeer.timer.data.mapper.plusMinute
 import com.tina.timerzeer.timer.data.mapper.plusSecond
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class TimerViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
 
     private val _timerPreviewState = MutableStateFlow(TimerPreviewState())
     val timerPreviewState: StateFlow<TimerPreviewState> =
-        _timerPreviewState.onStart { observeSettings() }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            _timerPreviewState.value
-        )
+        _timerPreviewState
 
     private var timerJob: Job? = null
-
-    fun observeSettings() {
-        viewModelScope.launch {
-            settingsRepository.settingsFlow.collectLatest {
-
-            }
-        }
-    }
-
     fun onUserAction(action: TimerPreviewIntent) {
         when (action) {
             is TimerPreviewIntent.OnStopwatchTitleChange -> {

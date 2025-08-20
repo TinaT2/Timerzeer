@@ -63,15 +63,17 @@ fun DefaultBottomSheet(
             )
             Spacer(Modifier.height(SizeXL))
 
-            // List of styles
-            DefaultStyleOption(
-                R.string.timerstyle_default,
-                color = colorScheme.secondary,
-                onStyleSelected = onStyleSelected
-            )
             optionList.onEach {
-                BottomSheetDivider()
-                DefaultStyleOption(it,onStyleSelected = onStyleSelected)
+                if(it==R.string.value_default)
+                    DefaultStyleOption(
+                        R.string.timerstyle_default,
+                        color = colorScheme.secondary,
+                        onStyleSelected = onStyleSelected
+                    )
+                else {
+                    BottomSheetDivider()
+                    DefaultStyleOption(it, onStyleSelected = onStyleSelected)
+                }
             }
 
             Spacer(Modifier.height(SizeXL))
