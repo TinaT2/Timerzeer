@@ -33,6 +33,7 @@ import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.theme.SizeS
 import com.tina.timerzeer.core.theme.SizeXS
 import com.tina.timerzeer.core.theme.SizeXXS
+import com.tina.timerzeer.core.theme.TextSecondaryTransparent
 import com.tina.timerzeer.core.theme.TimerzeerTheme
 import kotlin.math.max
 
@@ -41,13 +42,17 @@ fun TimerInputField(
     value: String,
     placeholder: String,
     error: TimerZeerError? = null,
+    isCustomisedBackground: Boolean,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
     val borderColor = when {
         error != null -> colorScheme.error
-        else -> colorScheme.secondary
+        else -> Color.Transparent
     }
+
+    val rowBackground =
+        if (isCustomisedBackground) TextSecondaryTransparent else colorScheme.tertiary
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         OutlinedTextField(
@@ -71,7 +76,7 @@ fun TimerInputField(
                     shape = RoundedCornerShape(RoundedCornerShapeNumber)
                 )
                 .background(
-                    color = colorScheme.tertiary,
+                    color = rowBackground,
                     shape = RoundedCornerShape(RoundedCornerShapeNumber)
                 ),
             colors = OutlinedTextFieldDefaults.colors(
@@ -141,6 +146,7 @@ fun CaptionTextField(text: String) {
 @Composable
 fun TextOptionButton(
     text: String,
+    isCustomisedBackground: Boolean,
     leadingIcon: Int,
     trailingIcon: Int,
     modifier: Modifier = Modifier,
@@ -148,6 +154,8 @@ fun TextOptionButton(
     onClick: () -> Unit
 ) {
     val textColor = if (enabled) colorScheme.onPrimary else colorScheme.onSecondary
+    val rowBackground =
+        if (isCustomisedBackground) TextSecondaryTransparent else colorScheme.tertiary
 
     Row(
         modifier = modifier
@@ -155,7 +163,7 @@ fun TextOptionButton(
             .clip(shape = RoundedCornerShape(RoundedCornerShapeNumber))
             .background(
                 shape = RoundedCornerShape(RoundedCornerShapeNumber),
-                color = colorScheme.tertiary
+                color = rowBackground
             )
             .clickable { onClick() }
             .padding(SizeS),
@@ -193,6 +201,7 @@ fun TimerInputFieldPlaceHolderPreview() {
     TimerzeerTheme {
         TimerInputField(
             value = "",
+            isCustomisedBackground = false,
             placeholder = "Enter time",
             error = null,
             onValueChange = {}
@@ -206,6 +215,7 @@ fun TimerInputFieldPreview() {
     TimerzeerTheme {
         TimerInputField(
             value = "10",
+            isCustomisedBackground = false,
             placeholder = "Enter time",
             error = null,
             onValueChange = {}
@@ -219,6 +229,7 @@ fun TextOptionButtonEnabledPreview() {
     TimerzeerTheme {
         TextOptionButton(
             text = "Timer Option",
+            isCustomisedBackground = false,
             leadingIcon = R.drawable.property_1_roller_brush,
             trailingIcon = R.drawable.property_1_chevron_right,
             enabled = true,
@@ -233,6 +244,7 @@ fun TextOptionButtonDisabledPreview() {
     TimerzeerTheme {
         TextOptionButton(
             text = "Timer Option",
+            isCustomisedBackground = false,
             leadingIcon = R.drawable.property_1_roller_brush,
             trailingIcon = R.drawable.property_1_chevron_right,
             enabled = false,
@@ -248,6 +260,7 @@ fun TimerInputFieldErrorPreview() {
     TimerzeerTheme {
         TimerInputField(
             value = "error32",
+            isCustomisedBackground = false,
             placeholder = "Enter time",
             error = UnknownError,
             onValueChange = {}

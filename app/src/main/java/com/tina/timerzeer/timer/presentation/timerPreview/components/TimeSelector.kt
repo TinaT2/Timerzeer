@@ -37,9 +37,13 @@ fun TimeSelector(
     value: Long,
     label: String,
     selectable: Boolean,
+    isCustomisedBackground:Boolean,
     onIncrease: () -> Unit = {},
     onDecrease: () -> Unit = {},
 ) {
+
+    val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,7 +53,7 @@ fun TimeSelector(
             modifier = Modifier
                 .padding(vertical = SizeS)
                 .widthIn(min = 90.dp)
-                .border(1.dp, colorScheme.tertiary, shape = CircleShape)
+                .border(1.dp, border, shape = CircleShape)
                 ,
             contentAlignment = Alignment.Center
         ) {
@@ -108,6 +112,7 @@ fun TimeSelectorPreview() {
             value = 10,
             label = "Minutes",
             selectable = false,
+            isCustomisedBackground = false,
             onIncrease = {},
             onDecrease = {}
         )
@@ -121,6 +126,7 @@ fun TimeSelectorSelectablePreview() {
         TimeSelector(
             value = 10,
             label = "Minutes",
+            isCustomisedBackground = false,
             selectable = true,
             onIncrease = {},
             onDecrease = {}

@@ -50,7 +50,6 @@ import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerView
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLoader
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 import kotlinx.coroutines.delay
-import kotlin.collections.get
 
 
 @Composable
@@ -85,6 +84,8 @@ fun TimerStarted(
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
+    val isCustomisedBackground = backgrounds[timerState.currentBackground] != null
+
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone) {
             delay(COUNTDOWN_DONE_DELAY_MS)
@@ -92,7 +93,7 @@ fun TimerStarted(
         }
     }
 
-    val bgColor =  backgrounds[timerState.currentBackground]?.let { Color.Transparent }
+    val bgColor = backgrounds[timerState.currentBackground]?.let { Color.Transparent }
         ?: colorScheme.background
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -151,6 +152,7 @@ fun TimerStarted(
                             TimeSelector(
                                 time.days,
                                 selectable = false,
+                                isCustomisedBackground = isCustomisedBackground,
                                 label = stringResource(R.string.days)
                             )
                         }
@@ -158,6 +160,7 @@ fun TimerStarted(
                             TimeSelector(
                                 time.hours,
                                 selectable = false,
+                                isCustomisedBackground = isCustomisedBackground,
                                 label = stringResource(R.string.hours)
                             )
                         }
@@ -165,11 +168,13 @@ fun TimerStarted(
                         TimeSelector(
                             time.minutes,
                             selectable = false,
+                            isCustomisedBackground = isCustomisedBackground,
                             label = stringResource(R.string.minutes)
                         )
                         TimeSelector(
                             time.seconds,
                             selectable = false,
+                            isCustomisedBackground = isCustomisedBackground,
                             label = stringResource(R.string.seconds)
                         )
                     }

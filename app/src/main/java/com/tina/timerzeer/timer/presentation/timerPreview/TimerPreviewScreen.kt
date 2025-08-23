@@ -186,6 +186,7 @@ private fun TimerScreen(
     onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
+    val isCustomisedBackground = backgrounds[timerPreviewState.currentBackground] != null
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -213,32 +214,23 @@ private fun TimerScreen(
                 )
                 Spacer(modifier = Modifier.height(SizeXXXL))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(SizeXS)
-                        .border(
-                            1.dp,
-                            colorScheme.tertiary,
-                            shape = RoundedCornerShape(RoundedCornerShapeNumber)
-                        ),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    SegmentedTab(
-                        listOf(
-                            (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
-                            (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-                        ), selected = timerPreviewState.mode.ordinal, onSelect = {
-                            onUserActionIntent(TimerPreviewIntent.OnModeChange(TimerMode.entries[it]))
-                        })
-                }
+                SegmentedTab(
+                    listOf(
+                        (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                        (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
+                    ), selected = timerPreviewState.mode.ordinal,
+                    isCustomisedBackground = isCustomisedBackground,
+                    onSelect = {
+                        onUserActionIntent(TimerPreviewIntent.OnModeChange(TimerMode.entries[it]))
+                    })
+
                 Spacer(modifier = Modifier.height(SizeXXXL))
 
                 Box {
                     SmoothSwitchTabFadeAnimatedVisibility(
                         timerPreviewState.mode == TimerMode.STOPWATCH,
                     ) {
-                        Stopwatch(timerPreviewState, onUserActionIntent)
+                        Stopwatch(timerPreviewState, isCustomisedBackground, onUserActionIntent)
                     }
 
                     SmoothSwitchTabFadeAnimatedVisibility(
@@ -246,7 +238,8 @@ private fun TimerScreen(
                     ) {
                         Countdown(
                             timerPreviewState,
-                            onUserActionIntent
+                            isCustomisedBackground = isCustomisedBackground,
+                            onUserActionIntent,
                         ) { onShowDatePicker() }
                     }
                 }
@@ -257,7 +250,8 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_roller_brush,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false
+                    enabled = false,
+                    isCustomisedBackground = isCustomisedBackground
                 ) {
                     onStyleChange()
                 }
@@ -266,7 +260,8 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_image_02,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false
+                    enabled = false,
+                    isCustomisedBackground = isCustomisedBackground
                 ) {
                     onBackgroundThemeChange()
                 }
@@ -277,7 +272,8 @@ private fun TimerScreen(
                         text = stringResource(R.string.value_default),
                         leadingIcon = R.drawable.property_1_flash,
                         trailingIcon = R.drawable.property_1_chevron_right,
-                        enabled = false
+                        enabled = false,
+                        isCustomisedBackground = isCustomisedBackground
                     ) {
                         onEndingAnimationChange()
                     }
@@ -297,12 +293,14 @@ private fun TimerScreen(
 @Composable
 fun Stopwatch(
     timerPreviewState: TimerPreviewState,
+    isCustomisedBackground: Boolean,
     onUserActionIntent: (TimerPreviewIntent) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.timerTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.stopwatch_title)
+            placeholder = stringResource(R.string.stopwatch_title),
+            isCustomisedBackground = isCustomisedBackground
         ) {
             onUserActionIntent(TimerPreviewIntent.OnStopwatchTitleChange(it))
         }
@@ -319,16 +317,19 @@ fun Stopwatch(
             TimeSelector(
                 time.hours,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.hours)
             )
             TimeSelector(
                 time.minutes,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.minutes)
             )
             TimeSelector(
                 time.seconds,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.seconds)
             )
         }
@@ -338,13 +339,15 @@ fun Stopwatch(
 @Composable
 private fun Countdown(
     timerPreviewState: TimerPreviewState,
+    isCustomisedBackground: Boolean,
     onUserActionIntent: (TimerPreviewIntent) -> Unit,
     onShowDatePicker: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.countdownTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.countdown_title)
+            placeholder = stringResource(R.string.countdown_title),
+            isCustomisedBackground = isCustomisedBackground
         ) {
             onUserActionIntent(TimerPreviewIntent.OnCountDownTitleChange(it))
         }
@@ -358,6 +361,7 @@ private fun Countdown(
                     time.days,
                     selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                     label = stringResource(R.string.days),
+                    isCustomisedBackground = isCustomisedBackground,
                     onIncrease = { onUserActionIntent(TimerPreviewIntent.OnDayIncrease) },
                     onDecrease = { onUserActionIntent(TimerPreviewIntent.OnDayDecrease) },
                 )
@@ -366,18 +370,21 @@ private fun Countdown(
                 time.hours,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.hours),
+                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnHourIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnHourDecrease) })
             TimeSelector(
                 time.minutes,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.minutes),
+                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesDecrease) })
             TimeSelector(
                 time.seconds,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.seconds),
+                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnSecondIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnSecondDecrease) })
         }
