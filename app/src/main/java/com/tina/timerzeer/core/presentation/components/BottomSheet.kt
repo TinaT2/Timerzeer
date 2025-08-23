@@ -23,10 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import com.tina.timerzeer.core.theme.SizeL
-import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXXL
-import com.tina.timerzeer.core.theme.SizeXXXL
+import com.tina.timerzeer.core.presentation.theme.SizeL
+import com.tina.timerzeer.core.presentation.theme.SizeXL
+import com.tina.timerzeer.core.presentation.theme.SizeXXL
+import com.tina.timerzeer.core.presentation.theme.SizeXXXL
 
 
 @OptIn(ExperimentalMaterial3Api::class)

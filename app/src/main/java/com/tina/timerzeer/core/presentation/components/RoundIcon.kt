@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.tina.timerzeer.core.theme.SizeM
-import com.tina.timerzeer.core.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.SizeM
+import com.tina.timerzeer.core.presentation.theme.SizeXS
 
 @Composable
 fun RoundIconOutlinedSmall(painterResource: Int, contentDescription: String,enabled: Boolean, onClick: () -> Unit) {

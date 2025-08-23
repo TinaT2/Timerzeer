@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
-import com.tina.timerzeer.core.theme.SizeM
-import com.tina.timerzeer.core.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.SizeM
+import com.tina.timerzeer.core.presentation.theme.SizeS
 
 @Composable
 fun TimeSelector(

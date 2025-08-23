@@ -3,7 +3,7 @@ package com.tina.timerzeer.core.presentation.components
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 
 @Composable
 fun ThemedPreview(content: @Composable () -> Unit) {

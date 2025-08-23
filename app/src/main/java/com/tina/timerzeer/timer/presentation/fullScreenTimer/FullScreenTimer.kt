@@ -2,7 +2,6 @@ package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
@@ -41,10 +39,10 @@ import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
-import com.tina.timerzeer.core.theme.SizeS
-import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.backgrounds
-import com.tina.timerzeer.core.theme.endingAnimations
+import com.tina.timerzeer.core.presentation.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.SizeXL
+import com.tina.timerzeer.core.presentation.theme.backgrounds
+import com.tina.timerzeer.core.presentation.theme.endingAnimations
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel.Companion.COUNTDOWN_DONE_DELAY_MS
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLoader

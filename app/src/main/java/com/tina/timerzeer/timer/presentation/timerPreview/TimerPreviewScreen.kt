@@ -1,8 +1,6 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -29,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,14 +43,13 @@ import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.components.TimerInputField
-import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
-import com.tina.timerzeer.core.theme.SizeS
-import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.core.theme.SizeXXXL
-import com.tina.timerzeer.core.theme.backgrounds
-import com.tina.timerzeer.core.theme.endingAnimations
-import com.tina.timerzeer.core.theme.fontStyles
+import com.tina.timerzeer.core.presentation.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.SizeXL
+import com.tina.timerzeer.core.presentation.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.SizeXXXL
+import com.tina.timerzeer.core.presentation.theme.backgrounds
+import com.tina.timerzeer.core.presentation.theme.endingAnimations
+import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector

@@ -23,9 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.util.startOfDayInMillis
-import com.tina.timerzeer.core.theme.SizeM
-import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXXL
+import com.tina.timerzeer.core.presentation.theme.SizeM
+import com.tina.timerzeer.core.presentation.theme.SizeXL
+import com.tina.timerzeer.core.presentation.theme.SizeXXL
 
 
 @OptIn(ExperimentalMaterial3Api::class)

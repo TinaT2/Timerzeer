@@ -25,10 +25,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
-import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
-import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.core.theme.SizeXXS
-import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
+import com.tina.timerzeer.core.presentation.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.SizeXXS
+import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 
 @Composable
 fun SegmentedTab(

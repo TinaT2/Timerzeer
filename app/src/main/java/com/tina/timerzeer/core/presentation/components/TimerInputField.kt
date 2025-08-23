@@ -28,13 +28,13 @@ import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerZeerError
 import com.tina.timerzeer.core.domain.UnknownError
-import com.tina.timerzeer.core.theme.MaxErrorCharacter
-import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
-import com.tina.timerzeer.core.theme.SizeS
-import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.core.theme.SizeXXS
-import com.tina.timerzeer.core.theme.TextSecondaryTransparent
-import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.core.presentation.theme.MaxErrorCharacter
+import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
+import com.tina.timerzeer.core.presentation.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.SizeXXS
+import com.tina.timerzeer.core.presentation.theme.TextSecondaryTransparent
+import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import kotlin.math.max
 
 @Composable
