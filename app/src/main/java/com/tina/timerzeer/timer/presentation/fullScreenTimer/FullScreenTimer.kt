@@ -84,7 +84,7 @@ fun TimerStarted(
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
-    val isCustomisedBackground = backgrounds[timerState.currentBackground] != null
+    val isCustomisedBackground = backgrounds()[timerState.currentBackground] != null
 
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone) {
@@ -93,18 +93,11 @@ fun TimerStarted(
         }
     }
 
-    val bgColor = backgrounds[timerState.currentBackground]?.let { Color.Transparent }
+    val bgColor = backgrounds()[timerState.currentBackground]?.let { Color.Transparent }
         ?: colorScheme.background
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgrounds[timerState.currentBackground]?.let {
-            Image(
-                painterResource(it),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        backgrounds()[timerState.currentBackground]?.invoke()
 
         Scaffold(
             modifier = Modifier

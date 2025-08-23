@@ -45,7 +45,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
                         )]?: endingAnimations.keys.first(),
                         currentBackground = settings[intPreferencesKey(
                             name = DataStoreFields.BACKGROUND.name
-                        )]?: backgrounds.keys.first(),
+                        )],
                         currentFontStyle = settings[intPreferencesKey(
                             name = DataStoreFields.FONT_STYLE.name
                         )]?: fontStyles.keys.first()

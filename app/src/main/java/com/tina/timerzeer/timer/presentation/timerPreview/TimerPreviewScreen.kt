@@ -58,6 +58,7 @@ import com.tina.timerzeer.core.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
+import kotlin.collections.get
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,18 +69,11 @@ fun TimerScreenRoot(
 ) {
     val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
     var uiOverlayIntent: UiOverlayIntent by remember { mutableStateOf(UiOverlayIntent.None) }
-    val bgColor = backgrounds[timerPreviewState.currentBackground]?.let { Color.Transparent }
+    val bgColor = backgrounds()[timerPreviewState.currentBackground]?.let { Color.Transparent }
         ?: colorScheme.background
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgrounds[timerPreviewState.currentBackground]?.let {
-            Image(
-                painterResource(it),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        backgrounds()[timerPreviewState.currentBackground]?.invoke()
 
         Scaffold(
             modifier = Modifier
@@ -122,9 +116,9 @@ private fun UIOverlays(
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
-                selected = state.currentBackground ?: backgrounds.keys.first(),
+                selected = state.currentBackground ?: backgrounds().keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
-                optionList = backgrounds.keys.toList(),
+                optionList = backgrounds().keys.toList(),
                 onDismiss = {
                     onDismiss()
                 }, onItemSelected = { backgroundId ->
@@ -186,7 +180,7 @@ private fun TimerScreen(
     onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
-    val isCustomisedBackground = backgrounds[timerPreviewState.currentBackground] != null
+    val isCustomisedBackground = backgrounds()[timerPreviewState.currentBackground] != null
     Box(
         modifier = Modifier
             .fillMaxSize()
