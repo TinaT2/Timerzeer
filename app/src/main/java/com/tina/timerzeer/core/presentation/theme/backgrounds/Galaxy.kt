@@ -1,4 +1,4 @@
-package com.tina.timerzeer.core.presentation.theme
+package com.tina.timerzeer.core.presentation.theme.backgrounds
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -26,7 +26,7 @@ val Galaxy: @Composable () -> Unit = {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF180027)) // dark background to see glass effect
+            .background(Color(0xFF180027))
     ) {
         // Circle 1
         Box(
