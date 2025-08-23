@@ -31,6 +31,7 @@ import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.theme.SizeM
 import com.tina.timerzeer.core.presentation.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.TextSecondary
 
 @Composable
 fun TimeSelector(
@@ -43,6 +44,7 @@ fun TimeSelector(
 ) {
 
     val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
+    val customizedTextColor = if(isCustomisedBackground) TextSecondary else colorScheme.onSecondary
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -69,7 +71,7 @@ fun TimeSelector(
         Text(
             text = label,
             modifier = Modifier.padding(top = SizeS),
-            color = colorScheme.onSecondary,
+            color = customizedTextColor,
             style = typography.labelLarge
         )
     }

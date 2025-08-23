@@ -22,7 +22,7 @@ val Galaxy: @Composable () -> Unit = {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val circleSize = 284.dp
-    val blurRadius = 300.dp
+    val blurRadius = 200.dp
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -28,6 +28,7 @@ import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.presentation.theme.SizeXS
 import com.tina.timerzeer.core.presentation.theme.SizeXXS
+import com.tina.timerzeer.core.presentation.theme.TextSecondary
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 
 @Composable
@@ -40,6 +41,7 @@ fun SegmentedTab(
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
     val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
+    val customizedTextColor = if(isCustomisedBackground) TextSecondary else MaterialTheme.colorScheme.onSecondary
 
     Row(
         modifier = Modifier
@@ -55,8 +57,7 @@ fun SegmentedTab(
         tabList.forEachIndexed { index, tab ->
             val isSelected = selected == index
             val bgColor = if (isSelected) colorScheme.primary else Color.Transparent
-            val textColor = if (isSelected) colorScheme.surface else colorScheme.onSecondary
-
+            val textColor = if (isSelected) colorScheme.surface else customizedTextColor
 
             Row(
                 modifier = Modifier

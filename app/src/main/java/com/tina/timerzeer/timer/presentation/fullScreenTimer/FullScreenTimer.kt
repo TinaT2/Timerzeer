@@ -248,7 +248,7 @@ fun TimerStarted(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CaptionTextField(stringResource(R.string.powered_by))
+                    CaptionTextField(stringResource(R.string.powered_by),isCustomisedBackground)
                     Icon(
                         painter = painterResource(R.drawable.timezeer),
                         modifier = Modifier.height(SizeS),

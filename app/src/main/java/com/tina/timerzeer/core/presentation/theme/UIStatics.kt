@@ -23,7 +23,7 @@ val backgroundToIsDark = linkedMapOf<Int, Boolean>(
     R.string.value_default to false,
     R.string.background_theme_dark to true,
     R.string.background_theme_galaxy to true,
-    R.string.background_theme_digital to false
+    R.string.background_theme_digital to true
 )
 
 val fontStyles = linkedMapOf(
