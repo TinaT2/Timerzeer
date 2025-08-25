@@ -245,8 +245,7 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_roller_brush,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false,
-                    isCustomisedBackground = isCustomisedBackground
+                    enabled = false
                 ) {
                     onStyleChange()
                 }
@@ -255,8 +254,7 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_image_02,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false,
-                    isCustomisedBackground = isCustomisedBackground
+                    enabled = false
                 ) {
                     onBackgroundThemeChange()
                 }
@@ -267,8 +265,7 @@ private fun TimerScreen(
                         text = stringResource(R.string.value_default),
                         leadingIcon = R.drawable.property_1_flash,
                         trailingIcon = R.drawable.property_1_chevron_right,
-                        enabled = false,
-                        isCustomisedBackground = isCustomisedBackground
+                        enabled = false
                     ) {
                         onEndingAnimationChange()
                     }
@@ -294,8 +291,7 @@ fun Stopwatch(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.timerTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.stopwatch_title),
-            isCustomisedBackground = isCustomisedBackground
+            placeholder = stringResource(R.string.stopwatch_title)
         ) {
             onUserActionIntent(TimerPreviewIntent.OnStopwatchTitleChange(it))
         }
@@ -341,8 +337,7 @@ private fun Countdown(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.countdownTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.countdown_title),
-            isCustomisedBackground = isCustomisedBackground
+            placeholder = stringResource(R.string.countdown_title)
         ) {
             onUserActionIntent(TimerPreviewIntent.OnCountDownTitleChange(it))
         }

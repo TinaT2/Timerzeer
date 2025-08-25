@@ -1,5 +1,7 @@
 package com.tina.timerzeer.core.presentation.theme
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // Light Theme Colors
@@ -22,3 +24,19 @@ val BgPrimaryDark = Color(0xFF132026)
 val TextPrimaryDark = Color(0xFFFFFFFF)
 val TextSecondaryDark = Color(0xFF3E555F)
 val ErrorDark = Color(0xFFD70004)
+
+
+@Immutable
+data class CustomColors(
+    val rowBackground: Color,
+    val textColorEnabled: Color,
+    val textColorDisabled: Color,
+)
+
+val LocalCustomColors = staticCompositionLocalOf {
+    CustomColors(
+        rowBackground = Color.Gray,
+        textColorEnabled = Color.Black,
+        textColorDisabled = Color.DarkGray,
+    )
+}
