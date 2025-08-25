@@ -10,11 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontFamily
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import com.tina.timerzeer.core.presentation.theme.backgroundToIsDark
+import com.tina.timerzeer.core.presentation.theme.fontManrope
+import com.tina.timerzeer.core.presentation.theme.fontStyles
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -24,13 +27,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settingsRepository: SettingsRepository by inject()
             var isThemeDark by remember { mutableStateOf<Boolean?>(null) }
+            var typography by remember { mutableStateOf<FontFamily?>(null) }
+
             LaunchedEffect(Unit) {
                 settingsRepository.settingsFlow.collect {
                     isThemeDark =
                         backgroundToIsDark[it[intPreferencesKey(DataStoreFields.BACKGROUND.name)]]
+                    typography = fontStyles[it[intPreferencesKey(DataStoreFields.FONT_STYLE.name)]]
                 }
             }
-            TimerzeerTheme(darkTheme = isThemeDark ?: isSystemInDarkTheme()) {
+            TimerzeerTheme(darkTheme = isThemeDark ?: isSystemInDarkTheme(), fontFamily = typography?: fontManrope) {
                 AppNavHost()
             }
         }

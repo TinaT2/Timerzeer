@@ -21,12 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.presentation.theme.SizeL
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.SizeXXL
 import com.tina.timerzeer.core.presentation.theme.SizeXXXL
+import com.tina.timerzeer.core.presentation.theme.fontStyles
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +37,7 @@ fun DefaultBottomSheet(
     leadingIcon: Int,
     selected: Int,
     optionList: List<Int>,
+    customListStyle: DataStoreFields? = null,
     onDismiss: () -> Unit,
     onItemSelected: (Int) -> Unit = {}
 ) {
@@ -63,17 +65,18 @@ fun DefaultBottomSheet(
             )
             Spacer(Modifier.height(SizeXL))
 
-            optionList.onEach {
-                if (it == selected) {
+            optionList.onEachIndexed { index, item ->
+                if (index != 0)
+                    BottomSheetDivider()
+                if (item == selected) {
                     DefaultStyleOption(
-                        it,
+                        item,
                         color = colorScheme.secondary,
+                        customListStyle = customListStyle,
                         onStyleSelected = onItemSelected
                     )
-                }
-                else {
-                    BottomSheetDivider()
-                    DefaultStyleOption(it, onStyleSelected = onItemSelected)
+                } else {
+                    DefaultStyleOption(item, customListStyle, onStyleSelected = onItemSelected)
                 }
             }
 
@@ -96,10 +99,15 @@ private fun BottomSheetDivider() {
 @Composable
 private fun DefaultStyleOption(
     nameId: Int,
-    fontFamily: FontFamily? = null,
+    customListStyle: DataStoreFields?,
     color: Color = colorScheme.onPrimary,
     onStyleSelected: (nameId: Int) -> Unit = {}
 ) {
+    val fontFamily = if (customListStyle == DataStoreFields.FONT_STYLE) fontStyles[nameId] else null
+    val style = fontFamily?.let {
+        typography.bodyMedium.copy(fontFamily = fontFamily)
+    } ?: typography.bodyMedium
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,7 +117,7 @@ private fun DefaultStyleOption(
     ) {
         Text(
             text = stringResource(nameId),
-            style = typography.bodyMedium.copy(fontFamily = fontFamily),
+            style = style,
             color = color
         )
     }

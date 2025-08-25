@@ -32,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
+import com.tina.timerzeer.core.data.dataStore.DATA_STORE_NAME
+import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
 import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
@@ -156,9 +158,13 @@ private fun UIOverlays(
                 selected = state.currentFontStyle ?: fontStyles.keys.first(),
                 leadingIcon = R.drawable.property_1_roller_brush,
                 optionList = fontStyles.keys.toList(),
+                customListStyle = DataStoreFields.FONT_STYLE,
                 onDismiss = {
                     onDismiss()
-                }, onItemSelected = {})
+                }, onItemSelected = {
+                    onUserAction(TimerPreviewIntent.SetStyle(it))
+                    onDismiss
+                })
         }
     }
 }
