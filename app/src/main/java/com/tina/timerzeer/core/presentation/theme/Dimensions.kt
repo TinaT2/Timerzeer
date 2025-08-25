@@ -1,4 +1,4 @@
-package com.tina.timerzeer.core.theme
+package com.tina.timerzeer.core.presentation.theme
 
 import androidx.compose.ui.unit.dp
 

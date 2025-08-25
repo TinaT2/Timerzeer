@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.tina.timerzeer.core.theme.SizeM
-import com.tina.timerzeer.core.theme.SizeS
-import com.tina.timerzeer.core.theme.SizeXXS
-import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.core.presentation.theme.SizeM
+import com.tina.timerzeer.core.presentation.theme.SizeS
+import com.tina.timerzeer.core.presentation.theme.SizeXXS
+import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 
 @Composable
 fun SplitButtonSelector(

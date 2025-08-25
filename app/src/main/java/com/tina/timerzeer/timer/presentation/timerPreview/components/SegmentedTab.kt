@@ -2,10 +2,12 @@ package com.tina.timerzeer.timer.presentation.timerPreview.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,27 +22,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
-import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
-import com.tina.timerzeer.core.theme.SizeXS
-import com.tina.timerzeer.core.theme.SizeXXS
-import com.tina.timerzeer.core.theme.TimerzeerTheme
+import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
+import com.tina.timerzeer.core.presentation.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.SizeXXS
+import com.tina.timerzeer.core.presentation.theme.TextSecondary
+import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 
 @Composable
-fun SegmentedTab(tabList: List<Pair<TimerMode, Int>>, selected: Int, onSelect: (Int) -> Unit) {
+fun SegmentedTab(
+    tabList: List<Pair<TimerMode, Int>>,
+    selected: Int,
+    isCustomisedBackground: Boolean,
+    onSelect: (Int) -> Unit
+) {
     val colorScheme = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
+    val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
+    val customizedTextColor = if(isCustomisedBackground) TextSecondary else MaterialTheme.colorScheme.onSecondary
 
     Row(
         modifier = Modifier
-            .background(colorScheme.background, shape = RoundedCornerShape(50))
-            .padding(SizeXS)
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                border,
+                shape = RoundedCornerShape(RoundedCornerShapeNumber)
+            )
+            .padding(SizeXS),
+        horizontalArrangement = Arrangement.Center
     ) {
         tabList.forEachIndexed { index, tab ->
             val isSelected = selected == index
             val bgColor = if (isSelected) colorScheme.primary else Color.Transparent
-            val textColor = if (isSelected) colorScheme.surface else colorScheme.onSecondary
+            val textColor = if (isSelected) colorScheme.surface else customizedTextColor
 
             Row(
                 modifier = Modifier
@@ -75,8 +92,19 @@ fun SegmentedTabPreview() {
         SegmentedTab(
             tabList = listOf(
                 (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
-                (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-            ), selected = 0, onSelect = {})
+                (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward),
+            ), selected = 0, isCustomisedBackground = false, onSelect = {})
+    }
+}
+@Preview
+@Composable
+fun SegmentedTabCustomizedBgPreview() {
+    TimerzeerTheme {
+        SegmentedTab(
+            tabList = listOf(
+                (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward),
+            ), selected = 0, isCustomisedBackground = true, onSelect = {})
     }
 }
 
@@ -88,7 +116,7 @@ fun SegmentedTabNightPreview() {
             tabList = listOf(
                 (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
                 (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-            ), selected = 0, onSelect = {})
+            ), selected = 0, isCustomisedBackground = false, onSelect = {})
     }
 }
 

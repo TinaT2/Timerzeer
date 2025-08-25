@@ -1,4 +1,4 @@
-package com.tina.timerzeer.core.theme
+package com.tina.timerzeer.core.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -10,6 +10,7 @@ val OnColorWhite = Color(0xFFFFFFFF)
 val BgPrimary = Color(0xFFFAFCFC)
 val TextPrimary = Color(0xFF1F3640)
 val TextSecondary = Color(0xFF8B979C)
+val TextSecondaryTransparent = Color(0x33F0F5F7)
 val Error = Color(0xFFD70004)
 
 // Dark Theme Colors

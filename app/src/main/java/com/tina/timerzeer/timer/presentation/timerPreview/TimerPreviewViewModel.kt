@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
-import com.tina.timerzeer.core.theme.backgrounds
-import com.tina.timerzeer.core.theme.endingAnimations
-import com.tina.timerzeer.core.theme.fontStyles
+import com.tina.timerzeer.core.presentation.theme.endingAnimations
+import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.minusDay
 import com.tina.timerzeer.timer.data.mapper.minusHour
 import com.tina.timerzeer.timer.data.mapper.minusMinute
@@ -42,7 +41,7 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
                         )]?: endingAnimations.keys.first(),
                         currentBackground = settings[intPreferencesKey(
                             name = DataStoreFields.BACKGROUND.name
-                        )]?: backgrounds.keys.first(),
+                        )],
                         currentFontStyle = settings[intPreferencesKey(
                             name = DataStoreFields.FONT_STYLE.name
                         )]?: fontStyles.keys.first()
@@ -114,7 +113,12 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
                 viewModelScope.launch {
                     settingsRepository.saveEndingAnimation(action.endingAnimation)
                 }
+            }
 
+            is TimerPreviewIntent.SetBackground -> {
+                viewModelScope.launch {
+                    settingsRepository.saveBackgroundTheme(action.backgroundId)
+                }
             }
         }
     }

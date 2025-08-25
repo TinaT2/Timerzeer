@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
-import com.tina.timerzeer.core.theme.RoundedCornerShapeNumber
-import com.tina.timerzeer.core.theme.SizeXS
+import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
+import com.tina.timerzeer.core.presentation.theme.SizeXS
 
 @Composable
 fun PrimaryButton(

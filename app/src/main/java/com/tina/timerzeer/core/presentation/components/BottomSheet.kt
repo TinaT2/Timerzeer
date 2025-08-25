@@ -23,11 +23,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import com.tina.timerzeer.R
-import com.tina.timerzeer.core.theme.SizeL
-import com.tina.timerzeer.core.theme.SizeXL
-import com.tina.timerzeer.core.theme.SizeXXL
-import com.tina.timerzeer.core.theme.SizeXXXL
+import com.tina.timerzeer.core.presentation.theme.SizeL
+import com.tina.timerzeer.core.presentation.theme.SizeXL
+import com.tina.timerzeer.core.presentation.theme.SizeXXL
+import com.tina.timerzeer.core.presentation.theme.SizeXXXL
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +37,7 @@ fun DefaultBottomSheet(
     selected: Int,
     optionList: List<Int>,
     onDismiss: () -> Unit,
-    onStyleSelected: (Int) -> Unit = {}
+    onItemSelected: (Int) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState()
 
@@ -69,12 +68,12 @@ fun DefaultBottomSheet(
                     DefaultStyleOption(
                         it,
                         color = colorScheme.secondary,
-                        onStyleSelected = onStyleSelected
+                        onStyleSelected = onItemSelected
                     )
                 }
                 else {
                     BottomSheetDivider()
-                    DefaultStyleOption(it, onStyleSelected = onStyleSelected)
+                    DefaultStyleOption(it, onStyleSelected = onItemSelected)
                 }
             }
 
