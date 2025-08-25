@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 
 val LightColorScheme = lightColorScheme(
     primary = Primary,
@@ -48,6 +49,7 @@ fun TimerzeerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    fontFamily: FontFamily = fontManrope,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -60,9 +62,12 @@ fun TimerzeerTheme(
         else -> LightColorScheme
     }
 
+    val typoGraphy = buildTypography(fontFamily)
+
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typoGraphy,
         content = content
     )
 }

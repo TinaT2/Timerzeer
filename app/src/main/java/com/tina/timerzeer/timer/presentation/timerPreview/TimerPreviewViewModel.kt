@@ -120,6 +120,12 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
                     settingsRepository.saveBackgroundTheme(action.backgroundId)
                 }
             }
+
+            is TimerPreviewIntent.SetStyle -> {
+                viewModelScope.launch {
+                    settingsRepository.saveFontStyle(action.styleId)
+                }
+            }
         }
     }
 

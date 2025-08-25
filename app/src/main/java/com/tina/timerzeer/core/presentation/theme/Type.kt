@@ -19,36 +19,45 @@ val fontManrope = FontFamily(
     Font(R.font.manrope_extralight, FontWeight.ExtraLight),
 )
 
+val fontPlayWrite = FontFamily(
+    Font(R.font.play_write_us_modern_regular, FontWeight.Normal)
+)
+
+val fontMinimal = FontFamily(Font(R.font.roboto_regular, FontWeight.Normal))
+
+val fontSaira = FontFamily(Font(R.font.saira_regular, FontWeight.Normal))
+
+
 // Set of Material typography styles to start with
-val Typography = Typography(
+fun buildTypography(fontFamily: FontFamily) = Typography(
     headlineLarge = TextStyle(
         fontSize = 42.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(700),
     ),
     headlineMedium = TextStyle(
         fontSize = 24.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(700),
     ),
     headlineSmall = TextStyle(
         fontSize = 20.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(600),
     ),
     bodyLarge = TextStyle(
         fontSize = 22.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(500),
     ),
     bodyMedium = TextStyle(
         fontSize = 16.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(500),
     ),
     labelLarge = TextStyle(
         fontSize = 12.sp,
-        fontFamily = fontManrope,
+        fontFamily = fontFamily,
         fontWeight = FontWeight(500),
     )
 )

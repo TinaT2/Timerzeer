@@ -27,7 +27,8 @@ val backgroundToIsDark = linkedMapOf<Int, Boolean>(
 )
 
 val fontStyles = linkedMapOf(
-    R.string.value_default to R.raw.firework,
-    R.string.ending_animation_Explosives to R.raw.firework,
-    R.string.ending_animation_fly_ribbons to R.raw.colorful,
+    R.string.value_default to fontManrope,
+    R.string.timerstyle_classic to fontPlayWrite,
+    R.string.timerstyle_minimal to fontMinimal,
+    R.string.timerstyle_digital to fontSaira,
 )
