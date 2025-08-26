@@ -9,8 +9,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 
 val LightColorScheme = lightColorScheme(
     primary = Primary,
@@ -40,8 +40,9 @@ fun TimerzeerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    fontFamily: FontFamily = fontManrope,
-    background: @Composable (() -> Unit)? = null,
+    fontId: Int? = null,
+    endingAnimationId: Int? = null,
+    backgroundId: Int? = null,
     content: @Composable (() -> Unit)
 ) {
     val colorScheme = when {
@@ -54,10 +55,11 @@ fun TimerzeerTheme(
         else -> LightColorScheme
     }
 
-    val isCustomized = background != null
+    val isCustomized = backgrounds()[backgroundId] != null
     val customColors = if (isCustomized) {
         CustomColors(
             rowBackground = TextSecondaryTransparent,
+            mainBackground = Color.Transparent,
             textColorEnabled = colorScheme.onPrimary,
             textColorDisabled = TextSecondary,
             border = MaterialTheme.colorScheme.surface
@@ -66,16 +68,24 @@ fun TimerzeerTheme(
         CustomColors(
             rowBackground = colorScheme.tertiary,
             textColorEnabled = colorScheme.onPrimary,
+            mainBackground = colorScheme.background,
             textColorDisabled = colorScheme.onSecondary,
             border = colorScheme.tertiary
         )
     }
 
-    val background = CustomComponents(backgroundComponent = background)
+    val customGraphicIds = CustomGraphicIds(
+        backgroundId = backgroundId,
+        fontId = fontId ?: DefaultLocalCustomGraphicIds.fontId,
+        endingAnimationId = endingAnimationId ?: DefaultLocalCustomGraphicIds.endingAnimationId
+    )
 
-    val typoGraphy = buildTypography(fontFamily)
+    val typoGraphy = buildTypography(fontStyles[fontId?: DefaultLocalCustomGraphicIds.fontId]?:fontManrope)
 
-    CompositionLocalProvider(LocalCustomColors provides customColors, LocalCustomComponents provides background) {
+    CompositionLocalProvider(
+        LocalCustomColors provides customColors,
+        LocalCustomGraphicIds provides customGraphicIds
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = typoGraphy,

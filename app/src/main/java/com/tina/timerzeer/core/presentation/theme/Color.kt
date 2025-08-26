@@ -26,36 +26,3 @@ val BgPrimaryDark = Color(0xFF132026)
 val TextPrimaryDark = Color(0xFFFFFFFF)
 val TextSecondaryDark = Color(0xFF3E555F)
 val ErrorDark = Color(0xFFD70004)
-
-
-@Immutable
-data class CustomColors(
-    val rowBackground: Color,
-    val textColorEnabled: Color,
-    val textColorDisabled: Color,
-    val border: Color
-)
-
-val LocalCustomColors = staticCompositionLocalOf {
-    CustomColors(
-        rowBackground = Color.Gray,
-        textColorEnabled = Color.Black,
-        textColorDisabled = Color.DarkGray,
-        border = Color.DarkGray,
-    )
-}
-
-@Immutable
-data class CustomComponents(
-    val backgroundComponent: @Composable (() -> Unit)?,
-//    val animation :Int,
-//    val font: FontFamily
-)
-
-val LocalCustomComponents = staticCompositionLocalOf {
-    CustomComponents(
-        backgroundComponent = null,
-//        animation = endingAnimations.values.first(),
-//        font = fontManrope
-    )
-}

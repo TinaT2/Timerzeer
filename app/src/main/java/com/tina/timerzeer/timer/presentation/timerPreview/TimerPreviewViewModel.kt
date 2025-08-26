@@ -30,27 +30,6 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
         _timerPreviewState
     private var timerJob: Job? = null
 
-
-    init {
-        viewModelScope.launch {
-            settingsRepository.settingsFlow.collectLatest { settings ->
-                _timerPreviewState.update {
-                    it.copy(
-                        currentAnimation = settings[intPreferencesKey(
-                            DataStoreFields.ENDING_ANIMATION.name
-                        )]?: endingAnimations.keys.first(),
-                        currentBackground = settings[intPreferencesKey(
-                            name = DataStoreFields.BACKGROUND.name
-                        )],
-                        currentFontStyle = settings[intPreferencesKey(
-                            name = DataStoreFields.FONT_STYLE.name
-                        )]?: fontStyles.keys.first()
-                    )
-                }
-            }
-        }
-    }
-
     fun onUserAction(action: TimerPreviewIntent) {
         when (action) {
             is TimerPreviewIntent.OnStopwatchTitleChange -> {

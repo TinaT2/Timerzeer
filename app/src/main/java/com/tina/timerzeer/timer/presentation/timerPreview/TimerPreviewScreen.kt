@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
-import com.tina.timerzeer.core.data.dataStore.DATA_STORE_NAME
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
@@ -45,6 +43,8 @@ import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.components.TimerInputField
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
+import com.tina.timerzeer.core.presentation.theme.LocalCustomGraphicIds
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.SizeXS
@@ -66,17 +66,17 @@ fun TimerScreenRoot(
 ) {
     val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
     var uiOverlayIntent: UiOverlayIntent by remember { mutableStateOf(UiOverlayIntent.None) }
-    val bgColor = backgrounds()[timerPreviewState.currentBackground]?.let { Color.Transparent }
-        ?: colorScheme.background
+    val customColors = LocalCustomColors.current
+    val customGraphicIds = LocalCustomGraphicIds.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgrounds()[timerPreviewState.currentBackground]?.invoke()
+        backgrounds()[customGraphicIds.backgroundId]?.invoke()
 
         Scaffold(
             modifier = Modifier
-                .background(bgColor)
+                .background(customColors.mainBackground)
                 .padding(top = SizeXL),
-            containerColor = bgColor
+            containerColor = customColors.mainBackground
         ) { paddingValues ->
             TimerScreen(
                 paddingValues,
@@ -109,11 +109,12 @@ private fun UIOverlays(
     onUserAction: (TimerPreviewIntent) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val customGraphicIds = LocalCustomGraphicIds.current
     when (uiOverlayIntent) {
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
-                selected = state.currentBackground ?: backgrounds().keys.first(),
+                selected = customGraphicIds.backgroundId?: backgrounds().keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
                 optionList = backgrounds().keys.toList(),
                 onDismiss = {
@@ -137,7 +138,7 @@ private fun UIOverlays(
         UiOverlayIntent.EndingAnimation -> {
             DefaultBottomSheet(
                 title = R.string.ending_animation,
-                selected = state.currentAnimation ?: endingAnimations.keys.first(),
+                selected = customGraphicIds.endingAnimationId,
                 leadingIcon = R.drawable.property_1_flash,
                 optionList = endingAnimations.keys.toList(),
                 onDismiss = {
@@ -155,7 +156,7 @@ private fun UIOverlays(
         UiOverlayIntent.TimerStyle -> {
             DefaultBottomSheet(
                 title = R.string.timer_style,
-                selected = state.currentFontStyle ?: fontStyles.keys.first(),
+                selected = customGraphicIds.fontId,
                 leadingIcon = R.drawable.property_1_roller_brush,
                 optionList = fontStyles.keys.toList(),
                 customListStyle = DataStoreFields.FONT_STYLE,

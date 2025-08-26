@@ -39,8 +39,7 @@ import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
-import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
-import com.tina.timerzeer.core.presentation.theme.LocalCustomComponents
+import com.tina.timerzeer.core.presentation.theme.LocalCustomGraphicIds
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.backgrounds
@@ -84,7 +83,8 @@ fun TimerStarted(
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
-    val backgroundComponent = LocalCustomComponents.current.backgroundComponent
+    val backgroundComponent = LocalCustomGraphicIds.current.backgroundId
+    val customGraphicIds = LocalCustomGraphicIds.current
 
 
     LaunchedEffect(timerState.isCountDownDone) {
@@ -98,7 +98,7 @@ fun TimerStarted(
         ?: colorScheme.background
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgroundComponent?.invoke()
+        backgrounds()[backgroundComponent]?.invoke()
 
         Scaffold(
             modifier = Modifier
@@ -131,7 +131,7 @@ fun TimerStarted(
                                 .align(Alignment.Center)
                                 .background(colorScheme.background.copy(alpha = 0.3f))
                                 .zIndex(2f),
-                            resId = endingAnimations[timerState.currentAnimation]
+                            resId = endingAnimations[customGraphicIds.endingAnimationId]
                                 ?: endingAnimations[R.string.value_default]!!
                         )
                     }
