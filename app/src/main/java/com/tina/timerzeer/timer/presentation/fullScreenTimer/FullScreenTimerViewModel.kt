@@ -1,21 +1,16 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
-import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
-import com.tina.timerzeer.core.presentation.theme.endingAnimations
-import com.tina.timerzeer.core.presentation.theme.fontStyles
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -82,7 +77,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
     private fun finishCountdown() {
         timerJob?.cancel()
         viewModelScope.launch {
-            _timerState.update { it.copy(isCountDownDone = true,  isRunning = false) }
+            _timerState.update { it.copy(isCountDownDone = true, isRunning = false) }
         }
     }
 

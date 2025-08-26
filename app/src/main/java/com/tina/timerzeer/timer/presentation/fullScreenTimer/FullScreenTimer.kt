@@ -26,12 +26,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.core.domain.util.LocalUtil
+import com.tina.timerzeer.core.domain.util.shareText
 import com.tina.timerzeer.core.presentation.components.CaptionTextField
 import com.tina.timerzeer.core.presentation.components.HeadlineMediumTextField
 import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
@@ -44,6 +48,7 @@ import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.backgrounds
 import com.tina.timerzeer.core.presentation.theme.endingAnimations
+import com.tina.timerzeer.timer.data.mapper.toDisplayString
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel.Companion.COUNTDOWN_DONE_DELAY_MS
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLoader
@@ -85,6 +90,7 @@ fun TimerStarted(
     var show: Boolean by remember { mutableStateOf(true) }
     val backgroundComponent = LocalCustomGraphicIds.current.backgroundId
     val customGraphicIds = LocalCustomGraphicIds.current
+    val context = LocalContext.current
 
 
     LaunchedEffect(timerState.isCountDownDone) {
@@ -224,7 +230,15 @@ fun TimerStarted(
                                 stringResource(R.string.share),
                                 enabled = timerState.elapsedTime != 0L
                             ) {
-                                //TODO()
+                                val shareText =
+                                    context.getString(
+                                        R.string.my_timer_state,
+                                        context.getString(timerState.mode.nameId)
+                                            .toLowerCase(LocalUtil.local),
+                                        timerState.elapsedTime.toTimeComponents().toDisplayString()
+                                    )
+
+                                context.shareText(shareText)
                             }
                         }
                     }

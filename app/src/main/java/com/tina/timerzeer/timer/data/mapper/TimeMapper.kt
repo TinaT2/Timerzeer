@@ -20,6 +20,16 @@ fun Long.toTimeComponents(): TimeComponents {
     return TimeComponents(days, hours, minutes, seconds)
 }
 
+fun TimeComponents.toDisplayString(): String {
+    return buildString {
+        if (days > 0) append("$days day${if (days > 1) "s" else ""}, ")
+        if (hours > 0) append("$hours hour${if (hours > 1) "s" else ""}, ")
+        if (minutes > 0) append("$minutes minute${if (minutes > 1) "s" else ""}, ")
+        append("$seconds second${if (seconds > 1) "s" else ""}")
+    }.trim().trimEnd(',')
+}
+
+
 fun Long.plusDay(): Long {
     return this + TimeUnit.DAYS.toMillis(1)
 }
