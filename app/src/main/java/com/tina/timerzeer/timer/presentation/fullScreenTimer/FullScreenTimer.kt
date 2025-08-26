@@ -39,6 +39,8 @@ import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
+import com.tina.timerzeer.core.presentation.theme.LocalCustomComponents
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.backgrounds
@@ -82,7 +84,8 @@ fun TimerStarted(
     onNavigateBack: () -> Unit
 ) {
     var show: Boolean by remember { mutableStateOf(true) }
-    val isCustomisedBackground = backgrounds()[timerState.currentBackground] != null
+    val backgroundComponent = LocalCustomComponents.current.backgroundComponent
+
 
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone) {
@@ -91,11 +94,11 @@ fun TimerStarted(
         }
     }
 
-    val bgColor = backgrounds()[timerState.currentBackground]?.let { Color.Transparent }
+    val bgColor = backgroundComponent?.let { Color.Transparent }
         ?: colorScheme.background
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgrounds()[timerState.currentBackground]?.invoke()
+        backgroundComponent?.invoke()
 
         Scaffold(
             modifier = Modifier
@@ -143,7 +146,6 @@ fun TimerStarted(
                             TimeSelector(
                                 time.days,
                                 selectable = false,
-                                isCustomisedBackground = isCustomisedBackground,
                                 label = stringResource(R.string.days)
                             )
                         }
@@ -151,7 +153,6 @@ fun TimerStarted(
                             TimeSelector(
                                 time.hours,
                                 selectable = false,
-                                isCustomisedBackground = isCustomisedBackground,
                                 label = stringResource(R.string.hours)
                             )
                         }
@@ -159,13 +160,11 @@ fun TimerStarted(
                         TimeSelector(
                             time.minutes,
                             selectable = false,
-                            isCustomisedBackground = isCustomisedBackground,
                             label = stringResource(R.string.minutes)
                         )
                         TimeSelector(
                             time.seconds,
                             selectable = false,
-                            isCustomisedBackground = isCustomisedBackground,
                             label = stringResource(R.string.seconds)
                         )
                     }
@@ -248,7 +247,7 @@ fun TimerStarted(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CaptionTextField(stringResource(R.string.powered_by),isCustomisedBackground)
+                    CaptionTextField(stringResource(R.string.powered_by))
                     Icon(
                         painter = painterResource(R.drawable.timezeer),
                         modifier = Modifier.height(SizeS),

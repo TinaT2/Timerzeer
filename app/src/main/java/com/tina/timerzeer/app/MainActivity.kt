@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     currentThemeId = it[intPreferencesKey(DataStoreFields.BACKGROUND.name)]
                 }
             }
-            TimerzeerTheme(darkTheme = isThemeDark ?: isSystemInDarkTheme(), fontFamily = typography?: fontManrope, isCustomisedBackground = backgrounds()[currentThemeId] != null) {
+            TimerzeerTheme(darkTheme = isThemeDark ?: isSystemInDarkTheme(), fontFamily = typography?: fontManrope, background = backgrounds()[currentThemeId]) {
                 AppNavHost()
             }
         }

@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
 import com.tina.timerzeer.core.presentation.theme.SizeM
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.TextSecondary
@@ -38,13 +39,11 @@ fun TimeSelector(
     value: Long,
     label: String,
     selectable: Boolean,
-    isCustomisedBackground:Boolean,
     onIncrease: () -> Unit = {},
     onDecrease: () -> Unit = {},
 ) {
 
-    val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
-    val customizedTextColor = if(isCustomisedBackground) TextSecondary else colorScheme.onSecondary
+    val customColors = LocalCustomColors.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -55,7 +54,7 @@ fun TimeSelector(
             modifier = Modifier
                 .padding(vertical = SizeS)
                 .widthIn(min = 90.dp)
-                .border(1.dp, border, shape = CircleShape)
+                .border(1.dp, customColors.border, shape = CircleShape)
                 ,
             contentAlignment = Alignment.Center
         ) {
@@ -71,7 +70,7 @@ fun TimeSelector(
         Text(
             text = label,
             modifier = Modifier.padding(top = SizeS),
-            color = customizedTextColor,
+            color = customColors.textColorDisabled,
             style = typography.labelLarge
         )
     }
@@ -114,7 +113,6 @@ fun TimeSelectorPreview() {
             value = 10,
             label = "Minutes",
             selectable = false,
-            isCustomisedBackground = false,
             onIncrease = {},
             onDecrease = {}
         )
@@ -128,7 +126,6 @@ fun TimeSelectorSelectablePreview() {
         TimeSelector(
             value = 10,
             label = "Minutes",
-            isCustomisedBackground = false,
             selectable = true,
             onIncrease = {},
             onDecrease = {}

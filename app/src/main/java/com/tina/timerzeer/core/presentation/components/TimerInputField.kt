@@ -37,7 +37,6 @@ import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXS
 import com.tina.timerzeer.core.presentation.theme.SizeXXS
 import com.tina.timerzeer.core.presentation.theme.TextSecondary
-import com.tina.timerzeer.core.presentation.theme.TextSecondaryTransparent
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import kotlin.math.max
 
@@ -141,9 +140,9 @@ fun HeadlineSmallTextField(textId: Int, modifier: Modifier = Modifier, leadingIc
 }
 
 @Composable
-fun CaptionTextField(text: String,isCustomisedBackground: Boolean) {
-    val customizedTextColor = if(isCustomisedBackground) TextSecondary else colorScheme.onSecondary
-    Text(text = text, style = typography.labelLarge, color = customizedTextColor)
+fun CaptionTextField(text: String) {
+    val customColors = LocalCustomColors.current
+    Text(text = text, style = typography.labelLarge, color = customColors.textColorDisabled)
 }
 
 @Composable

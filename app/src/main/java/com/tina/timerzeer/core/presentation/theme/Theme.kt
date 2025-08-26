@@ -41,8 +41,8 @@ fun TimerzeerTheme(
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     fontFamily: FontFamily = fontManrope,
-    isCustomisedBackground:Boolean = false,
-    content: @Composable () -> Unit
+    background: @Composable (() -> Unit)? = null,
+    content: @Composable (() -> Unit)
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -54,25 +54,28 @@ fun TimerzeerTheme(
         else -> LightColorScheme
     }
 
-
-    val customColors = if (isCustomisedBackground) {
+    val isCustomized = background != null
+    val customColors = if (isCustomized) {
         CustomColors(
             rowBackground = TextSecondaryTransparent,
             textColorEnabled = colorScheme.onPrimary,
-            textColorDisabled = TextSecondary
+            textColorDisabled = TextSecondary,
+            border = MaterialTheme.colorScheme.surface
         )
     } else {
         CustomColors(
             rowBackground = colorScheme.tertiary,
             textColorEnabled = colorScheme.onPrimary,
-            textColorDisabled = colorScheme.onSecondary
+            textColorDisabled = colorScheme.onSecondary,
+            border = colorScheme.tertiary
         )
     }
 
+    val background = CustomComponents(backgroundComponent = background)
 
     val typoGraphy = buildTypography(fontFamily)
 
-    CompositionLocalProvider(LocalCustomColors provides customColors){
+    CompositionLocalProvider(LocalCustomColors provides customColors, LocalCustomComponents provides background) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = typoGraphy,
