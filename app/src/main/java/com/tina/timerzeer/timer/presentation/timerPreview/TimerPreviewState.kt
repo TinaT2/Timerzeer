@@ -9,8 +9,5 @@ data class TimerPreviewState(
     val countdownTitle: String = "",
     val countDownInitTime: Long = 0L,
     val mode: TimerMode = TimerMode.STOPWATCH,
-    val errorMessage: TimerZeerError? = null,
-    val currentAnimation: Int? = null,
-    val currentBackground: Int? = null,
-    val currentFontStyle: Int? = null,
+    val errorMessage: TimerZeerError? = null
 )

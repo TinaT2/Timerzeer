@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
 import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.presentation.theme.SizeXS
 import com.tina.timerzeer.core.presentation.theme.SizeXXS
@@ -35,20 +38,16 @@ import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 fun SegmentedTab(
     tabList: List<Pair<TimerMode, Int>>,
     selected: Int,
-    isCustomisedBackground: Boolean,
     onSelect: (Int) -> Unit
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-    val border = if (isCustomisedBackground) colorScheme.surface else colorScheme.tertiary
-    val customizedTextColor = if(isCustomisedBackground) TextSecondary else MaterialTheme.colorScheme.onSecondary
+    val customColors = LocalCustomColors.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 1.dp,
-                border,
+                customColors.border,
                 shape = RoundedCornerShape(RoundedCornerShapeNumber)
             )
             .padding(SizeXS),
@@ -57,7 +56,7 @@ fun SegmentedTab(
         tabList.forEachIndexed { index, tab ->
             val isSelected = selected == index
             val bgColor = if (isSelected) colorScheme.primary else Color.Transparent
-            val textColor = if (isSelected) colorScheme.surface else customizedTextColor
+            val textColor = if (isSelected) colorScheme.surface else customColors.textColorDisabled
 
             Row(
                 modifier = Modifier
@@ -93,7 +92,7 @@ fun SegmentedTabPreview() {
             tabList = listOf(
                 (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
                 (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward),
-            ), selected = 0, isCustomisedBackground = false, onSelect = {})
+            ), selected = 0,  onSelect = {})
     }
 }
 @Preview
@@ -104,7 +103,7 @@ fun SegmentedTabCustomizedBgPreview() {
             tabList = listOf(
                 (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
                 (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward),
-            ), selected = 0, isCustomisedBackground = true, onSelect = {})
+            ), selected = 0, onSelect = {})
     }
 }
 
@@ -116,7 +115,7 @@ fun SegmentedTabNightPreview() {
             tabList = listOf(
                 (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
                 (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-            ), selected = 0, isCustomisedBackground = false, onSelect = {})
+            ), selected = 0, onSelect = {})
     }
 }
 

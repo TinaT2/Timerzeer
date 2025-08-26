@@ -34,26 +34,6 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
 
     private var timerJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-            repository.settingsFlow.collectLatest { settings ->
-                _timerState.update {
-                    it.copy(
-                        currentAnimation = settings[intPreferencesKey(
-                            DataStoreFields.ENDING_ANIMATION.name
-                        )]?: endingAnimations.keys.first(),
-                        currentBackground = settings[intPreferencesKey(
-                            name = DataStoreFields.BACKGROUND.name
-                        )],
-                        currentFontStyle = settings[intPreferencesKey(
-                            name = DataStoreFields.FONT_STYLE.name
-                        )]?: fontStyles.keys.first()
-                    )
-                }
-            }
-        }
-    }
-
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
             TimerFullScreenIntent.Start -> {

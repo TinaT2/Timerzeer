@@ -1,6 +1,10 @@
 package com.tina.timerzeer.core.presentation.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 
 // Light Theme Colors
 val Primary = Color(0xFF0096D7)

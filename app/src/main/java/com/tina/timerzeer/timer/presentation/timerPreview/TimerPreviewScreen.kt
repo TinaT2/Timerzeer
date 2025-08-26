@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tina.timerzeer.R
-import com.tina.timerzeer.core.data.dataStore.DATA_STORE_NAME
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.presentation.components.DefaultBottomSheet
@@ -45,6 +43,8 @@ import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.components.TimerInputField
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
+import com.tina.timerzeer.core.presentation.theme.LocalCustomGraphicIds
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
 import com.tina.timerzeer.core.presentation.theme.SizeXS
@@ -66,17 +66,17 @@ fun TimerScreenRoot(
 ) {
     val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
     var uiOverlayIntent: UiOverlayIntent by remember { mutableStateOf(UiOverlayIntent.None) }
-    val bgColor = backgrounds()[timerPreviewState.currentBackground]?.let { Color.Transparent }
-        ?: colorScheme.background
+    val customColors = LocalCustomColors.current
+    val customGraphicIds = LocalCustomGraphicIds.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        backgrounds()[timerPreviewState.currentBackground]?.invoke()
+        backgrounds()[customGraphicIds.backgroundId]?.invoke()
 
         Scaffold(
             modifier = Modifier
-                .background(bgColor)
+                .background(customColors.mainBackground)
                 .padding(top = SizeXL),
-            containerColor = bgColor
+            containerColor = customColors.mainBackground
         ) { paddingValues ->
             TimerScreen(
                 paddingValues,
@@ -109,11 +109,12 @@ private fun UIOverlays(
     onUserAction: (TimerPreviewIntent) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val customGraphicIds = LocalCustomGraphicIds.current
     when (uiOverlayIntent) {
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
-                selected = state.currentBackground ?: backgrounds().keys.first(),
+                selected = customGraphicIds.backgroundId?: backgrounds().keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
                 optionList = backgrounds().keys.toList(),
                 onDismiss = {
@@ -137,7 +138,7 @@ private fun UIOverlays(
         UiOverlayIntent.EndingAnimation -> {
             DefaultBottomSheet(
                 title = R.string.ending_animation,
-                selected = state.currentAnimation ?: endingAnimations.keys.first(),
+                selected = customGraphicIds.endingAnimationId,
                 leadingIcon = R.drawable.property_1_flash,
                 optionList = endingAnimations.keys.toList(),
                 onDismiss = {
@@ -155,7 +156,7 @@ private fun UIOverlays(
         UiOverlayIntent.TimerStyle -> {
             DefaultBottomSheet(
                 title = R.string.timer_style,
-                selected = state.currentFontStyle ?: fontStyles.keys.first(),
+                selected = customGraphicIds.fontId,
                 leadingIcon = R.drawable.property_1_roller_brush,
                 optionList = fontStyles.keys.toList(),
                 customListStyle = DataStoreFields.FONT_STYLE,
@@ -163,7 +164,7 @@ private fun UIOverlays(
                     onDismiss()
                 }, onItemSelected = {
                     onUserAction(TimerPreviewIntent.SetStyle(it))
-                    onDismiss
+                    onDismiss()
                 })
         }
     }
@@ -181,7 +182,6 @@ private fun TimerScreen(
     onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
-    val isCustomisedBackground = backgrounds()[timerPreviewState.currentBackground] != null
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -214,7 +214,6 @@ private fun TimerScreen(
                         (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
                         (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
                     ), selected = timerPreviewState.mode.ordinal,
-                    isCustomisedBackground = isCustomisedBackground,
                     onSelect = {
                         onUserActionIntent(TimerPreviewIntent.OnModeChange(TimerMode.entries[it]))
                     })
@@ -225,7 +224,7 @@ private fun TimerScreen(
                     SmoothSwitchTabFadeAnimatedVisibility(
                         timerPreviewState.mode == TimerMode.STOPWATCH,
                     ) {
-                        Stopwatch(timerPreviewState, isCustomisedBackground, onUserActionIntent)
+                        Stopwatch(timerPreviewState, onUserActionIntent)
                     }
 
                     SmoothSwitchTabFadeAnimatedVisibility(
@@ -233,7 +232,6 @@ private fun TimerScreen(
                     ) {
                         Countdown(
                             timerPreviewState,
-                            isCustomisedBackground = isCustomisedBackground,
                             onUserActionIntent,
                         ) { onShowDatePicker() }
                     }
@@ -245,8 +243,7 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_roller_brush,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false,
-                    isCustomisedBackground = isCustomisedBackground
+                    enabled = false
                 ) {
                     onStyleChange()
                 }
@@ -255,8 +252,7 @@ private fun TimerScreen(
                     text = stringResource(R.string.value_default),
                     leadingIcon = R.drawable.property_1_image_02,
                     trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false,
-                    isCustomisedBackground = isCustomisedBackground
+                    enabled = false
                 ) {
                     onBackgroundThemeChange()
                 }
@@ -267,8 +263,7 @@ private fun TimerScreen(
                         text = stringResource(R.string.value_default),
                         leadingIcon = R.drawable.property_1_flash,
                         trailingIcon = R.drawable.property_1_chevron_right,
-                        enabled = false,
-                        isCustomisedBackground = isCustomisedBackground
+                        enabled = false
                     ) {
                         onEndingAnimationChange()
                     }
@@ -288,14 +283,12 @@ private fun TimerScreen(
 @Composable
 fun Stopwatch(
     timerPreviewState: TimerPreviewState,
-    isCustomisedBackground: Boolean,
     onUserActionIntent: (TimerPreviewIntent) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.timerTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.stopwatch_title),
-            isCustomisedBackground = isCustomisedBackground
+            placeholder = stringResource(R.string.stopwatch_title)
         ) {
             onUserActionIntent(TimerPreviewIntent.OnStopwatchTitleChange(it))
         }
@@ -312,19 +305,16 @@ fun Stopwatch(
             TimeSelector(
                 time.hours,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.hours)
             )
             TimeSelector(
                 time.minutes,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.minutes)
             )
             TimeSelector(
                 time.seconds,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                isCustomisedBackground = isCustomisedBackground,
                 label = stringResource(R.string.seconds)
             )
         }
@@ -334,15 +324,13 @@ fun Stopwatch(
 @Composable
 private fun Countdown(
     timerPreviewState: TimerPreviewState,
-    isCustomisedBackground: Boolean,
     onUserActionIntent: (TimerPreviewIntent) -> Unit,
     onShowDatePicker: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.countdownTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.countdown_title),
-            isCustomisedBackground = isCustomisedBackground
+            placeholder = stringResource(R.string.countdown_title)
         ) {
             onUserActionIntent(TimerPreviewIntent.OnCountDownTitleChange(it))
         }
@@ -356,7 +344,6 @@ private fun Countdown(
                     time.days,
                     selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                     label = stringResource(R.string.days),
-                    isCustomisedBackground = isCustomisedBackground,
                     onIncrease = { onUserActionIntent(TimerPreviewIntent.OnDayIncrease) },
                     onDecrease = { onUserActionIntent(TimerPreviewIntent.OnDayDecrease) },
                 )
@@ -365,21 +352,18 @@ private fun Countdown(
                 time.hours,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.hours),
-                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnHourIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnHourDecrease) })
             TimeSelector(
                 time.minutes,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.minutes),
-                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesDecrease) })
             TimeSelector(
                 time.seconds,
                 selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
                 label = stringResource(R.string.seconds),
-                isCustomisedBackground = isCustomisedBackground,
                 onIncrease = { onUserActionIntent(TimerPreviewIntent.OnSecondIncrease) },
                 onDecrease = { onUserActionIntent(TimerPreviewIntent.OnSecondDecrease) })
         }
