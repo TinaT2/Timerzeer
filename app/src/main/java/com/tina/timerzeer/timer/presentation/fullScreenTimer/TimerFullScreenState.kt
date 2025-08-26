@@ -11,4 +11,7 @@ data class Timer(
     val isRunning: Boolean = false,
     val errorMessage: TimerZeerError? = null,
     val isCountDownDone: Boolean = false,
+    val hide: Boolean = false,
+    val lock: Boolean = false,
+    val iconAppear: Boolean = true
 )
