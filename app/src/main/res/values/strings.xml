@@ -35,4 +35,5 @@
     <string name="set_date">Set date</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="my_timer_state">⏱ My %1$s state: %2$s</string>
 </resources>
