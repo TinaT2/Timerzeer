@@ -38,7 +38,6 @@ import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
-import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
@@ -55,7 +54,6 @@ import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
-import kotlin.collections.get
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,7 +112,7 @@ private fun UIOverlays(
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
-                selected = customGraphicIds.backgroundId?: backgrounds().keys.first(),
+                selected = customGraphicIds.backgroundId ?: backgrounds().keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
                 optionList = backgrounds().keys.toList(),
                 onDismiss = {
@@ -221,16 +219,21 @@ private fun TimerScreen(
                 Spacer(modifier = Modifier.height(SizeXXXL))
 
                 Box {
-                    SmoothSwitchTabFadeAnimatedVisibility(
+                    SmoothFieldFadeAnimatedVisibility(
                         timerPreviewState.mode == TimerMode.STOPWATCH,
                     ) {
-                        Stopwatch(timerPreviewState, onUserActionIntent)
+                        Stopwatch(
+                            modifier = Modifier.align(Alignment.Center),
+                            timerPreviewState,
+                            onUserActionIntent
+                        )
                     }
 
-                    SmoothSwitchTabFadeAnimatedVisibility(
+                    SmoothFieldFadeAnimatedVisibility(
                         timerPreviewState.mode == TimerMode.COUNTDOWN,
                     ) {
                         Countdown(
+                            modifier = Modifier.align(Alignment.Center),
                             timerPreviewState,
                             onUserActionIntent,
                         ) { onShowDatePicker() }
@@ -282,10 +285,11 @@ private fun TimerScreen(
 
 @Composable
 fun Stopwatch(
+    modifier: Modifier,
     timerPreviewState: TimerPreviewState,
     onUserActionIntent: (TimerPreviewIntent) -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier,horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.timerTitle, error = timerPreviewState.errorMessage,
             placeholder = stringResource(R.string.stopwatch_title)
@@ -323,11 +327,12 @@ fun Stopwatch(
 
 @Composable
 private fun Countdown(
+    modifier: Modifier,
     timerPreviewState: TimerPreviewState,
     onUserActionIntent: (TimerPreviewIntent) -> Unit,
     onShowDatePicker: () -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier,horizontalAlignment = Alignment.CenterHorizontally) {
         TimerInputField(
             value = timerPreviewState.countdownTitle, error = timerPreviewState.errorMessage,
             placeholder = stringResource(R.string.countdown_title)

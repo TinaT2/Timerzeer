@@ -84,12 +84,8 @@ private fun ThemedArrowIcon(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(animationSpec = tween(durationMillis = 500)) + slideInVertically(
-            animationSpec = tween(durationMillis = 1000)
-        ) { it / 2 },
-        exit = fadeOut(animationSpec = tween(durationMillis = 500)) + slideOutVertically(
-            animationSpec = tween(durationMillis = 1000)
-        ) { it / 2 }
+        enter = slideInVertically(animationSpec = tween(durationMillis = 3000)) { it },
+        exit = slideOutVertically(animationSpec = tween(durationMillis = 3000)) { it }
     ) {
         IconButton(
             onClick = onIncrease,
