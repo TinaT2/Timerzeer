@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
+import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import com.tina.timerzeer.core.presentation.theme.backgroundToIsDark
 import org.koin.android.ext.android.inject
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
             var typography by remember { mutableStateOf<Int?>(null) }
             var currentThemeId by remember { mutableStateOf<Int?>(null) }
             var endingAnimation by remember { mutableStateOf<Int?>(null) }
+            var isLoaded by remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 settingsRepository.settingsFlow.collect {
@@ -35,15 +37,19 @@ class MainActivity : ComponentActivity() {
                     typography = it[intPreferencesKey(DataStoreFields.FONT_STYLE.name)]
                     currentThemeId = it[intPreferencesKey(DataStoreFields.BACKGROUND.name)]
                     endingAnimation = it[intPreferencesKey(DataStoreFields.ENDING_ANIMATION.name)]
+                    isLoaded = true
                 }
             }
-            TimerzeerTheme(
-                darkTheme = isThemeDark ?: isSystemInDarkTheme(),
-                fontId = typography,
-                backgroundId = currentThemeId,
-                endingAnimationId = endingAnimation
-            ) {
-                AppNavHost()
+
+            SmoothSwitchTabFadeAnimatedVisibility(isLoaded) {
+                TimerzeerTheme(
+                    darkTheme = isThemeDark ?: isSystemInDarkTheme(),
+                    fontId = typography,
+                    backgroundId = currentThemeId,
+                    endingAnimationId = endingAnimation
+                ) {
+                    AppNavHost()
+                }
             }
         }
     }
