@@ -41,6 +41,7 @@ import com.tina.timerzeer.core.presentation.components.RoundIconFilledMedium
 import com.tina.timerzeer.core.presentation.components.RoundIconOutlinedSmall
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
+import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
 import com.tina.timerzeer.core.presentation.theme.LocalCustomGraphicIds
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXL
@@ -85,8 +86,8 @@ fun TimerStarted(
     onTimerIntent: (TimerFullScreenIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    val backgroundComponent = LocalCustomGraphicIds.current.backgroundId
     val customGraphicIds = LocalCustomGraphicIds.current
+    val customColors = LocalCustomColors.current
     val context = LocalContext.current
 
     LaunchedEffect(timerState.isCountDownDone) {
@@ -96,9 +97,6 @@ fun TimerStarted(
         }
     }
 
-    val bgColor = backgroundComponent?.let { Color.Transparent }
-        ?: colorScheme.background
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -106,13 +104,13 @@ fun TimerStarted(
                 onTimerIntent(TimerFullScreenIntent.IconAppear)
             }) {
 
-        backgrounds()[backgroundComponent]?.invoke()
+        backgrounds()[customGraphicIds.backgroundId]?.invoke()
 
         Scaffold(
             modifier = Modifier
-                .background(bgColor)
+                .background(customColors.mainBackground)
                 .padding(top = SizeXL),
-            containerColor = bgColor
+            containerColor = customColors.mainBackground
         ) { paddingValues ->
             Column(
                 modifier = Modifier
