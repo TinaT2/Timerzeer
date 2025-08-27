@@ -16,7 +16,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
-class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: SettingsRepository) :
+class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) :
     ViewModel() {
 
     companion object {
@@ -26,6 +26,7 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
     val args = savedStateHandle.toRoute<Route.TimerFullScreen>()
     private val _timerState = MutableStateFlow(Timer(title = args.title, mode = args.mode))
     val timerState: StateFlow<Timer> = _timerState
+    var appearJob: Job? = null
 
     private var timerJob: Job? = null
 
@@ -69,6 +70,34 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle, repository: S
                     if (_timerState.value.elapsedTime == 0L) {
                         finishCountdown()
                     }
+                }
+            }
+
+            TimerFullScreenIntent.Hide -> {
+                viewModelScope.launch {
+                    _timerState.update { it.copy(hide = !_timerState.value.hide) }
+                    if(timerState.value.hide) {
+                        delay(3000)
+                        _timerState.update { it.copy(iconAppear = false) }
+                    }
+                }
+            }
+
+            TimerFullScreenIntent.Lock -> {
+                viewModelScope.launch {
+                    _timerState.update { it.copy(lock = !_timerState.value.lock) }
+                    if(timerState.value.lock) {
+                        delay(3000)
+                        _timerState.update { it.copy(iconAppear = false) }
+                    }
+                }
+            }
+            TimerFullScreenIntent.IconAppear -> {
+                appearJob?.cancel()
+                _timerState.update { it.copy(iconAppear = true) }
+                appearJob = viewModelScope.launch {
+                    delay(4000)
+                    _timerState.update { it.copy(iconAppear = false) }
                 }
             }
         }

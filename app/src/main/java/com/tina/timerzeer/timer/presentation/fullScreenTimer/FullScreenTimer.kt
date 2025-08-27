@@ -1,8 +1,10 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,11 +85,9 @@ fun TimerStarted(
     onTimerIntent: (TimerFullScreenIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    var show: Boolean by remember { mutableStateOf(true) }
     val backgroundComponent = LocalCustomGraphicIds.current.backgroundId
     val customGraphicIds = LocalCustomGraphicIds.current
     val context = LocalContext.current
-
 
     LaunchedEffect(timerState.isCountDownDone) {
         if (timerState.isCountDownDone) {
@@ -103,7 +99,13 @@ fun TimerStarted(
     val bgColor = backgroundComponent?.let { Color.Transparent }
         ?: colorScheme.background
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable {
+                onTimerIntent(TimerFullScreenIntent.IconAppear)
+            }) {
+
         backgrounds()[backgroundComponent]?.invoke()
 
         Scaffold(
@@ -181,14 +183,15 @@ fun TimerStarted(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.weight(2f)
                 ) {
-                    SmoothFieldFadeAnimatedVisibility(visible = show) {
+                    SmoothFieldFadeAnimatedVisibility(visible = !timerState.hide && !timerState.lock) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_eye_off,
                                 stringResource(R.string.hide_ui),
                                 enabled = timerState.elapsedTime != 0L
                             ) {
-                                show = false
+                                onTimerIntent(TimerFullScreenIntent.IconAppear)
+                                onTimerIntent(TimerFullScreenIntent.Hide)
                             }
                             Spacer(Modifier.width(SizeXL))
                             RoundIconOutlinedSmall(
@@ -222,7 +225,8 @@ fun TimerStarted(
                                 stringResource(R.string.lock),
                                 enabled = timerState.elapsedTime != 0L
                             ) {
-                                //TODO
+                                onTimerIntent(TimerFullScreenIntent.IconAppear)
+                                onTimerIntent(TimerFullScreenIntent.Lock)
                             }
                             Spacer(Modifier.width(SizeXL))
                             RoundIconOutlinedSmall(
@@ -243,14 +247,34 @@ fun TimerStarted(
                         }
                     }
 
-                    SmoothFieldFadeAnimatedVisibility(visible = !show) {
+                    SmoothFieldFadeAnimatedVisibility(visible = timerState.hide && timerState.iconAppear) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_eye,
                                 stringResource(R.string.show_ui),
                                 enabled = timerState.elapsedTime != 0L
                             ) {
-                                show = true
+                                onTimerIntent(TimerFullScreenIntent.Hide)
+                            }
+                        }
+                    }
+
+                    SmoothFieldFadeAnimatedVisibility(visible = timerState.lock && timerState.iconAppear) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RoundIconOutlinedSmall(
+                                R.drawable.property_1_lock_unlocked_01,
+                                stringResource(R.string.show_ui),
+                                enabled = timerState.elapsedTime != 0L,
+                                onLongPress3Second = {
+                                    onTimerIntent(TimerFullScreenIntent.Lock)
+                                }
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.hold_for_3_seconds),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                onTimerIntent(TimerFullScreenIntent.IconAppear)
                             }
                         }
                     }

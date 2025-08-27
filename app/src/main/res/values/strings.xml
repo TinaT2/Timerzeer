@@ -36,4 +36,5 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="my_timer_state">⏱ My %1$s state: %2$s</string>
+    <string name="hold_for_3_seconds">Hold for 3 seconds</string>
 </resources>
