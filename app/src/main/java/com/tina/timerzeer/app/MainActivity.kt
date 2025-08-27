@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
-import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
+import com.tina.timerzeer.core.presentation.components.SmoothStartUpAnimation
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import com.tina.timerzeer.core.presentation.theme.backgroundToIsDark
 import org.koin.android.ext.android.inject
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            SmoothSwitchTabFadeAnimatedVisibility(isLoaded) {
+            SmoothStartUpAnimation(isLoaded) {
                 TimerzeerTheme(
                     darkTheme = isThemeDark ?: isSystemInDarkTheme(),
                     fontId = typography,

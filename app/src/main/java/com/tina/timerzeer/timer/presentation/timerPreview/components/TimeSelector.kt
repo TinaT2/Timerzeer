@@ -1,6 +1,7 @@
 package com.tina.timerzeer.timer.presentation.timerPreview.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +11,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +26,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,7 +36,7 @@ import com.tina.timerzeer.core.presentation.components.ThemedPreview
 import com.tina.timerzeer.core.presentation.theme.LocalCustomColors
 import com.tina.timerzeer.core.presentation.theme.SizeM
 import com.tina.timerzeer.core.presentation.theme.SizeS
-import com.tina.timerzeer.core.presentation.theme.TextSecondary
+import com.tina.timerzeer.core.presentation.theme.SizeXXXL
 
 @Composable
 fun TimeSelector(
@@ -42,20 +46,33 @@ fun TimeSelector(
     onIncrease: () -> Unit = {},
     onDecrease: () -> Unit = {},
 ) {
-
     val customColors = LocalCustomColors.current
+    val space by animateDpAsState(
+        targetValue = if (!selectable) SizeXXXL else 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "paddingAnimation"
+    )
+
+    val spaceBottom by animateDpAsState(
+        targetValue = if (selectable) 48.dp else 0.dp,
+        animationSpec = tween(durationMillis = 2000),
+        label = "paddingAnimation"
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ThemedArrowIcon(Icons.Default.KeyboardArrowUp, visible = selectable, onIncrease)
+        Box {
+            ThemedArrowIcon(Icons.Default.KeyboardArrowUp, visible = selectable, onIncrease)
+            Spacer(modifier = Modifier.height(space))
+        }
+
 
         Box(
             modifier = Modifier
                 .padding(vertical = SizeS)
                 .widthIn(min = 90.dp)
-                .border(1.dp, customColors.border, shape = CircleShape)
-                ,
+                .border(1.dp, customColors.border, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -65,7 +82,10 @@ fun TimeSelector(
                 modifier = Modifier.padding(horizontal = SizeM, vertical = SizeS)
             )
         }
-        ThemedArrowIcon(Icons.Default.KeyboardArrowDown, visible = selectable) { onDecrease() }
+        Box {
+            ThemedArrowIcon(Icons.Default.KeyboardArrowDown, visible = selectable) { onDecrease() }
+            Spacer(modifier = Modifier.height(spaceBottom))
+        }
 
         Text(
             text = label,
@@ -73,6 +93,7 @@ fun TimeSelector(
             color = customColors.textColorDisabled,
             style = typography.labelLarge
         )
+        Spacer(modifier = Modifier.height(space))
     }
 }
 
@@ -85,10 +106,10 @@ private fun ThemedArrowIcon(
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(durationMillis = 500)) + slideInVertically(
-            animationSpec = tween(durationMillis = 1000)
+            animationSpec = tween(durationMillis = 500)
         ) { it / 2 },
         exit = fadeOut(animationSpec = tween(durationMillis = 500)) + slideOutVertically(
-            animationSpec = tween(durationMillis = 1000)
+            animationSpec = tween(durationMillis = 500)
         ) { it / 2 }
     ) {
         IconButton(
