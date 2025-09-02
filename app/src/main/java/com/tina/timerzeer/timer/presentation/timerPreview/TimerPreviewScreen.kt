@@ -1,5 +1,7 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +40,6 @@ import com.tina.timerzeer.core.presentation.components.LightDarkPreviews
 import com.tina.timerzeer.core.presentation.components.OutlinedPrimaryButton
 import com.tina.timerzeer.core.presentation.components.PrimaryButton
 import com.tina.timerzeer.core.presentation.components.SmoothFieldFadeAnimatedVisibility
-import com.tina.timerzeer.core.presentation.components.SmoothSwitchTabFadeAnimatedVisibility
 import com.tina.timerzeer.core.presentation.components.StyledDatePicker
 import com.tina.timerzeer.core.presentation.components.TextOptionButton
 import com.tina.timerzeer.core.presentation.components.ThemedPreview
@@ -55,7 +56,6 @@ import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
-import kotlin.collections.get
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,7 +114,7 @@ private fun UIOverlays(
         UiOverlayIntent.BackgroundTheme -> {
             DefaultBottomSheet(
                 title = R.string.background_theme,
-                selected = customGraphicIds.backgroundId?: backgrounds().keys.first(),
+                selected = customGraphicIds.backgroundId ?: backgrounds().keys.first(),
                 leadingIcon = R.drawable.property_1_image_02,
                 optionList = backgrounds().keys.toList(),
                 onDismiss = {
@@ -182,6 +182,7 @@ private fun TimerScreen(
     onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,77 +200,121 @@ private fun TimerScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                Icon(
-                    painter = painterResource(R.drawable.timezeer),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentDescription = stringResource(
-                        R.string.titleIcon
-                    ),
-                    tint = Color.Unspecified
-                )
-                Spacer(modifier = Modifier.height(SizeXXXL))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        painter = painterResource(R.drawable.timezeer),
+                        modifier = Modifier.fillMaxWidth(),
+                        contentDescription = stringResource(
+                            R.string.titleIcon
+                        ),
+                        tint = Color.Unspecified
+                    )
+                    Spacer(modifier = Modifier.height(SizeXXXL))
 
-                SegmentedTab(
-                    listOf(
-                        (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
-                        (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
-                    ), selected = timerPreviewState.mode.ordinal,
-                    onSelect = {
-                        onUserActionIntent(TimerPreviewIntent.OnModeChange(TimerMode.entries[it]))
-                    })
+                    SegmentedTab(
+                        listOf(
+                            (TimerMode.STOPWATCH to R.drawable.property_1_clock_stopwatch),
+                            (TimerMode.COUNTDOWN to R.drawable.property_1_clock_fast_forward)
+                        ), selected = timerPreviewState.mode.ordinal,
+                        onSelect = {
+                            onUserActionIntent(TimerPreviewIntent.OnModeChange(TimerMode.entries[it]))
+                        })
 
-                Spacer(modifier = Modifier.height(SizeXXXL))
+                    Spacer(modifier = Modifier.height(SizeXXXL))
 
-                Box {
-                    SmoothSwitchTabFadeAnimatedVisibility(
-                        timerPreviewState.mode == TimerMode.STOPWATCH,
+                    TimerInputField(
+                        value = timerPreviewState.getTitle(),
+                        error = timerPreviewState.errorMessage,
+                        placeholder = stringResource(timerPreviewState.getPlaceHolder())
                     ) {
-                        Stopwatch(timerPreviewState, onUserActionIntent)
+                        onUserActionIntent(timerPreviewState.getOnTitleChange(it))
                     }
 
-                    SmoothSwitchTabFadeAnimatedVisibility(
-                        timerPreviewState.mode == TimerMode.COUNTDOWN,
+                    Spacer(Modifier.height(SizeXL))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Countdown(
-                            timerPreviewState,
-                            onUserActionIntent,
-                        ) { onShowDatePicker() }
+                        val time =
+                            if (timerPreviewState.mode == TimerMode.STOPWATCH) 0L.toTimeComponents() else timerPreviewState.countDownInitTime.toTimeComponents()
+                        SmoothFieldFadeAnimatedVisibility(time.days > 0) {
+                            TimeSelector(
+                                time.days,
+                                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                                label = stringResource(R.string.days),
+                                onIncrease = { onUserActionIntent(TimerPreviewIntent.OnDayIncrease) },
+                                onDecrease = { onUserActionIntent(TimerPreviewIntent.OnDayDecrease) },
+                            )
+                        }
+
+                        TimeSelector(
+                            time.hours,
+                            selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                            label = stringResource(R.string.hours),
+                            onIncrease = { onUserActionIntent(TimerPreviewIntent.OnHourIncrease) },
+                            onDecrease = { onUserActionIntent(TimerPreviewIntent.OnHourDecrease) })
+                        TimeSelector(
+                            time.minutes,
+                            selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                            label = stringResource(R.string.minutes),
+                            onIncrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesIncrease) },
+                            onDecrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesDecrease) })
+                        TimeSelector(
+                            time.seconds,
+                            selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
+                            label = stringResource(R.string.seconds),
+                            onIncrease = { onUserActionIntent(TimerPreviewIntent.OnSecondIncrease) },
+                            onDecrease = { onUserActionIntent(TimerPreviewIntent.OnSecondDecrease) })
                     }
-                }
 
-                Spacer(Modifier.height(SizeXXXL))
+                    SmoothFieldFadeAnimatedVisibility(timerPreviewState.mode == TimerMode.COUNTDOWN) {
+                        Column {
+                            Spacer(Modifier.height(SizeXL))
 
-                TextOptionButton(
-                    text = stringResource(R.string.value_default),
-                    leadingIcon = R.drawable.property_1_roller_brush,
-                    trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false
-                ) {
-                    onStyleChange()
-                }
-                Spacer(Modifier.height(SizeXS))
-                TextOptionButton(
-                    text = stringResource(R.string.value_default),
-                    leadingIcon = R.drawable.property_1_image_02,
-                    trailingIcon = R.drawable.property_1_chevron_right,
-                    enabled = false
-                ) {
-                    onBackgroundThemeChange()
-                }
-                Spacer(Modifier.height(SizeXS))
+                            OutlinedPrimaryButton(
+                                text = "Set by date",
+                                leadingIcon = R.drawable.property_1_calendar
+                            ) {
+                                onShowDatePicker()
+                            }
+                        }
+                    }
 
-                SmoothFieldFadeAnimatedVisibility(timerPreviewState.mode == TimerMode.COUNTDOWN) {
+                    Spacer(Modifier.height(SizeXXXL))
+
                     TextOptionButton(
                         text = stringResource(R.string.value_default),
-                        leadingIcon = R.drawable.property_1_flash,
+                        leadingIcon = R.drawable.property_1_roller_brush,
                         trailingIcon = R.drawable.property_1_chevron_right,
                         enabled = false
                     ) {
-                        onEndingAnimationChange()
+                        onStyleChange()
                     }
-                }
+                    Spacer(Modifier.height(SizeXS))
+                    TextOptionButton(
+                        text = stringResource(R.string.value_default),
+                        leadingIcon = R.drawable.property_1_image_02,
+                        trailingIcon = R.drawable.property_1_chevron_right,
+                        enabled = false
+                    ) {
+                        onBackgroundThemeChange()
+                    }
+                    Spacer(Modifier.height(SizeXS))
 
-                Spacer(Modifier.height(100.dp))
+                    SmoothFieldFadeAnimatedVisibility(timerPreviewState.mode == TimerMode.COUNTDOWN) {
+                        TextOptionButton(
+                            text = stringResource(R.string.value_default),
+                            leadingIcon = R.drawable.property_1_flash,
+                            trailingIcon = R.drawable.property_1_chevron_right,
+                            enabled = false
+                        ) {
+                            onEndingAnimationChange()
+                        }
+                    }
+
+                    Spacer(Modifier.height(100.dp))
+                }
             }
         }
         PrimaryButton(
@@ -280,102 +325,6 @@ private fun TimerScreen(
     }
 }
 
-@Composable
-fun Stopwatch(
-    timerPreviewState: TimerPreviewState,
-    onUserActionIntent: (TimerPreviewIntent) -> Unit
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        TimerInputField(
-            value = timerPreviewState.timerTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.stopwatch_title)
-        ) {
-            onUserActionIntent(TimerPreviewIntent.OnStopwatchTitleChange(it))
-        }
-
-        Spacer(Modifier.height(SizeXL))
-
-        Row(
-            modifier = Modifier
-                .padding(vertical = SizeXXXL)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            val time = 0L.toTimeComponents()
-            TimeSelector(
-                time.hours,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.hours)
-            )
-            TimeSelector(
-                time.minutes,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.minutes)
-            )
-            TimeSelector(
-                time.seconds,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.seconds)
-            )
-        }
-    }
-}
-
-@Composable
-private fun Countdown(
-    timerPreviewState: TimerPreviewState,
-    onUserActionIntent: (TimerPreviewIntent) -> Unit,
-    onShowDatePicker: () -> Unit
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        TimerInputField(
-            value = timerPreviewState.countdownTitle, error = timerPreviewState.errorMessage,
-            placeholder = stringResource(R.string.countdown_title)
-        ) {
-            onUserActionIntent(TimerPreviewIntent.OnCountDownTitleChange(it))
-        }
-
-        Spacer(Modifier.height(SizeXL))
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            val time = timerPreviewState.countDownInitTime.toTimeComponents()
-            SmoothFieldFadeAnimatedVisibility(time.days > 0) {
-                TimeSelector(
-                    time.days,
-                    selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                    label = stringResource(R.string.days),
-                    onIncrease = { onUserActionIntent(TimerPreviewIntent.OnDayIncrease) },
-                    onDecrease = { onUserActionIntent(TimerPreviewIntent.OnDayDecrease) },
-                )
-            }
-            TimeSelector(
-                time.hours,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.hours),
-                onIncrease = { onUserActionIntent(TimerPreviewIntent.OnHourIncrease) },
-                onDecrease = { onUserActionIntent(TimerPreviewIntent.OnHourDecrease) })
-            TimeSelector(
-                time.minutes,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.minutes),
-                onIncrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesIncrease) },
-                onDecrease = { onUserActionIntent(TimerPreviewIntent.OnMinutesDecrease) })
-            TimeSelector(
-                time.seconds,
-                selectable = timerPreviewState.mode == TimerMode.COUNTDOWN,
-                label = stringResource(R.string.seconds),
-                onIncrease = { onUserActionIntent(TimerPreviewIntent.OnSecondIncrease) },
-                onDecrease = { onUserActionIntent(TimerPreviewIntent.OnSecondDecrease) })
-        }
-        Spacer(Modifier.height(SizeXL))
-
-        OutlinedPrimaryButton(text = "Set by date", leadingIcon = R.drawable.property_1_calendar) {
-            onShowDatePicker()
-        }
-
-    }
-}
-
 @LightDarkPreviews
 @Composable
 private fun StopwatchScreenPreview() {
@@ -383,7 +332,7 @@ private fun StopwatchScreenPreview() {
         TimerScreen(
             paddingValues = PaddingValues(),
             timerPreviewState = TimerPreviewState(
-                timerTitle = "Work Session",
+                stopwatchTitle = "Work Session",
                 mode = TimerMode.STOPWATCH,
                 countDownInitTime = 3661000L,
                 errorMessage = null
@@ -401,7 +350,7 @@ private fun CountdownScreenPreview() {
         TimerScreen(
             paddingValues = PaddingValues(),
             timerPreviewState = TimerPreviewState(
-                timerTitle = "Work Session",
+                stopwatchTitle = "Work Session",
                 mode = TimerMode.COUNTDOWN,
                 countDownInitTime = 3661000L,
                 errorMessage = null

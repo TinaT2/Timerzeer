@@ -58,7 +58,7 @@ fun AppNavHost() {
                         Route.TimerFullScreen(
                             userActionState.mode,
                             if (userActionState.mode == TimerMode.STOPWATCH)
-                                userActionState.timerTitle
+                                userActionState.stopwatchTitle
                             else userActionState.countdownTitle,
                             userActionState.countDownInitTime
                         )

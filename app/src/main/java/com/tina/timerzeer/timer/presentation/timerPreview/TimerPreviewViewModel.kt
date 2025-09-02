@@ -1,12 +1,8 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tina.timerzeer.core.data.dataStore.DataStoreFields
 import com.tina.timerzeer.core.data.repository.SettingsRepository
-import com.tina.timerzeer.core.presentation.theme.endingAnimations
-import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.minusDay
 import com.tina.timerzeer.timer.data.mapper.minusHour
 import com.tina.timerzeer.timer.data.mapper.minusMinute
@@ -18,7 +14,6 @@ import com.tina.timerzeer.timer.data.mapper.plusSecond
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -34,7 +29,7 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
         when (action) {
             is TimerPreviewIntent.OnStopwatchTitleChange -> {
                 _timerPreviewState.update {
-                    it.copy(timerTitle = action.name)
+                    it.copy(stopwatchTitle = action.name)
                 }
             }
 

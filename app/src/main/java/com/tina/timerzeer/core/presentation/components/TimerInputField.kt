@@ -36,7 +36,6 @@ import com.tina.timerzeer.core.presentation.theme.RoundedCornerShapeNumber
 import com.tina.timerzeer.core.presentation.theme.SizeS
 import com.tina.timerzeer.core.presentation.theme.SizeXS
 import com.tina.timerzeer.core.presentation.theme.SizeXXS
-import com.tina.timerzeer.core.presentation.theme.TextSecondary
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import kotlin.math.max
 
@@ -60,12 +59,14 @@ fun TimerInputField(
             value = value,
             onValueChange = onValueChange,
             placeholder = {
-                Text(
-                    placeholder,
-                    modifier = Modifier.fillMaxWidth(),
-                    style = typography.bodyMedium.copy(textAlign = TextAlign.Center),
-                    color = customizedColors.textColorDisabled
-                )
+                SmoothAnimatedContent(targetState = placeholder) {
+                    Text(
+                        it,
+                        modifier = Modifier.fillMaxWidth(),
+                        style = typography.bodyMedium.copy(textAlign = TextAlign.Center),
+                        color = customizedColors.textColorDisabled
+                    )
+                }
             },
             singleLine = true,
             modifier = Modifier
