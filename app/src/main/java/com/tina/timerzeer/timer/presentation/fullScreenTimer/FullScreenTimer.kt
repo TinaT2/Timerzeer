@@ -54,7 +54,6 @@ import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLo
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> Unit) {
     val timerState = viewModel.timerState.collectAsStateWithLifecycle()

@@ -5,7 +5,6 @@ sealed interface TimerFullScreenIntent {
     data object Pause : TimerFullScreenIntent
     data object Resume : TimerFullScreenIntent
     data object Stop : TimerFullScreenIntent
-    data object Tick : TimerFullScreenIntent
     data object Hide : TimerFullScreenIntent
     data object Lock : TimerFullScreenIntent
     data object IconAppear : TimerFullScreenIntent

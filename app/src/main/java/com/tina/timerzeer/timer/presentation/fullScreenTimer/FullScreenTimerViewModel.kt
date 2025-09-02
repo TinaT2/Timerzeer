@@ -1,23 +1,29 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
+import android.app.Application
+import android.content.Intent
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tina.timerzeer.app.Route
-import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.timer.data.repository.TimerRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
-class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) :
-    ViewModel() {
+class FullScreenTimerViewModel(
+    application: Application,
+    savedStateHandle: SavedStateHandle,
+    private val repository: TimerRepository,
+) : AndroidViewModel(application) {
 
     companion object {
         const val COUNTDOWN_DONE_DELAY_MS = 3000L
@@ -28,55 +34,68 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) :
     val timerState: StateFlow<Timer> = _timerState
     var appearJob: Job? = null
 
-    private var timerJob: Job? = null
+    init {
+        observeTimelapse()
+    }
+
+    private fun observeTimelapse() {
+        viewModelScope.launch {
+            repository.timeFlow.collect { time ->
+                _timerState.update { it.copy(elapsedTime = time) }
+                if (_timerState.value.mode == TimerMode.COUNTDOWN && time == 0L) {
+                    finishCountdown()
+                }
+            }
+        }
+    }
+
 
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
             TimerFullScreenIntent.Start -> {
+                val intent = Intent(application, TimerService::class.java)
                 if (_timerState.value.mode == TimerMode.COUNTDOWN)
                     args.time?.let {
-                        _timerState.update { timer ->
-                            timer.copy(elapsedTime = args.time)
+                        intent.apply {
+                            putExtra(TimerService.ARG_TIME, args.time)
+                            putExtra(TimerService.ARG_MODE, _timerState.value.mode)
                         }
                     }
                 if (_timerState.value.isRunning) return
                 _timerState.update { it.copy(isRunning = true) }
-                startTimer()
+                startTimer(intent)
             }
 
             TimerFullScreenIntent.Pause -> {
-                timerJob?.cancel()
+                val intent = Intent(application, TimerService::class.java).apply {
+                    action = TimerForegroundActions.ACTION_PAUSE.name
+                }
+                application.startService(intent)
                 _timerState.update { it.copy(isRunning = false) }
             }
 
             TimerFullScreenIntent.Resume -> {
                 if (!_timerState.value.isRunning) {
                     _timerState.update { it.copy(isRunning = true) }
-                    startTimer()
+                    val intent = Intent(application, TimerService::class.java).apply {
+                        action = TimerForegroundActions.ACTION_RESUME.name
+                    }
+                    startTimer(intent)
                 }
             }
 
             TimerFullScreenIntent.Stop -> {
-                timerJob?.cancel()
-                _timerState.update { it.copy(elapsedTime = 0L, isRunning = false) }
-            }
-
-            TimerFullScreenIntent.Tick -> {
-                if (!_timerState.value.isRunning) return
-                if (_timerState.value.mode == TimerMode.STOPWATCH)
-                    _timerState.update { it.copy(elapsedTime = it.elapsedTime + 1000) }
-                else {
-                    _timerState.update { it.copy(elapsedTime = it.elapsedTime - 1000) }
-                    if (_timerState.value.elapsedTime == 0L) {
-                        finishCountdown()
-                    }
+                val intent = Intent(application, TimerService::class.java).apply {
+                    action = TimerForegroundActions.ACTION_STOP.name
                 }
+                application.startService(intent)
+                _timerState.update { it.copy(isRunning = false) }
             }
 
             TimerFullScreenIntent.Hide -> {
                 viewModelScope.launch {
                     _timerState.update { it.copy(hide = !_timerState.value.hide) }
-                    if(timerState.value.hide) {
+                    if (timerState.value.hide) {
                         delay(3000)
                         _timerState.update { it.copy(iconAppear = false) }
                     }
@@ -86,12 +105,13 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) :
             TimerFullScreenIntent.Lock -> {
                 viewModelScope.launch {
                     _timerState.update { it.copy(lock = !_timerState.value.lock) }
-                    if(timerState.value.lock) {
+                    if (timerState.value.lock) {
                         delay(3000)
                         _timerState.update { it.copy(iconAppear = false) }
                     }
                 }
             }
+
             TimerFullScreenIntent.IconAppear -> {
                 appearJob?.cancel()
                 _timerState.update { it.copy(iconAppear = true) }
@@ -104,25 +124,14 @@ class FullScreenTimerViewModel(savedStateHandle: SavedStateHandle) :
     }
 
     private fun finishCountdown() {
-        timerJob?.cancel()
         viewModelScope.launch {
             _timerState.update { it.copy(isCountDownDone = true, isRunning = false) }
         }
     }
 
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            while (isActive) {
-                delay(1000)
-                onTimerIntent(TimerFullScreenIntent.Tick)
-            }
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        timerJob?.cancel()
+    private fun startTimer(intent: Intent) {
+        intent.apply { action = TimerForegroundActions.ACTION_START.name }
+        ContextCompat.startForegroundService(application, intent)
     }
 
 }
