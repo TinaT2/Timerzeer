@@ -4,10 +4,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.util.Log
+import androidx.compose.ui.text.toLowerCase
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.core.domain.util.LocalUtil
+import com.tina.timerzeer.timer.data.mapper.toDisplayString
+import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.data.repository.TimerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +27,6 @@ class TimerService : LifecycleService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private lateinit var mode: TimerMode
-    private var time: Long = 0L
 
     // Expose timer updates
     val repository: TimerRepository by inject()
@@ -43,8 +46,8 @@ class TimerService : LifecycleService() {
 
             when (TimerForegroundActions.valueOf(action)) {
                 TimerForegroundActions.ACTION_START -> {
-                    time = getLongExtra(ARG_TIME, 0L)
-                    mode = TimerMode.valueOf(getStringExtra(ARG_MODE) ?: TimerMode.STOPWATCH.name)
+                    val modeName = getStringExtra(ARG_MODE)
+                    mode = TimerMode.valueOf(modeName?: TimerMode.STOPWATCH.name)
                     startTimer()
                 }
 
@@ -77,7 +80,7 @@ class TimerService : LifecycleService() {
                     elapsedTime -= 1000
 
                 repository.update(elapsedTime)
-                updateNotification(elapsedTime/1000)
+                updateNotification(elapsedTime)
                 delay(1000)
 
                 if (mode == TimerMode.COUNTDOWN && repository.timeFlow.value == 0L)
@@ -111,10 +114,14 @@ class TimerService : LifecycleService() {
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun updateNotification(seconds: Long) {
+    private fun updateNotification(milliseconds: Long) {
         val notification = NotificationCompat.Builder(this, "timer_channel")
             .setContentTitle("Timer running")
-            .setContentText("Elapsed: ${seconds}s")
+            .setContentText(
+                "${mode.name.toLowerCase(LocalUtil.local)}: ${
+                    milliseconds.toTimeComponents().toDisplayString()
+                }"
+            )
             .setSmallIcon(R.drawable.property_1_clock_stopwatch)
             .build()
 
@@ -123,7 +130,6 @@ class TimerService : LifecycleService() {
     }
 
     companion object {
-        val ARG_TIME = "Time"
         val ARG_MODE = "Mode"
         val NOTIFICATION_ID = 1
     }

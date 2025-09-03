@@ -35,6 +35,8 @@ class FullScreenTimerViewModel(
     var appearJob: Job? = null
 
     init {
+        if (_timerState.value.mode == TimerMode.COUNTDOWN && args.time != null)
+            repository.update(args.time)
         observeTimelapse()
     }
 
@@ -43,7 +45,8 @@ class FullScreenTimerViewModel(
             repository.timeFlow.collect { time ->
                 _timerState.update { it.copy(elapsedTime = time) }
                 if (_timerState.value.mode == TimerMode.COUNTDOWN && time == 0L) {
-                    finishCountdown()
+                        _timerState.update { it.copy(isCountDownDone = true) }
+                        onTimerIntent(TimerFullScreenIntent.Stop)
                 }
             }
         }
@@ -53,17 +56,14 @@ class FullScreenTimerViewModel(
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
             TimerFullScreenIntent.Start -> {
-                val intent = Intent(application, TimerService::class.java)
-                if (_timerState.value.mode == TimerMode.COUNTDOWN)
-                    args.time?.let {
-                        intent.apply {
-                            putExtra(TimerService.ARG_TIME, args.time)
-                            putExtra(TimerService.ARG_MODE, _timerState.value.mode)
-                        }
-                    }
                 if (_timerState.value.isRunning) return
                 _timerState.update { it.copy(isRunning = true) }
-                startTimer(intent)
+                val intent = Intent(application, TimerService::class.java)
+                intent.apply {
+                    action = TimerForegroundActions.ACTION_START.name
+                    putExtra(TimerService.ARG_MODE, _timerState.value.mode.name)
+                }
+                ContextCompat.startForegroundService(application, intent)
             }
 
             TimerFullScreenIntent.Pause -> {
@@ -80,7 +80,7 @@ class FullScreenTimerViewModel(
                     val intent = Intent(application, TimerService::class.java).apply {
                         action = TimerForegroundActions.ACTION_RESUME.name
                     }
-                    startTimer(intent)
+                    ContextCompat.startForegroundService(application, intent)
                 }
             }
 
@@ -121,17 +121,6 @@ class FullScreenTimerViewModel(
                 }
             }
         }
-    }
-
-    private fun finishCountdown() {
-        viewModelScope.launch {
-            _timerState.update { it.copy(isCountDownDone = true, isRunning = false) }
-        }
-    }
-
-    private fun startTimer(intent: Intent) {
-        intent.apply { action = TimerForegroundActions.ACTION_START.name }
-        ContextCompat.startForegroundService(application, intent)
     }
 
 }
