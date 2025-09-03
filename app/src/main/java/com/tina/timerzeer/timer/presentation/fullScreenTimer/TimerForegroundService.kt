@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.util.concurrent.TimeUnit
 
 
 class TimerService : LifecycleService() {
@@ -28,7 +29,6 @@ class TimerService : LifecycleService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private lateinit var mode: TimerMode
 
-    // Expose timer updates
     val repository: TimerRepository by inject()
 
     private var timerJob: Job? = null
@@ -47,14 +47,13 @@ class TimerService : LifecycleService() {
             when (TimerForegroundActions.valueOf(action)) {
                 TimerForegroundActions.ACTION_START -> {
                     val modeName = getStringExtra(ARG_MODE)
-                    mode = TimerMode.valueOf(modeName?: TimerMode.STOPWATCH.name)
+                    mode = TimerMode.valueOf(modeName ?: TimerMode.STOPWATCH.name)
                     startTimer()
                 }
 
                 TimerForegroundActions.ACTION_STOP -> stopTimer()
                 TimerForegroundActions.ACTION_PAUSE -> {
-                    timerJob?.cancel()
-                    timerJob = null
+                    pauseTimer()
                 }
 
                 TimerForegroundActions.ACTION_RESUME -> {
@@ -73,22 +72,19 @@ class TimerService : LifecycleService() {
 
         var elapsedTime = repository.timeFlow.value
         timerJob = serviceScope.launch {
+            delay(TimeUnit.SECONDS.toMillis(1))
             while (isActive) {
                 if (mode == TimerMode.STOPWATCH)
-                    elapsedTime += 1000
+                    elapsedTime += TimeUnit.SECONDS.toMillis(1)
                 else
-                    elapsedTime -= 1000
+                    elapsedTime -= TimeUnit.SECONDS.toMillis(1)
 
                 repository.update(elapsedTime)
                 updateNotification(elapsedTime)
-                delay(1000)
-
-                if (mode == TimerMode.COUNTDOWN && repository.timeFlow.value == 0L)
-                    timerJob?.cancel()
+                delay(TimeUnit.SECONDS.toMillis(1))
             }
         }
     }
-
 
     private fun stopTimer() {
         timerJob?.cancel()
@@ -98,25 +94,30 @@ class TimerService : LifecycleService() {
         stopSelf()
     }
 
+    private fun pauseTimer() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+
     private fun startForegroundService() {
-        val channelId = "timer_channel"
         val channel = NotificationChannel(
-            channelId, "Timer", NotificationManager.IMPORTANCE_LOW
+            CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW
         )
 
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
 
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Timer running")
-            .setContentText("Elapsed: 0s")
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.timer_running))
+            .setContentText(getString(R.string.timer_running))
+            .setSmallIcon(R.drawable.property_1_clock_stopwatch)
             .build()
 
         startForeground(NOTIFICATION_ID, notification)
     }
 
     private fun updateNotification(milliseconds: Long) {
-        val notification = NotificationCompat.Builder(this, "timer_channel")
-            .setContentTitle("Timer running")
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.timer_running))
             .setContentText(
                 "${mode.name.toLowerCase(LocalUtil.local)}: ${
                     milliseconds.toTimeComponents().toDisplayString()
@@ -130,8 +131,11 @@ class TimerService : LifecycleService() {
     }
 
     companion object {
-        val ARG_MODE = "Mode"
-        val NOTIFICATION_ID = 1
+        const val ARG_MODE = "Mode"
+        const val NOTIFICATION_ID = 1
+        private const val CHANNEL_ID = "timer_channel"
+        private const val CHANNEL_NAME = "timer_channel"
+
     }
 }
 
