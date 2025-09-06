@@ -2,6 +2,7 @@ package com.tina.timerzeer.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.tina.timerzeer.app.TimezeerApplication
 import com.tina.timerzeer.core.data.dataStore.dataStore
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.timer.data.repository.TimerRepository
@@ -19,5 +20,5 @@ val timerModule = module {
         androidContext().dataStore
     }
     singleOf(::SettingsRepository)
-    singleOf(::TimerRepository)
+    single{TimerRepository(androidContext() as TimezeerApplication)}
 }

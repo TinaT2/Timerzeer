@@ -1,18 +1,87 @@
 package com.tina.timerzeer.timer.data.repository
 
+import android.content.Intent
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.application
+import androidx.lifecycle.viewModelScope
+import com.tina.timerzeer.app.TimezeerApplication
+import com.tina.timerzeer.core.domain.TimerMode
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.Timer
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerForegroundActions
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerFullScreenIntent
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerIntent
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class TimerRepository {
-    private val _timeFlow = MutableStateFlow(0L)
-    val timeFlow: StateFlow<Long> = _timeFlow.asStateFlow()
+class TimerRepository(private val application: TimezeerApplication) {
+
+    private val _timerState = MutableStateFlow(Timer())
+    val timerState: StateFlow<Timer> = _timerState
 
     fun update(seconds: Long) {
-        _timeFlow.value = seconds
+        if (timerState.value.mode == TimerMode.COUNTDOWN && seconds == 0L) {
+            _timerState.update { it.copy(elapsedTime = seconds, isCountDownDone = true) }
+            onTimerIntent(TimerIntent.Stop)
+        } else
+            _timerState.update { it.copy(elapsedTime = seconds) }
+    }
+
+    fun update(mode: TimerMode, title: String, initialTime: Long?) {
+        _timerState.update {
+            it.copy(mode = mode, title = title, initialTime = initialTime)
+        }
     }
 
     fun reset() {
-        _timeFlow.value = 0
+        _timerState.update { it.copy(elapsedTime = 0L) }
+    }
+
+
+    fun onTimerIntent(intent: TimerIntent?) {
+        when (intent) {
+            TimerIntent.Start -> {
+                if (_timerState.value.isRunning) return
+                _timerState.update { it.copy(isRunning = true, elapsedTime = _timerState.value.initialTime ?: 0L) }
+                val intent = Intent(application, TimerService::class.java)
+                intent.apply {
+                    action = TimerForegroundActions.ACTION_START.name
+                }
+
+                ContextCompat.startForegroundService(application, intent)
+            }
+
+            TimerIntent.Pause -> {
+                val intent = Intent(application, TimerService::class.java).apply {
+                    action = TimerForegroundActions.ACTION_PAUSE.name
+                }
+                application.startService(intent)
+                _timerState.update { it.copy(isRunning = false) }
+            }
+
+            TimerIntent.Resume -> {
+                if (!_timerState.value.isRunning) {
+                    _timerState.update { it.copy(isRunning = true) }
+                    val intent = Intent(application, TimerService::class.java).apply {
+                        action = TimerForegroundActions.ACTION_RESUME.name
+                    }
+                    ContextCompat.startForegroundService(application, intent)
+                }
+            }
+
+            TimerIntent.Stop -> {
+                val intent = Intent(application, TimerService::class.java).apply {
+                    action = TimerForegroundActions.ACTION_STOP.name
+                }
+                application.startService(intent)
+                _timerState.update { it.copy(isRunning = false) }
+            }
+
+            null -> {}
+        }
     }
 }

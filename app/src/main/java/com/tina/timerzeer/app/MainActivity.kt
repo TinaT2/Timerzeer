@@ -1,9 +1,11 @@
 package com.tina.timerzeer.app
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,6 +28,7 @@ import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.presentation.components.SmoothStartUpAnimation
 import com.tina.timerzeer.core.presentation.theme.TimerzeerTheme
 import com.tina.timerzeer.core.presentation.theme.backgroundToIsDark
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerService
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -39,6 +42,14 @@ class MainActivity : ComponentActivity() {
             var currentThemeId by remember { mutableStateOf<Int?>(null) }
             var endingAnimation by remember { mutableStateOf<Int?>(null) }
             var isLoaded by remember { mutableStateOf(false) }
+            var destination by remember {
+                mutableStateOf(
+                    intent?.getIntExtra(
+                        TimerService.NOTIFICATION_DESTINATION_ARG,
+                        0
+                    )
+                )
+            }
 
             LaunchedEffect(Unit) {
                 settingsRepository.settingsFlow.collect {
@@ -50,8 +61,8 @@ class MainActivity : ComponentActivity() {
                     isLoaded = true
                 }
             }
-
             SmoothStartUpAnimation(isLoaded) {
+                Log.d("NotifNav", "SmoothStartUpAnimation")
                 TimerzeerTheme(
                     darkTheme = isThemeDark ?: isSystemInDarkTheme(),
                     fontId = typography,
@@ -59,10 +70,17 @@ class MainActivity : ComponentActivity() {
                     endingAnimationId = endingAnimation
                 ) {
                     RequestNotificationPermission()
-                    AppNavHost()
+                    AppNavHost(destination) {
+                        destination = null
+                    }
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 }
 

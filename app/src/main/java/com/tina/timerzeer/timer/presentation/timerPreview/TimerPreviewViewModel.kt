@@ -11,6 +11,7 @@ import com.tina.timerzeer.timer.data.mapper.plusDay
 import com.tina.timerzeer.timer.data.mapper.plusHour
 import com.tina.timerzeer.timer.data.mapper.plusMinute
 import com.tina.timerzeer.timer.data.mapper.plusSecond
+import com.tina.timerzeer.timer.data.repository.TimerRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class TimerPreviewViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val timerRepository: TimerRepository
+) : ViewModel() {
 
     private val _timerPreviewState = MutableStateFlow(TimerPreviewState())
     val timerPreviewState: StateFlow<TimerPreviewState> =
@@ -99,6 +103,17 @@ class TimerPreviewViewModel(private val settingsRepository: SettingsRepository) 
                 viewModelScope.launch {
                     settingsRepository.saveFontStyle(action.styleId)
                 }
+            }
+
+            TimerPreviewIntent.OnTimerStarted -> {
+                timerPreviewState.value.apply {
+                    timerRepository.update(
+                        mode = mode,
+                        title = getTitle(),
+                        initialTime = countDownInitTime
+                    )
+                }
+
             }
         }
     }

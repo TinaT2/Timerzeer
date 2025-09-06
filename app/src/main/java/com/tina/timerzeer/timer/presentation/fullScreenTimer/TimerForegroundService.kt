@@ -1,13 +1,17 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 import androidx.compose.ui.text.toLowerCase
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import com.tina.timerzeer.R
+import com.tina.timerzeer.app.MainActivity
+import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.domain.util.LocalUtil
 import com.tina.timerzeer.timer.data.mapper.toDisplayString
@@ -27,8 +31,6 @@ import java.util.concurrent.TimeUnit
 class TimerService : LifecycleService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    private lateinit var mode: TimerMode
-
     val repository: TimerRepository by inject()
 
     private var timerJob: Job? = null
@@ -46,8 +48,6 @@ class TimerService : LifecycleService() {
 
             when (TimerForegroundActions.valueOf(action)) {
                 TimerForegroundActions.ACTION_START -> {
-                    val modeName = getStringExtra(ARG_MODE)
-                    mode = TimerMode.valueOf(modeName ?: TimerMode.STOPWATCH.name)
                     startTimer()
                 }
 
@@ -70,11 +70,11 @@ class TimerService : LifecycleService() {
     private fun startTimer() {
         if (timerJob != null) return
 
-        var elapsedTime = repository.timeFlow.value
+        var elapsedTime = repository.timerState.value.elapsedTime
         timerJob = serviceScope.launch {
             delay(TimeUnit.SECONDS.toMillis(1))
             while (isActive) {
-                if (mode == TimerMode.STOPWATCH)
+                if (repository.timerState.value.mode == TimerMode.STOPWATCH)
                     elapsedTime += TimeUnit.SECONDS.toMillis(1)
                 else
                     elapsedTime -= TimeUnit.SECONDS.toMillis(1)
@@ -106,36 +106,50 @@ class TimerService : LifecycleService() {
 
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(getString(R.string.timer_running))
-            .setContentText(getString(R.string.timer_running))
-            .setSmallIcon(R.drawable.property_1_clock_stopwatch)
-            .build()
+        val notification = buildNotification()
 
         startForeground(NOTIFICATION_ID, notification)
     }
 
     private fun updateNotification(milliseconds: Long) {
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(getString(R.string.timer_running))
-            .setContentText(
-                "${mode.name.toLowerCase(LocalUtil.local)}: ${
-                    milliseconds.toTimeComponents().toDisplayString()
-                }"
-            )
-            .setSmallIcon(R.drawable.property_1_clock_stopwatch)
-            .build()
+        val notification = buildNotification(milliseconds)
 
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(NOTIFICATION_ID, notification)
     }
 
+    private fun buildNotification(milliseconds: Long? = null): Notification {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(NOTIFICATION_DESTINATION_ARG, Route.TimerFullScreen.hashCode())
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val content = milliseconds?.let {
+            "${repository.timerState.value.mode.name.toLowerCase(LocalUtil.local)}: ${
+                milliseconds.toTimeComponents().toDisplayString()
+            }"
+        } ?: getString(R.string.timer_running)
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.timer_running))
+            .setContentText(content)
+            .setSmallIcon(R.drawable.property_1_clock_stopwatch)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+    }
+
+
     companion object {
-        const val ARG_MODE = "Mode"
         const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "timer_channel"
-        private const val CHANNEL_NAME = "timer_channel"
-
+        private const val CHANNEL_NAME = "timer"
+        const val NOTIFICATION_DESTINATION_ARG = "destination"
     }
 }
 
