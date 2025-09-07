@@ -2,23 +2,22 @@ package com.tina.timerzeer.timer.data.repository
 
 import android.content.Intent
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.application
-import androidx.lifecycle.viewModelScope
 import com.tina.timerzeer.app.TimezeerApplication
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.Timer
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerForegroundActions
-import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerFullScreenIntent
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerIntent
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerService
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class TimerRepository(private val application: TimezeerApplication) {
+
+    init {
+        val intent = Intent(application, TimerService::class.java)
+        ContextCompat.startForegroundService(application, intent)
+    }
 
     private val _timerState = MutableStateFlow(Timer())
     val timerState: StateFlow<Timer> = _timerState
@@ -46,13 +45,18 @@ class TimerRepository(private val application: TimezeerApplication) {
         when (intent) {
             TimerIntent.Start -> {
                 if (_timerState.value.isRunning) return
-                _timerState.update { it.copy(isRunning = true, elapsedTime = _timerState.value.initialTime ?: 0L) }
+                _timerState.update {
+                    it.copy(
+                        isRunning = true,
+                        elapsedTime = _timerState.value.initialTime ?: 0L
+                    )
+                }
                 val intent = Intent(application, TimerService::class.java)
                 intent.apply {
                     action = TimerForegroundActions.ACTION_START.name
                 }
 
-                ContextCompat.startForegroundService(application, intent)
+                application.startService(intent)
             }
 
             TimerIntent.Pause -> {

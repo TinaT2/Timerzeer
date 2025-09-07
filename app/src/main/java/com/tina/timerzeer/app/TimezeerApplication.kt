@@ -12,10 +12,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.tina.timerzeer.di.initKoin
 import com.tina.timerzeer.di.timerModule
+import com.tina.timerzeer.timer.data.repository.TimerRepository
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.RootTimerFullScreen
 import com.tina.timerzeer.timer.presentation.timerPreview.TimerScreenRoot
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.compose.koinInject
 import org.koin.core.logger.Level
 
 class TimezeerApplication : Application() {
@@ -30,8 +32,9 @@ class TimezeerApplication : Application() {
 }
 
 @Composable
-fun AppNavHost(destination: Int?, clearDestination: () -> Unit) {
+fun AppNavHost() {
     val navController = rememberNavController()
+    val repository: TimerRepository = koinInject()
 
     NavHost(
         navController = navController,
@@ -45,10 +48,10 @@ fun AppNavHost(destination: Int?, clearDestination: () -> Unit) {
                 exitTransition = { fadeOut(animationSpec = tween(durationMillis = (1000))) }
             ) {
                 LaunchedEffect(Unit) {
-                    if (destination == Route.TimerFullScreen.hashCode()) navController.navigate(
-                        Route.TimerFullScreen
-                    )
-                    clearDestination()
+                    if (repository.timerState.value.isRunning)
+                        navController.navigate(
+                            Route.TimerFullScreen
+                        )
                 }
                 TimerScreenRoot {
                     navController.navigate(Route.TimerFullScreen)

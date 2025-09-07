@@ -70,9 +70,7 @@ class MainActivity : ComponentActivity() {
                     endingAnimationId = endingAnimation
                 ) {
                     RequestNotificationPermission()
-                    AppNavHost(destination) {
-                        destination = null
-                    }
+                    AppNavHost()
                 }
             }
         }

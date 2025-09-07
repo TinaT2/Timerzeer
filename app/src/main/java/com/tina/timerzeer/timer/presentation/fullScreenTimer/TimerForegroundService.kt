@@ -38,7 +38,7 @@ class TimerService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-        Log.d("MyService", "onCreate")
+        Log.d(TAG, "onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -63,7 +63,7 @@ class TimerService : LifecycleService() {
                 TimerForegroundActions.NONE -> {}
             }
         }
-        Log.d("MyService", "onStartCommand")
+        Log.d(TAG, "onStartCommand")
         return START_STICKY
     }
 
@@ -90,8 +90,7 @@ class TimerService : LifecycleService() {
         timerJob?.cancel()
         timerJob = null
         repository.reset()
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        updateNotification(null)
     }
 
     private fun pauseTimer() {
@@ -107,11 +106,10 @@ class TimerService : LifecycleService() {
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
 
         val notification = buildNotification()
-
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun updateNotification(milliseconds: Long) {
+    private fun updateNotification(milliseconds: Long?) {
         val notification = buildNotification(milliseconds)
 
         val manager = getSystemService(NotificationManager::class.java)
@@ -119,22 +117,23 @@ class TimerService : LifecycleService() {
     }
 
     private fun buildNotification(milliseconds: Long? = null): Notification {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val defaultIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra(NOTIFICATION_DESTINATION_ARG, Route.TimerFullScreen.hashCode())
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+                this,
+                0,
+                defaultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+
         val content = milliseconds?.let {
             "${repository.timerState.value.mode.name.toLowerCase(LocalUtil.local)}: ${
                 milliseconds.toTimeComponents().toDisplayString()
             }"
-        } ?: getString(R.string.timer_running)
+        }
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.timer_running))
             .setContentText(content)
@@ -146,10 +145,12 @@ class TimerService : LifecycleService() {
 
 
     companion object {
+        private const val TAG = "TimerService"
         const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "timer_channel"
         private const val CHANNEL_NAME = "timer"
         const val NOTIFICATION_DESTINATION_ARG = "destination"
+
     }
 }
 
