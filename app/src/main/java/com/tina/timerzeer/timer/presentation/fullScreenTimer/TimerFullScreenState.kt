@@ -3,8 +3,7 @@ package com.tina.timerzeer.timer.presentation.fullScreenTimer
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.domain.TimerZeerError
 
-//todo change name
-data class Timer(
+data class TimerState(
     val title: String = "",
     val mode: TimerMode = TimerMode.STOPWATCH,
     val initialTime: Long? = null,
@@ -21,6 +20,6 @@ data class TimerUiState(
 )
 
 data class FullScreenTimerState(
-    val timer: Timer,
+    val timer: TimerState,
     val ui: TimerUiState
 )

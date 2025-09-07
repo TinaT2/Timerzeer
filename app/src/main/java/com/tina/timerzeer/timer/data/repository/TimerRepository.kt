@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import com.tina.timerzeer.app.TimezeerApplication
 import com.tina.timerzeer.core.domain.TimerMode
-import com.tina.timerzeer.timer.presentation.fullScreenTimer.Timer
+import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerState
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerForegroundActions
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerIntent
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.TimerService
@@ -19,8 +19,8 @@ class TimerRepository(private val application: TimezeerApplication) {
         ContextCompat.startForegroundService(application, intent)
     }
 
-    private val _timerState = MutableStateFlow(Timer())
-    val timerState: StateFlow<Timer> = _timerState
+    private val _timerState = MutableStateFlow(TimerState())
+    val timerState: StateFlow<TimerState> = _timerState
 
     fun update(seconds: Long) {
         if (timerState.value.mode == TimerMode.COUNTDOWN && seconds == 0L) {

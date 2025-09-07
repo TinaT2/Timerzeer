@@ -20,5 +20,5 @@ val timerModule = module {
         androidContext().dataStore
     }
     singleOf(::SettingsRepository)
-    single{TimerRepository(androidContext() as TimezeerApplication)}
+    single { TimerRepository(androidContext() as TimezeerApplication) }
 }

@@ -22,5 +22,5 @@ fun TimerFullScreenIntent.toTimerIntent(): TimerIntent? = when (this) {
     TimerFullScreenIntent.Pause -> TimerIntent.Pause
     TimerFullScreenIntent.Resume -> TimerIntent.Resume
     TimerFullScreenIntent.Stop -> TimerIntent.Stop
-    else -> null // UI-only intents (Hide, Lock, IconAppear) don’t map
+    else -> null
 }

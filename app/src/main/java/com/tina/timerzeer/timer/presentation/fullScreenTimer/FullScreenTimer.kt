@@ -304,7 +304,7 @@ fun TimerStartedPreview() {
     ThemedPreview {
         TimerStarted(
             timerState = FullScreenTimerState(
-                timer = Timer(
+                timer = TimerState(
                     title = "Work",
                     mode = TimerMode.COUNTDOWN,
                     elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second

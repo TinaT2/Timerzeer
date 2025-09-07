@@ -27,7 +27,7 @@ class FullScreenTimerViewModel(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = FullScreenTimerState(Timer(), TimerUiState())
+            initialValue = FullScreenTimerState(TimerState(), TimerUiState())
         )
 
     companion object {
