@@ -13,6 +13,7 @@ composeBom = "2025.07.00"
 koin = "4.1.0"
 lottieCompose = "6.6.7"
 navigationCompose = "2.9.3"
+lifecycleService = "2.9.2"
 
 
 [libraries]
@@ -39,6 +40,7 @@ koin-core = { module = "io.insert-koin:koin-core" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
 
 
 

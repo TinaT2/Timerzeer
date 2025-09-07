@@ -53,11 +53,11 @@ import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerView
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.components.LottieLoader
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
 import kotlinx.coroutines.delay
-
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> Unit) {
-    val timerState = viewModel.timerState.collectAsStateWithLifecycle()
+fun RootTimerFullScreen(viewModel: FullScreenTimerViewModel = koinViewModel(), onNavigateBack: () -> Unit) {
+    val timerState = viewModel.fullState.collectAsStateWithLifecycle()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     DisposableEffect(Unit) {
@@ -82,7 +82,7 @@ fun RootTimerStarted(viewModel: FullScreenTimerViewModel, onNavigateBack: () -> 
 
 @Composable
 fun TimerStarted(
-    timerState: Timer,
+    timerState: FullScreenTimerState,
     onTimerIntent: (TimerFullScreenIntent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -90,8 +90,8 @@ fun TimerStarted(
     val customColors = LocalCustomColors.current
     val context = LocalContext.current
 
-    LaunchedEffect(timerState.isCountDownDone) {
-        if (timerState.isCountDownDone) {
+    LaunchedEffect(timerState.timer.isCountDownDone) {
+        if (timerState.timer.isCountDownDone) {
             delay(COUNTDOWN_DONE_DELAY_MS)
             onNavigateBack()
         }
@@ -121,7 +121,7 @@ fun TimerStarted(
             ) {
                 Spacer(Modifier.weight(1.3f))
 
-                HeadlineMediumTextField(timerState.title)
+                HeadlineMediumTextField(timerState.timer.title)
 
                 Box(
                     modifier = Modifier
@@ -130,7 +130,7 @@ fun TimerStarted(
                     contentAlignment = Alignment.Center
                 ) {
                     SmoothFieldFadeAnimatedVisibility(
-                        visible = timerState.isCountDownDone
+                        visible = timerState.timer.isCountDownDone
                     ) {
                         LottieLoader(
                             modifier = Modifier
@@ -147,7 +147,7 @@ fun TimerStarted(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        val time = timerState.elapsedTime.toTimeComponents()
+                        val time = timerState.timer.elapsedTime.toTimeComponents()
                         SmoothFieldFadeAnimatedVisibility(time.days != 0L) {
                             TimeSelector(
                                 time.days,
@@ -181,12 +181,12 @@ fun TimerStarted(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.weight(2f)
                 ) {
-                    SmoothFieldFadeAnimatedVisibility(visible = !timerState.hide && !timerState.lock) {
+                    SmoothFieldFadeAnimatedVisibility(visible = !timerState.ui.hide && !timerState.ui.lock) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_eye_off,
                                 stringResource(R.string.hide_ui),
-                                enabled = timerState.elapsedTime != 0L
+                                enabled = timerState.timer.elapsedTime != 0L
                             ) {
                                 onTimerIntent(TimerFullScreenIntent.IconAppear)
                                 onTimerIntent(TimerFullScreenIntent.Hide)
@@ -195,17 +195,17 @@ fun TimerStarted(
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_stop,
                                 stringResource(R.string.stop),
-                                enabled = timerState.elapsedTime != 0L
+                                enabled = timerState.timer.elapsedTime != 0L
                             ) {
                                 onTimerIntent(TimerFullScreenIntent.Stop)
                                 onNavigateBack()
                             }
                             Spacer(Modifier.width(SizeXL))
-                            if (timerState.isRunning)
+                            if (timerState.timer.isRunning)
                                 RoundIconFilledMedium(
                                     R.drawable.property_1_pause_circle,
                                     stringResource(R.string.pause),
-                                    enabled = timerState.elapsedTime != 0L
+                                    enabled = timerState.timer.elapsedTime != 0L
                                 ) {
                                     onTimerIntent(TimerFullScreenIntent.Pause)
                                 }
@@ -213,7 +213,7 @@ fun TimerStarted(
                                 RoundIconFilledMedium(
                                     R.drawable.property_1_play,
                                     stringResource(R.string.play),
-                                    enabled = timerState.elapsedTime != 0L
+                                    enabled = timerState.timer.elapsedTime != 0L
                                 ) {
                                     onTimerIntent(TimerFullScreenIntent.Resume)
                                 }
@@ -221,7 +221,7 @@ fun TimerStarted(
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_lock_01,
                                 stringResource(R.string.lock),
-                                enabled = timerState.elapsedTime != 0L
+                                enabled = timerState.timer.elapsedTime != 0L
                             ) {
                                 onTimerIntent(TimerFullScreenIntent.IconAppear)
                                 onTimerIntent(TimerFullScreenIntent.Lock)
@@ -230,14 +230,14 @@ fun TimerStarted(
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_share_06,
                                 stringResource(R.string.share),
-                                enabled = timerState.elapsedTime != 0L
+                                enabled = timerState.timer.elapsedTime != 0L
                             ) {
                                 val shareText =
                                     context.getString(
                                         R.string.my_timer_state,
-                                        context.getString(timerState.mode.nameId)
+                                        context.getString(timerState.timer.mode.nameId)
                                             .toLowerCase(LocalUtil.local),
-                                        timerState.elapsedTime.toTimeComponents().toDisplayString()
+                                        timerState.timer.elapsedTime.toTimeComponents().toDisplayString()
                                     )
 
                                 context.shareText(shareText)
@@ -245,24 +245,24 @@ fun TimerStarted(
                         }
                     }
 
-                    SmoothFieldFadeAnimatedVisibility(visible = timerState.hide && timerState.iconAppear) {
+                    SmoothFieldFadeAnimatedVisibility(visible = timerState.ui.hide && timerState.ui.iconAppear) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_eye,
                                 stringResource(R.string.show_ui),
-                                enabled = timerState.elapsedTime != 0L
+                                enabled = timerState.timer.elapsedTime != 0L
                             ) {
                                 onTimerIntent(TimerFullScreenIntent.Hide)
                             }
                         }
                     }
 
-                    SmoothFieldFadeAnimatedVisibility(visible = timerState.lock && timerState.iconAppear) {
+                    SmoothFieldFadeAnimatedVisibility(visible = timerState.ui.lock && timerState.ui.iconAppear) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RoundIconOutlinedSmall(
                                 R.drawable.property_1_lock_unlocked_01,
                                 stringResource(R.string.show_ui),
-                                enabled = timerState.elapsedTime != 0L,
+                                enabled = timerState.timer.elapsedTime != 0L,
                                 onLongPress3Second = {
                                     onTimerIntent(TimerFullScreenIntent.Lock)
                                 }
@@ -302,14 +302,17 @@ fun TimerStarted(
 @Composable
 fun TimerStartedPreview() {
     ThemedPreview {
-        val timerState = Timer(
-            elapsedTime = 3661000L,
-            isRunning = true,
-            title = "Title",
-            mode = TimerMode.STOPWATCH
-        )
-        TimerStarted(timerState, {}, {})
+        TimerStarted(
+            timerState = FullScreenTimerState(
+                timer = TimerState(
+                    title = "Work",
+                    mode = TimerMode.COUNTDOWN,
+                    elapsedTime = 3661000L, // 1 hour, 1 minute, 1 second
+                    isRunning = true
+                ),
+                ui = TimerUiState()
+            ), onTimerIntent = {}, onNavigateBack = {})
     }
-
 }
+
 

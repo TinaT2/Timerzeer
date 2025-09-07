@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.tina.timerzeer"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.lottie.compose)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.lifecycle.service)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

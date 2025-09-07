@@ -1,7 +1,5 @@
 package com.tina.timerzeer.timer.presentation.timerPreview
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -56,12 +54,13 @@ import com.tina.timerzeer.core.presentation.theme.fontStyles
 import com.tina.timerzeer.timer.data.mapper.toTimeComponents
 import com.tina.timerzeer.timer.presentation.timerPreview.components.SegmentedTab
 import com.tina.timerzeer.timer.presentation.timerPreview.components.TimeSelector
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimerScreenRoot(
-    viewModel: TimerPreviewViewModel,
+    viewModel: TimerPreviewViewModel = koinViewModel(),
     onTimerStarted: () -> Unit = {}
 ) {
     val timerPreviewState by viewModel.timerPreviewState.collectAsStateWithLifecycle()
@@ -82,6 +81,7 @@ fun TimerScreenRoot(
                 paddingValues,
                 timerPreviewState = timerPreviewState,
                 onTimerStarted = {
+                    viewModel.onUserAction(TimerPreviewIntent.OnTimerStarted)
                     onTimerStarted()
                 },
                 onUserActionIntent = { intent ->

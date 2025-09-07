@@ -2,8 +2,10 @@ package com.tina.timerzeer.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.tina.timerzeer.app.TimezeerApplication
 import com.tina.timerzeer.core.data.dataStore.dataStore
 import com.tina.timerzeer.core.data.repository.SettingsRepository
+import com.tina.timerzeer.timer.data.repository.TimerRepository
 import com.tina.timerzeer.timer.presentation.fullScreenTimer.FullScreenTimerViewModel
 import com.tina.timerzeer.timer.presentation.timerPreview.TimerPreviewViewModel
 import org.koin.android.ext.koin.androidContext
@@ -18,5 +20,5 @@ val timerModule = module {
         androidContext().dataStore
     }
     singleOf(::SettingsRepository)
-
+    single { TimerRepository(androidContext() as TimezeerApplication) }
 }
