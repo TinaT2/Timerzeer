@@ -19,7 +19,7 @@ fun backgrounds() = linkedMapOf(
     R.string.background_theme_digital to Digital,
 )
 
-val backgroundToIsDark = linkedMapOf<Int, Boolean>(
+val backgroundToIsDark = linkedMapOf(
     R.string.value_default to false,
     R.string.background_theme_dark to true,
     R.string.background_theme_galaxy to true,
