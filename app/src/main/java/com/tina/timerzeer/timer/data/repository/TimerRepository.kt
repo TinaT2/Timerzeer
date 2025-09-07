@@ -48,7 +48,8 @@ class TimerRepository(private val application: TimezeerApplication) {
                 _timerState.update {
                     it.copy(
                         isRunning = true,
-                        elapsedTime = _timerState.value.initialTime ?: 0L
+                        elapsedTime = _timerState.value.initialTime ?: 0L,
+                        isCountDownDone = false
                     )
                 }
                 val intent = Intent(application, TimerService::class.java)

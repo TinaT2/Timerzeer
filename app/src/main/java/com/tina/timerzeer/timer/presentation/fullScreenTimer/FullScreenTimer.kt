@@ -135,7 +135,6 @@ fun TimerStarted(
                         LottieLoader(
                             modifier = Modifier
                                 .align(Alignment.Center)
-                                .background(colorScheme.background.copy(alpha = 0.3f))
                                 .zIndex(2f),
                             resId = endingAnimations[customGraphicIds.endingAnimationId]
                                 ?: endingAnimations[R.string.value_default]!!
