@@ -1,7 +1,6 @@
 package com.tina.timerzeer.timer.presentation.fullScreenTimer
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
@@ -11,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import com.tina.timerzeer.R
 import com.tina.timerzeer.app.MainActivity
-import com.tina.timerzeer.app.Route
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.core.domain.util.LocalUtil
 import com.tina.timerzeer.timer.data.mapper.toDisplayString
@@ -99,12 +97,6 @@ class TimerService : LifecycleService() {
     }
 
     private fun startForegroundService() {
-        val channel = NotificationChannel(
-            CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW
-        )
-
-        getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-
         val notification = buildNotification()
         startForeground(NOTIFICATION_ID, notification)
     }
@@ -122,11 +114,11 @@ class TimerService : LifecycleService() {
         }
 
         val pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                defaultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+            this,
+            0,
+            defaultIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val content = milliseconds?.let {
             "${repository.timerState.value.mode.name.toLowerCase(LocalUtil.local)}: ${
@@ -147,10 +139,8 @@ class TimerService : LifecycleService() {
     companion object {
         private const val TAG = "TimerService"
         const val NOTIFICATION_ID = 1
-        private const val CHANNEL_ID = "timer_channel"
-        private const val CHANNEL_NAME = "timer"
-        const val NOTIFICATION_DESTINATION_ARG = "destination"
-
+        const val CHANNEL_ID = "timer_channel"
+        const val CHANNEL_NAME = "timer"
     }
 }
 
