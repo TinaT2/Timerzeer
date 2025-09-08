@@ -2,7 +2,6 @@ package com.tina.timerzeer.core.presentation.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.tina.timerzeer.R
 import com.tina.timerzeer.core.domain.TimerZeerError
 import com.tina.timerzeer.core.domain.UnknownError
@@ -41,17 +39,12 @@ import kotlin.math.max
 
 @Composable
 fun TimerInputField(
+    modifier: Modifier = Modifier,
     value: String,
     placeholder: String,
     error: TimerZeerError? = null,
-    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
-    val borderColor = when {
-        error != null -> colorScheme.error
-        else -> Color.Transparent
-    }
-
     val customizedColors = LocalCustomColors.current
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -72,18 +65,13 @@ fun TimerInputField(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                    shape = RoundedCornerShape(RoundedCornerShapeNumber)
-                )
                 .background(
                     color = customizedColors.rowBackground,
                     shape = RoundedCornerShape(RoundedCornerShapeNumber)
                 ),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = colorScheme.onPrimary,
+                focusedBorderColor = Color.Transparent,
                 cursorColor = colorScheme.onPrimary,
                 errorBorderColor = colorScheme.error,
                 focusedTextColor = colorScheme.onPrimary,

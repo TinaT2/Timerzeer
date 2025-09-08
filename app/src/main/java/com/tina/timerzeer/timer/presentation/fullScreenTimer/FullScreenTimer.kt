@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,7 +55,10 @@ import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun RootTimerFullScreen(viewModel: FullScreenTimerViewModel = koinViewModel(), onNavigateBack: () -> Unit) {
+fun RootTimerFullScreen(
+    viewModel: FullScreenTimerViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit
+) {
     val timerState = viewModel.fullState.collectAsStateWithLifecycle()
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -135,7 +137,6 @@ fun TimerStarted(
                         LottieLoader(
                             modifier = Modifier
                                 .align(Alignment.Center)
-                                .background(colorScheme.background.copy(alpha = 0.3f))
                                 .zIndex(2f),
                             resId = endingAnimations[customGraphicIds.endingAnimationId]
                                 ?: endingAnimations[R.string.value_default]!!
@@ -237,7 +238,8 @@ fun TimerStarted(
                                         R.string.my_timer_state,
                                         context.getString(timerState.timer.mode.nameId)
                                             .toLowerCase(LocalUtil.local),
-                                        timerState.timer.elapsedTime.toTimeComponents().toDisplayString()
+                                        timerState.timer.elapsedTime.toTimeComponents()
+                                            .toDisplayString()
                                     )
 
                                 context.shareText(shareText)

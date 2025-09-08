@@ -94,7 +94,6 @@ fun TimerScreenRoot(
             )
 
             UIOverlays(
-                state = timerPreviewState,
                 uiOverlayIntent,
                 { viewModel.onUserAction(it) },
                 onDismiss = { uiOverlayIntent = UiOverlayIntent.None })
@@ -104,7 +103,6 @@ fun TimerScreenRoot(
 
 @Composable
 private fun UIOverlays(
-    state: TimerPreviewState,
     uiOverlayIntent: UiOverlayIntent,
     onUserAction: (TimerPreviewIntent) -> Unit,
     onDismiss: () -> Unit
@@ -182,6 +180,7 @@ private fun TimerScreen(
     onShowDatePicker: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
+    val customGraphicIds = LocalCustomGraphicIds.current
 
     Box(
         modifier = Modifier
@@ -284,19 +283,21 @@ private fun TimerScreen(
                     Spacer(Modifier.height(SizeXXXL))
 
                     TextOptionButton(
-                        text = stringResource(R.string.value_default),
+                        text = stringResource(customGraphicIds.fontId),
                         leadingIcon = R.drawable.property_1_roller_brush,
                         trailingIcon = R.drawable.property_1_chevron_right,
-                        enabled = false
+                        enabled = customGraphicIds.fontId != fontStyles.keys.first()
                     ) {
                         onStyleChange()
                     }
                     Spacer(Modifier.height(SizeXS))
                     TextOptionButton(
-                        text = stringResource(R.string.value_default),
+                        text = stringResource(
+                            customGraphicIds.backgroundId ?: backgrounds().keys.first()
+                        ),
                         leadingIcon = R.drawable.property_1_image_02,
                         trailingIcon = R.drawable.property_1_chevron_right,
-                        enabled = false
+                        enabled = customGraphicIds.backgroundId != backgrounds().keys.first() && customGraphicIds.backgroundId != null
                     ) {
                         onBackgroundThemeChange()
                     }
@@ -304,10 +305,10 @@ private fun TimerScreen(
 
                     SmoothFieldFadeAnimatedVisibility(timerPreviewState.mode == TimerMode.COUNTDOWN) {
                         TextOptionButton(
-                            text = stringResource(R.string.value_default),
+                            text = stringResource(customGraphicIds.endingAnimationId),
                             leadingIcon = R.drawable.property_1_flash,
                             trailingIcon = R.drawable.property_1_chevron_right,
-                            enabled = false
+                            enabled = customGraphicIds.endingAnimationId != endingAnimations.keys.first()
                         ) {
                             onEndingAnimationChange()
                         }
