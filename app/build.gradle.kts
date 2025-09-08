@@ -59,24 +59,18 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.service)
 
-    androidTestImplementation(libs.androidx.junit)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(kotlin("test"))
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    // --- Coroutines test utilities ---
-    testImplementation(libs.kotlinx.coroutines.test)
-// (latest)
-// --- Mocking (Kotlin-friendly) ---
-    testImplementation(libs.mockk)
-// --- Flow testing helper ---
-    testImplementation(libs.turbine)
-// --- Kotest (optional, rich assertions + property testing) ---
-    testImplementation(libs.kotest.assertions.core)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    testImplementation(kotlin("test"))
 }
 
 tasks.withType<Test> {

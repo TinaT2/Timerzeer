@@ -1,6 +1,5 @@
 package com.tina.timerzeer
 
-import app.cash.turbine.test
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
 import com.tina.timerzeer.timer.data.mapper.plusDay
@@ -14,8 +13,8 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -31,7 +30,6 @@ class TimerPreviewViewModelTest {
     private val timerRepository: TimerRepository = mockk(relaxed = true)
 
     private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
 
     private lateinit var viewModel: TimerPreviewViewModel
 
@@ -47,117 +45,92 @@ class TimerPreviewViewModelTest {
     }
 
     @Test
-    fun `OnStopwatchTitleChange updates stopwatchTitle`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            viewModel.onUserAction(TimerPreviewIntent.OnStopwatchTitleChange("Workout"))
-            val state = awaitItem()
-            assertEquals("Workout", state.stopwatchTitle)
-        }
+    fun `OnStopwatchTitleChange updates stopwatchTitle`() = runTest {
+        viewModel.onUserAction(TimerPreviewIntent.OnStopwatchTitleChange("Workout"))
+        assertEquals("Workout", viewModel.timerPreviewState.first().stopwatchTitle)
     }
 
     @Test
-    fun `OnCountDownTitleChange updates countdownTitle`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            viewModel.onUserAction(TimerPreviewIntent.OnCountDownTitleChange("Timer"))
-            val state = awaitItem()
-            assertEquals("Timer", state.countdownTitle)
-        }
+    fun `OnCountDownTitleChange updates countdownTitle`() = runTest {
+        viewModel.onUserAction(TimerPreviewIntent.OnCountDownTitleChange("Timer"))
+        assertEquals("Timer", viewModel.timerPreviewState.first().countdownTitle)
     }
 
     @Test
-    fun `OnModeChange updates mode only if different`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            // Change to COUNTDOWN
-            viewModel.onUserAction(TimerPreviewIntent.OnModeChange(TimerMode.COUNTDOWN))
-            val state1 = awaitItem()
-            assertEquals(TimerMode.COUNTDOWN, state1.mode)
+    fun `OnModeChange updates mode only if different`() = runTest {
+        assertEquals(TimerMode.STOPWATCH, viewModel.timerPreviewState.value.mode)
 
-            // Change to same mode → should not emit new state
-            viewModel.onUserAction(TimerPreviewIntent.OnModeChange(TimerMode.COUNTDOWN))
-            expectNoEvents()
-        }
+        viewModel.onUserAction(TimerPreviewIntent.OnModeChange(TimerMode.COUNTDOWN))
+        assertEquals(TimerMode.COUNTDOWN, viewModel.timerPreviewState.value.mode)
+
+        val before = viewModel.timerPreviewState.value
+        viewModel.onUserAction(TimerPreviewIntent.OnModeChange(TimerMode.COUNTDOWN))
+        val after = viewModel.timerPreviewState.value
+
+        assertEquals(before, after)
     }
 
     @Test
-    fun `SetDate updates countDownInitTime`() = testScope.runTest {
+    fun `SetDate updates countDownInitTime`() = runTest {
         val newTime = 12345L
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            viewModel.onUserAction(TimerPreviewIntent.SetDate(newTime))
-            val state = awaitItem()
-            assertEquals(newTime, state.countDownInitTime)
-        }
+        viewModel.onUserAction(TimerPreviewIntent.SetDate(newTime))
+        assertEquals(newTime, viewModel.timerPreviewState.first().countDownInitTime)
     }
 
     @Test
-    fun `OnHourIncrease and OnHourDecrease work`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            val before = viewModel.timerPreviewState.value.countDownInitTime
+    fun `OnHourIncrease and OnHourDecrease work`() = runTest {
+        val before = viewModel.timerPreviewState.value.countDownInitTime
 
-            viewModel.onUserAction(TimerPreviewIntent.OnHourIncrease)
-            assertEquals(before.plusHour(), awaitItem().countDownInitTime)
+        viewModel.onUserAction(TimerPreviewIntent.OnHourIncrease)
+        assertEquals(before.plusHour(), viewModel.timerPreviewState.first().countDownInitTime)
 
-            viewModel.onUserAction(TimerPreviewIntent.OnHourDecrease)
-            assertEquals(before, awaitItem().countDownInitTime)
-        }
+        viewModel.onUserAction(TimerPreviewIntent.OnHourDecrease)
+        assertEquals(before, viewModel.timerPreviewState.first().countDownInitTime)
     }
 
     @Test
-    fun `OnMinutesIncrease and OnMinutesDecrease work`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            val before = viewModel.timerPreviewState.value.countDownInitTime
+    fun `OnMinutesIncrease and OnMinutesDecrease work`() = runTest {
+        val before = viewModel.timerPreviewState.value.countDownInitTime
 
-            viewModel.onUserAction(TimerPreviewIntent.OnMinutesIncrease)
-            assertEquals(before.plusMinute(), awaitItem().countDownInitTime)
+        viewModel.onUserAction(TimerPreviewIntent.OnMinutesIncrease)
+        assertEquals(before.plusMinute(), viewModel.timerPreviewState.first().countDownInitTime)
 
-            viewModel.onUserAction(TimerPreviewIntent.OnMinutesDecrease)
-            assertEquals(before, awaitItem().countDownInitTime)
-        }
+        viewModel.onUserAction(TimerPreviewIntent.OnMinutesDecrease)
+        assertEquals(before, viewModel.timerPreviewState.first().countDownInitTime)
     }
 
     @Test
-    fun `OnSecondIncrease and OnSecondDecrease work`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            val before = viewModel.timerPreviewState.value.countDownInitTime
+    fun `OnSecondIncrease and OnSecondDecrease work`() = runTest {
+        val before = viewModel.timerPreviewState.value.countDownInitTime
 
-            viewModel.onUserAction(TimerPreviewIntent.OnSecondIncrease)
-            assertEquals(before.plusSecond(), awaitItem().countDownInitTime)
+        viewModel.onUserAction(TimerPreviewIntent.OnSecondIncrease)
+        assertEquals(before.plusSecond(), viewModel.timerPreviewState.first().countDownInitTime)
 
-            viewModel.onUserAction(TimerPreviewIntent.OnSecondDecrease)
-            assertEquals(before, awaitItem().countDownInitTime)
-        }
+        viewModel.onUserAction(TimerPreviewIntent.OnSecondDecrease)
+        assertEquals(before, viewModel.timerPreviewState.first().countDownInitTime)
     }
 
     @Test
-    fun `OnDayIncrease and OnDayDecrease work`() = testScope.runTest {
-        viewModel.timerPreviewState.test {
-            skipItems(1)
-            val before = viewModel.timerPreviewState.value.countDownInitTime
+    fun `OnDayIncrease and OnDayDecrease work`() = runTest {
+        val before = viewModel.timerPreviewState.value.countDownInitTime
 
-            viewModel.onUserAction(TimerPreviewIntent.OnDayIncrease)
-            assertEquals(before.plusDay(), awaitItem().countDownInitTime)
+        viewModel.onUserAction(TimerPreviewIntent.OnDayIncrease)
+        assertEquals(before.plusDay(), viewModel.timerPreviewState.first().countDownInitTime)
 
-            viewModel.onUserAction(TimerPreviewIntent.OnDayDecrease)
-            assertEquals(before, awaitItem().countDownInitTime)
-        }
+        viewModel.onUserAction(TimerPreviewIntent.OnDayDecrease)
+        assertEquals(before, viewModel.timerPreviewState.first().countDownInitTime)
     }
 
     @Test
-    fun `SetEndingAnimation calls repository`() = testScope.runTest {
+    fun `SetEndingAnimation calls repository`() = runTest {
         val animationId = 5
         viewModel.onUserAction(TimerPreviewIntent.SetEndingAnimation(animationId))
-        testScheduler.advanceUntilIdle() // ensure coroutine runs
+        testScheduler.advanceUntilIdle()
         coVerify { settingsRepository.saveEndingAnimation(animationId) }
     }
 
     @Test
-    fun `SetBackground calls repository`() = testScope.runTest {
+    fun `SetBackground calls repository`() = runTest {
         val bgId = 2
         viewModel.onUserAction(TimerPreviewIntent.SetBackground(bgId))
         testScheduler.advanceUntilIdle()
@@ -165,7 +138,7 @@ class TimerPreviewViewModelTest {
     }
 
     @Test
-    fun `SetStyle calls repository`() = testScope.runTest {
+    fun `SetStyle calls repository`() = runTest {
         val styleId = 7
         viewModel.onUserAction(TimerPreviewIntent.SetStyle(styleId))
         testScheduler.advanceUntilIdle()
@@ -173,7 +146,7 @@ class TimerPreviewViewModelTest {
     }
 
     @Test
-    fun `OnTimerStarted calls timerRepository update`() = testScope.runTest {
+    fun `OnTimerStarted calls timerRepository update`() = runTest {
         viewModel.onUserAction(TimerPreviewIntent.OnTimerStarted)
         coVerify {
             timerRepository.update(
