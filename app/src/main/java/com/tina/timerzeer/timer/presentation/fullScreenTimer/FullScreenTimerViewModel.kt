@@ -17,24 +17,24 @@ import kotlinx.coroutines.launch
 
 class FullScreenTimerViewModel(
     application: Application,
-    private val repository: TimerRepository,
+    private val repository: TimerRepository
 ) : AndroidViewModel(application) {
-
-    private val _uiState = MutableStateFlow(TimerUiState())
-    val fullState: StateFlow<FullScreenTimerState> =
-        combine(repository.timerState, _uiState) { timer, ui ->
-            FullScreenTimerState(timer, ui)
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = FullScreenTimerState(TimerState(), TimerUiState())
-        )
 
     companion object {
         const val COUNTDOWN_DONE_DELAY_MS = 3000L
     }
 
     var appearJob: Job? = null
+    private val _uiState = MutableStateFlow(TimerUiState())
+    val fullState: StateFlow<FullScreenTimerState> =
+        combine(repository.timerState, _uiState) { timer, ui ->
+            FullScreenTimerState(timer, ui)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            initialValue = FullScreenTimerState(TimerState(), TimerUiState())
+        )
+
 
     fun onTimerIntent(intent: TimerFullScreenIntent) {
         when (intent) {
