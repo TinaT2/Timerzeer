@@ -25,59 +25,55 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
    - Press ▶ Run.
 
 ---
-
-## ✅ Implemented Features
-
-- **Stopwatch**
-  - Start, pause, resume, stop.
-  - Real-time elapsed time updates.
-  - Shared ViewModel between screens.
-  
-- **Countdown Timer**
-  - Start from a preset time.
-  - Pause, resume, stop.
-  - Auto-reset after countdown completion.
-  
-- **UI/UX**
-  - Compose Navigation.
-  - Smooth arrow animations in TimeSelector.
-  - Click outside to unfocus input fields.
-
----
-
-## ⏳ Pending Features
-
-- [ ] **Timer persistence** on app restart.
-
-### 🎨 Timer persistence
-- [ ] Timer continues on app restart.
-
-### 🎨 Customization Features
-- [ ] Change Timer Style (apply selected style).
-- [ ] Change Timer Background (apply selected background).
-
-### 🎉 Completion Animations
-- [ ] Confetti Animation.
-- [ ] Ribbon Animation.
-
-### 🔒 Lock Screen Option
-- [ ] Lock/unlock mechanism (press and hold for 3 seconds to unlock).
-
-### 📤 Share Functionality
-- [ ] Native Android share sheet for sharing timer state.
-
-### ⚡ UI and Performance Enhancements
-- [ ] Advanced transitions and animations.
-- [ ] Final polish on bottom sheets and interactive elements.
+**✅ Implemented Features**  
+   • **⏱ Stopwatch**  
+     • Start, pause, resume, stop.  
+     • Real-time elapsed time updates.  
+     • Shared ViewModel between screens.  
+     
+   • **⏳ Countdown Timer**  
+     • Start from a preset time.  
+     • Pause, resume, stop.  
+     • Auto-reset after countdown completion.  
+     
+   • **🎨 UI/UX**  
+     • Compose Navigation.  
+     • Smooth arrow animations in TimeSelector.  
+     • Click outside to unfocus input fields.  
+     
+   • **💾 Timer Persistence**  
+     • Timer continues running on app restart.  
+     
+   • **🎨 Customization Features**  
+     • Change Timer Style (apply selected style).  
+     • Change Timer Background (apply selected background).  
+     
+   • **🎉 Completion Animations**  
+     • Confetti Animation.  
+     • Ribbon Animation.  
+     
+   • **🔒 Lock Screen Option**  
+     • Lock/unlock mechanism (press and hold for 3 seconds to unlock).  
+     
+   • **📤 Share Functionality**  
+     • Native Android share sheet for sharing timer state.  
+     
+   • **⚡ UI and Performance Enhancements**  
+     • Advanced transitions and animations.  
+     
+   • **🧪 Testing**  
+     • Unit tests implemented for ViewModels and Repositories.  
+     • DataStore tested with in-memory unit tests.  
+     • StateFlow and coroutine behaviors tested with runTest.  
 
 ---
 
-## 📌 Notes & Assumptions
-
-- App follows **MVI architecture** with ViewModel state handling.
-- Shared ViewModels are scoped to **navigation graph** for state preservation.
-- Timer logic uses `CoroutineScope` + `delay` for ticking.
-- Designed for **API 24+**.
+**📌 Notes & Assumptions**  
+   • App follows **MVI architecture** with ViewModel state handling.  
+   • Shared ViewModels are scoped to **navigation graph** for state preservation.  
+   • Timer logic uses **CoroutineScope + delay** for ticking.  
+   • Designed for **API 24+**.  
+   • Fully tested with **unit tests for reliability**.  
 
 ---
 
@@ -85,8 +81,7 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
 
 | Stopwatch Screen | Countdown Screen | Timer Full Screen |
 |------------------|------------------|--------------------------|
-|<img width="300" alt="image" src="https://github.com/user-attachments/assets/bbfe665a-cb09-4907-bd86-b6f7d5869447" />|<img width="300" alt="image" src="https://github.com/user-attachments/assets/69d78f1f-d31f-4c8b-b36a-6b11cad17600" />|<img width="300" alt="image" src="https://github.com/user-attachments/assets/a3283d26-5f64-4df4-b874-5212e26516b7" />
-" />
+|<img width="300" alt="image" src="https://github.com/user-attachments/assets/b55fdf7c-08d2-4420-beab-4339a67e2483"/>|<img width="300" alt="image" src="https://github.com/user-attachments/assets/e8ff64f2-9a7e-4c16-86bc-eaf1cf787a26" />|<img width="300" alt="image" src="https://github.com/user-attachments/assets/0a74ebb7-f75f-4375-9a17-035bb167d0b4"/>
 
 ---
 
@@ -94,6 +89,3 @@ It’s designed with a clean Material 3 UI and smooth animations for an intuitiv
 [timerzeer.webm](https://github.com/user-attachments/assets/1b8293b9-e605-4e9b-bfd3-6464e6114254)
 
 ---
-
-## 📱 Sample Android App
-[timerzeer.apk](https://drive.google.com/file/d/1Z4dKWU46Zsi40OKTAa0DlQvslOrmh_hn/view?usp=sharing)
