@@ -1,4 +1,4 @@
-package com.tina.timerzeer
+package com.tina.timerzeer.viewmodel
 
 import android.app.Application
 import com.tina.timerzeer.core.domain.TimerMode

@@ -1,4 +1,4 @@
-package com.tina.timerzeer
+package com.tina.timerzeer.viewmodel
 
 import com.tina.timerzeer.core.data.repository.SettingsRepository
 import com.tina.timerzeer.core.domain.TimerMode
