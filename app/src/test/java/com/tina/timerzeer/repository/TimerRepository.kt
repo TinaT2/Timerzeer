@@ -24,6 +24,7 @@ import kotlin.test.assertTrue
 class TimerRepositoryTest {
 
     private val application: TimezeerApplication = mockk(relaxed = true)
+    private var repository: TimerRepository = TimerRepository(application)
 
     @BeforeEach
     fun setup() {
@@ -32,6 +33,7 @@ class TimerRepositoryTest {
 
         mockkConstructor(Intent::class)
         every { anyConstructed<Intent>().setAction(any()) } returns mockk(relaxed = true)
+        repository = TimerRepository(application)
     }
 
     @Test
@@ -42,17 +44,15 @@ class TimerRepositoryTest {
 
     @Test
     fun `update sets elapsedTime`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(50L)
-        assertEquals(50L, repo.timerState.first().elapsedTime)
+        repository.update(50L)
+        assertEquals(50L, repository.timerState.first().elapsedTime)
     }
 
     @Test
     fun `update countdown mode with 0 triggers Stop`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(TimerMode.COUNTDOWN, "Test", 10L)
-        repo.update(0L)
-        val state = repo.timerState.first()
+        repository.update(TimerMode.COUNTDOWN, "Test", 10L)
+        repository.update(0L)
+        val state = repository.timerState.first()
         assertTrue(state.isCountDownDone)
         assertEquals(0L, state.elapsedTime)
         assertFalse(state.isRunning) // because Stop was triggered
@@ -60,9 +60,8 @@ class TimerRepositoryTest {
 
     @Test
     fun `update with mode, title, initialTime updates state`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(TimerMode.STOPWATCH, "My Timer", 123L)
-        val state = repo.timerState.first()
+        repository.update(TimerMode.STOPWATCH, "My Timer", 123L)
+        val state = repository.timerState.first()
         assertEquals("My Timer", state.title)
         assertEquals(123L, state.initialTime)
         assertEquals(TimerMode.STOPWATCH, state.mode)
@@ -70,69 +69,87 @@ class TimerRepositoryTest {
 
     @Test
     fun `reset sets elapsedTime to 0`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(42L)
-        repo.reset()
-        assertEquals(0L, repo.timerState.first().elapsedTime)
-    }
-
-    @Test
-    fun `onTimerIntent Start sets running true and calls startService`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(TimerMode.STOPWATCH, "t", 100L)
-        repo.onTimerIntent(TimerIntent.Start)
-
-        val state = repo.timerState.first()
-        assertTrue(state.isRunning)
-        assertEquals(100L, state.elapsedTime)
-        verify { application.startService(any<Intent>()) }
+        repository.update(42L)
+        repository.reset()
+        assertEquals(0L, repository.timerState.first().elapsedTime)
     }
 
     @Test
     fun `onTimerIntent Start does nothing if already running`() = runTest {
-        val repo = TimerRepository(application)
-        repo.update(TimerMode.STOPWATCH, "t", 100L)
-        repo.onTimerIntent(TimerIntent.Start)
-        val before = repo.timerState.first()
+        repository.update(TimerMode.STOPWATCH, "t", 100L)
+        repository.onTimerIntent(TimerIntent.Start)
+        val before = repository.timerState.first()
 
-        repo.onTimerIntent(TimerIntent.Start) // again
-        val after = repo.timerState.first()
+        repository.onTimerIntent(TimerIntent.Start) // again
+        val after = repository.timerState.first()
 
         assertEquals(before, after) // unchanged
     }
 
     @Test
     fun `onTimerIntent Pause sets running false`() = runTest {
-        val repo = TimerRepository(application)
-        repo.onTimerIntent(TimerIntent.Pause)
-        val state = repo.timerState.first()
+        repository.onTimerIntent(TimerIntent.Pause)
+        val state = repository.timerState.first()
         assertFalse(state.isRunning)
         verify { application.startService(any<Intent>()) }
     }
 
     @Test
     fun `onTimerIntent Resume sets running true only if not running`() = runTest {
-        val repo = TimerRepository(application)
-        repo.onTimerIntent(TimerIntent.Resume)
-        assertTrue(repo.timerState.first().isRunning)
+        repository.onTimerIntent(TimerIntent.Resume)
+        assertTrue(repository.timerState.first().isRunning)
         verify { ContextCompat.startForegroundService(application, any()) }
     }
 
     @Test
     fun `onTimerIntent Stop sets running false`() = runTest {
-        val repo = TimerRepository(application)
-        repo.onTimerIntent(TimerIntent.Stop)
-        val state = repo.timerState.first()
+        repository.onTimerIntent(TimerIntent.Stop)
+        val state = repository.timerState.first()
         assertFalse(state.isRunning)
         verify { application.startService(any<Intent>()) }
     }
 
     @Test
     fun `onTimerIntent null does nothing`() = runTest {
-        val repo = TimerRepository(application)
-        val before = repo.timerState.first()
-        repo.onTimerIntent(null)
-        val after = repo.timerState.first()
+        val before = repository.timerState.first()
+        repository.onTimerIntent(null)
+        val after = repository.timerState.first()
         assertEquals(before, after)
+    }
+
+    @Test
+    fun `Start sets elapsedTime to initialTime for countdown`() = runTest {
+        val initialTime = 5000L
+
+        // Set initial countdown state
+        repository.update(TimerMode.COUNTDOWN, title = "Countdown", initialTime = initialTime)
+
+        // Trigger Start
+        repository.onTimerIntent(TimerIntent.Start)
+
+        val state = repository.timerState.first()
+        assertTrue(state.isRunning)
+        assertEquals(initialTime, state.elapsedTime)
+        assertFalse(state.isCountDownDone)
+
+        // Verify service started
+        verify { application.startService(any<Intent>()) }
+    }
+
+    @Test
+    fun `Start sets elapsedTime to 0 for stopwatch`() = runTest {
+        // Set initial stopwatch state with initialTime (should be ignored)
+        repository.update(TimerMode.STOPWATCH, title = "Stopwatch", initialTime = 1000L)
+
+        // Trigger Start
+        repository.onTimerIntent(TimerIntent.Start)
+
+        val state = repository.timerState.first()
+        assertTrue(state.isRunning)
+        assertEquals(0L, state.elapsedTime)
+        assertFalse(state.isCountDownDone)
+
+        // Verify service started
+        verify { application.startService(any<Intent>()) }
     }
 }

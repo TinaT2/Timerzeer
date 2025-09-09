@@ -52,7 +52,8 @@ class TimerRepository(private val application: TimezeerApplication) {
                 _timerState.update {
                     it.copy(
                         isRunning = true,
-                        elapsedTime = _timerState.value.initialTime ?: 0L,
+                        elapsedTime = if (_timerState.value.mode == TimerMode.COUNTDOWN) _timerState.value.initialTime
+                            ?: 0L else 0L,
                         isCountDownDone = false
                     )
                 }
